@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI社内ポータル Builder</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --primary: #3B82F6;
+    --primary-dark: #2563EB;
+    --primary-light: #EFF6FF;
+    --sidebar-width: 240px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background: #F1F5F9;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: flex; flex-direction: column; min-height: 100vh; }
+  .page-portal.active { display: flex; flex-direction: row; min-height: 100vh; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: #fff;
+    border-right: 1px solid #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+  .sidebar-logo-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary-light);
+    border-radius: 10px;
+    padding: 8px 12px;
+    width: 100%;
+  }
+  .sidebar-logo-icon {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; flex-shrink: 0;
+  }
+  .sidebar-company {
+    font-size: 13px; font-weight: 700;
+    color: #1E293B;
+    line-height: 1.2;
+  }
+  .sidebar-tagline {
+    font-size: 10px; color: #64748B; margin-top: 1px;
+  }
+  .sidebar-nav { padding: 12px 12px; flex: 1; }
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 600; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 8px 8px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #64748B;
+    font-size: 14px; font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: #F8FAFC; color: #1E293B; }
+  .nav-item.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-badge {
+    margin-left: auto;
+    background: #EF4444;
+    color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #F1F5F9;
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sidebar-user:hover { background: #F8FAFC; }
+  .sidebar-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .sidebar-user-name { font-size: 13px; font-weight: 600; color: #1E293B; }
+  .sidebar-user-dept { font-size: 11px; color: #64748B; }
+
+  /* ===== PORTAL CONTENT ===== */
+  .portal-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .portal-topbar {
+    background: #fff;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 0 28px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .portal-topbar-title {
+    font-size: 18px; font-weight: 700; color: #1E293B;
+  }
+  .portal-topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .topbar-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: #F8FAFC; border: 1px solid #E2E8F0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; color: #64748B;
+    transition: all 0.15s;
+  }
+  .topbar-btn:hover { background: #EFF6FF; border-color: var(--primary); color: var(--primary); }
+  .portal-main { padding: 28px; flex: 1; }
+
+  /* ===== VIEW SECTIONS ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .card-p { padding: 20px; }
+
+  /* ===== STAT CARDS ===== */
+  .stat-card {
+    background: #fff; border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .stat-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+  }
+  .stat-value { font-size: 28px; font-weight: 800; color: #1E293B; line-height: 1; }
+  .stat-label { font-size: 13px; color: #64748B; margin-top: 4px; }
+  .stat-change { font-size: 12px; margin-top: 8px; }
+
+  /* ===== MEMBER CARDS ===== */
+  .member-card {
+    background: #fff; border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .member-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+  .member-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: white;
+    margin: 0 auto 12px;
+  }
+  .member-name { font-size: 15px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+  .member-dept {
+    display: inline-block;
+    background: #F1F5F9; color: #64748B;
+    font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 20px;
+    margin-bottom: 4px;
+  }
+  .member-title { font-size: 12px; color: #94A3B8; }
+  .member-contact { margin-top: 12px; display: flex; gap: 6px; justify-content: center; }
+  .member-contact-btn {
+    flex: 1; padding: 6px;
+    border: 1px solid #E2E8F0; border-radius: 6px;
+    font-size: 11px; color: #64748B; cursor: pointer;
+    transition: all 0.15s; background: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .member-contact-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+  /* ===== NEWS ITEMS ===== */
+  .news-item {
+    display: flex; gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #F8FAFC;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-item:hover { background: #FAFBFC; }
+  .news-badge {
+    flex-shrink: 0;
+    font-size: 10px; font-weight: 600;
+    padding: 3px 8px; border-radius: 20px;
+    white-space: nowrap; align-self: flex-start; margin-top: 2px;
+  }
+  .badge-important { background: #FEE2E2; color: #DC2626; }
+  .badge-general { background: #F1F5F9; color: #64748B; }
+  .badge-event { background: #EDE9FE; color: #7C3AED; }
+  .badge-hr { background: #ECFDF5; color: #059669; }
+  .news-date { font-size: 12px; color: #94A3B8; margin-bottom: 4px; }
+  .news-title { font-size: 14px; font-weight: 600; color: #1E293B; line-height: 1.4; }
+  .news-excerpt { font-size: 13px; color: #64748B; margin-top: 3px; line-height: 1.5; }
+
+  /* ===== LINK CARDS ===== */
+  .link-card {
+    background: #fff; border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .link-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  .link-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .link-title { font-size: 14px; font-weight: 600; color: #1E293B; margin-bottom: 2px; }
+  .link-desc { font-size: 12px; color: #94A3B8; }
+  .link-arrow { margin-left: auto; color: #CBD5E1; font-size: 16px; }
+
+  /* ===== FAQ ===== */
+  .faq-item {
+    background: #fff; border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    overflow: hidden; margin-bottom: 8px;
+  }
+  .faq-question {
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: background 0.12s;
+    font-size: 14px; font-weight: 600; color: #1E293B;
+  }
+  .faq-question:hover { background: #FAFBFC; }
+  .faq-q-icon {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--primary-light); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .faq-arrow { margin-left: auto; color: #94A3B8; transition: transform 0.2s; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-answer {
+    display: none;
+    padding: 0 20px 16px 56px;
+    font-size: 13px; color: #64748B; line-height: 1.7;
+  }
+  .faq-item.open .faq-answer { display: block; }
+
+  /* ===== BOTTOM TABS (MOBILE) ===== */
+  .bottom-tabs {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #E2E8F0;
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .bottom-tabs-inner {
+    display: flex;
+    height: 60px;
+  }
+  .tab-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px; cursor: pointer;
+    transition: color 0.15s;
+    color: #94A3B8; font-size: 10px; font-weight: 500;
+  }
+  .tab-item.active { color: var(--primary); }
+  .tab-item .tab-icon { font-size: 20px; line-height: 1; }
+  .tab-item .tab-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #EF4444; position: absolute; top: 8px; right: calc(50% - 14px);
+  }
+  .tab-item-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+
+  /* ===== MOBILE TOPBAR ===== */
+  .mobile-topbar {
+    display: none;
+    background: #fff;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 0 16px;
+    height: 52px;
+    align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .mobile-topbar-logo { font-size: 15px; font-weight: 700; color: #1E293B; }
+  .mobile-topbar-actions { display: flex; gap: 6px; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .portal-content { margin-left: 0; }
+    .portal-topbar { display: none; }
+    .mobile-topbar { display: flex; }
+    .bottom-tabs { display: flex; flex-direction: column; }
+    .portal-main { padding: 16px; padding-bottom: 80px; }
+  }
+
+  /* ===== LANDING PAGE ===== */
+  .landing-hero {
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #06B6D4 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  .landing-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 40px;
+  }
+  .landing-logo { display: flex; align-items: center; gap: 10px; }
+  .landing-logo-icon {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.2);
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; color: white;
+    backdrop-filter: blur(4px);
+  }
+  .landing-logo-text { font-size: 16px; font-weight: 700; color: white; }
+  .landing-hero-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px;
+  }
+  .landing-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 12px; color: rgba(255,255,255,0.9); margin-bottom: 28px;
+  }
+  .landing-h1 { font-size: 48px; font-weight: 900; color: white; line-height: 1.15; margin-bottom: 16px; }
+  .landing-h1 span { color: #FCD34D; }
+  .landing-sub { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 40px; max-width: 480px; line-height: 1.6; }
+  .btn-primary-lg {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; color: #1D4ED8;
+    font-size: 16px; font-weight: 700;
+    padding: 14px 32px; border-radius: 12px;
+    cursor: pointer; border: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+  }
+  .btn-primary-lg:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.2); }
+  .btn-outline-lg {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.5);
+    color: white; font-size: 16px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px;
+    cursor: pointer; margin-left: 12px;
+    transition: all 0.2s;
+  }
+  .btn-outline-lg:hover { background: rgba(255,255,255,0.1); border-color: white; }
+  .landing-features {
+    background: white; padding: 80px 40px;
+  }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 960px; margin: 0 auto; }
+  .feature-card {
+    padding: 28px; border-radius: 16px;
+    background: #F8FAFF; border: 1px solid #E0EAFF;
+    text-align: center;
+  }
+  .feature-icon { font-size: 36px; margin-bottom: 12px; }
+  .feature-title { font-size: 16px; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
+  .feature-desc { font-size: 14px; color: #64748B; line-height: 1.6; }
+
+  /* ===== LOGIN PAGE ===== */
+  .login-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F0F4FF 0%, #E8F4FD 100%);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .login-card {
+    background: white; border-radius: 20px;
+    padding: 40px; width: 100%; max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+  }
+  .login-logo { text-align: center; margin-bottom: 28px; }
+  .login-logo-icon {
+    width: 56px; height: 56px; background: var(--primary);
+    border-radius: 16px; display: flex; align-items: center;
+    justify-content: center; font-size: 26px; color: white; margin: 0 auto 12px;
+  }
+  .login-title { font-size: 22px; font-weight: 800; color: #1E293B; }
+  .login-sub { font-size: 14px; color: #64748B; margin-top: 4px; }
+  .form-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 10px 14px;
+    border: 2px solid #E2E8F0; border-radius: 8px;
+    font-size: 14px; color: #1E293B;
+    transition: border-color 0.15s;
+    outline: none;
+    font-family: inherit;
+  }
+  .form-input:focus { border-color: var(--primary); }
+  .btn-primary {
+    width: 100%; padding: 12px;
+    background: var(--primary); color: white;
+    font-size: 15px; font-weight: 700;
+    border: none; border-radius: 10px;
+    cursor: pointer; margin-top: 20px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+  /* ===== ONBOARDING ===== */
+  .onboarding-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F0F4FF 0%, #E8F4FD 100%);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .onboarding-card {
+    background: white; border-radius: 20px;
+    width: 100%; max-width: 540px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .onboarding-header {
+    background: linear-gradient(135deg, var(--primary), #6366F1);
+    padding: 28px 32px 24px;
+    color: white;
+  }
+  .onboarding-step-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; }
+  .onboarding-step-title { font-size: 22px; font-weight: 800; }
+  .onboarding-progress {
+    display: flex; gap: 6px; margin-top: 16px;
+  }
+  .progress-dot {
+    height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.3); flex: 1;
+    transition: background 0.3s;
+  }
+  .progress-dot.done { background: white; }
+  .onboarding-body { padding: 28px 32px 24px; }
+  .onboarding-footer {
+    padding: 16px 32px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #F1F5F9;
+  }
+  .btn-back {
+    padding: 10px 20px; background: #F8FAFC;
+    border: 1px solid #E2E8F0; color: #64748B;
+    font-size: 14px; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-back:hover { background: #F1F5F9; }
+  .btn-next {
+    padding: 10px 24px; background: var(--primary);
+    color: white; font-size: 14px; font-weight: 700;
+    border: none; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-next:hover { background: var(--primary-dark); }
+  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .option-item {
+    border: 2px solid #E2E8F0; border-radius: 10px;
+    padding: 14px; cursor: pointer; text-align: center;
+    transition: all 0.15s;
+  }
+  .option-item:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-item.selected { border-color: var(--primary); background: var(--primary-light); }
+  .option-icon { font-size: 24px; margin-bottom: 6px; }
+  .option-label { font-size: 13px; font-weight: 600; color: #374151; }
+  .color-swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch {
+    width: 40px; height: 40px; border-radius: 10px;
+    cursor: pointer; transition: transform 0.15s;
+    border: 3px solid transparent;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.selected { border-color: #1E293B; transform: scale(1.1); }
+
+  /* ===== ADMIN PAGE ===== */
+  .admin-sidebar {
+    width: 200px; min-width: 200px;
+    background: #1E293B;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .admin-logo {
+    padding: 18px 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: white; font-size: 14px; font-weight: 700;
+  }
+  .admin-logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .admin-nav { padding: 12px 8px; flex: 1; }
+  .admin-nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 10px; border-radius: 6px;
+    color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 500;
+    cursor: pointer; margin-bottom: 2px; transition: all 0.15s;
+  }
+  .admin-nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .admin-nav-item.active { background: rgba(59,130,246,0.3); color: #93C5FD; }
+  .admin-nav-icon { font-size: 15px; width: 18px; text-align: center; }
+  .admin-content { margin-left: 200px; }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header { margin-bottom: 20px; }
+  .section-title { font-size: 20px; font-weight: 800; color: #1E293B; }
+  .section-sub { font-size: 14px; color: #64748B; margin-top: 2px; }
+
+  /* ===== GRID UTILS ===== */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ===== SHORTCUT CARDS ===== */
+  .shortcut-card {
+    background: white; border-radius: 12px;
+    padding: 16px; text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .shortcut-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+  .shortcut-icon { font-size: 28px; margin-bottom: 8px; }
+  .shortcut-label { font-size: 12px; font-weight: 600; color: #374151; }
+
+  /* ===== SEARCH BAR ===== */
+  .search-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: #F8FAFC; border: 2px solid #E2E8F0;
+    border-radius: 10px; padding: 8px 14px;
+    transition: border-color 0.15s; cursor: text;
+  }
+  .search-bar:focus-within { border-color: var(--primary); background: white; }
+  .search-bar input {
+    border: none; background: transparent; outline: none;
+    font-size: 14px; color: #1E293B; width: 100%;
+    font-family: inherit;
+  }
+  .search-bar input::placeholder { color: #94A3B8; }
+
+  /* ===== TAGS ===== */
+  .tag {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+    background: #F1F5F9; color: #64748B;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.25s ease; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+  @media (max-width: 768px) {
+    .landing-h1 { font-size: 32px; }
+    .landing-nav { padding: 16px 20px; }
+    .features-grid { grid-template-columns: 1fr; max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== PAGE: LANDING ========== -->
+<div id="page-landing" class="page active">
+  <div class="landing-hero">
+    <nav class="landing-nav">
+      <div class="landing-logo">
+        <div class="landing-logo-icon">🏢</div>
+        <span class="landing-logo-text">AI社内ポータル Builder</span>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline-lg" style="padding:9px 20px;font-size:14px;" onclick="showPage('login')">ログイン</button>
+        <button class="btn-primary-lg" style="padding:9px 20px;font-size:14px;" onclick="showPage('login')">無料で始める</button>
+      </div>
+    </nav>
+    <div class="landing-hero-body">
+      <div class="landing-badge">✨ AI搭載・3分でポータル完成</div>
+      <h1 class="landing-h1">中小企業のための<br><span>かんたん社内ポータル</span></h1>
+      <p class="landing-sub">ITが得意でなくても大丈夫。AIが手伝うから、誰でもすぐに使えるポータルサイトが作れます。</p>
+      <div>
+        <button class="btn-primary-lg" onclick="showPage('login')">🚀 無料で試してみる</button>
+        <button class="btn-outline-lg" onclick="showPage('login')">▶ デモを見る</button>
+      </div>
+    </div>
+  </div>
+  <div class="landing-features">
+    <div style="text-align:center;margin-bottom:48px;">
+      <h2 style="font-size:32px;font-weight:800;color:#1E293B;margin-bottom:8px;">なぜ選ばれるのか</h2>
+      <p style="font-size:16px;color:#64748B;">サイボウズの簡単さ × Softrの美しさ × AIの速さ</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">3分でセットアップ</div>
+        <div class="feature-desc">AIウィザードが質問に答えるだけで、会社にぴったりのポータルを自動生成します。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <div class="feature-title">スマホでもきれい</div>
+        <div class="feature-desc">PCはサイドバー、スマホはボトムタブで最適表示。どこからでも使いやすい。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">AI がサポート</div>
+        <div class="feature-desc">よくある質問への自動回答、お知らせの自動要約など、AIが社員をサポート。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">安心のセキュリティ</div>
+        <div class="feature-desc">社員ごとにアクセス権限を設定。大切な情報を守ります。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-title">自由なカスタマイズ</div>
+        <div class="feature-desc">会社のカラーやロゴに合わせてデザインを変更できます。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">充実のサポート</div>
+        <div class="feature-desc">日本語サポート対応。困ったときにすぐ相談できます。</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:56px;">
+      <button class="btn-primary-lg" onclick="showPage('login')" style="background:var(--primary);color:white;">今すぐ無料で始める →</button>
+      <p style="font-size:13px;color:#94A3B8;margin-top:12px;">クレジットカード不要 · 14日間無料トライアル</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: LOGIN ========== -->
+<div id="page-login" class="page">
+  <div class="login-page">
+    <div class="login-card fade-in">
+      <div class="login-logo">
+        <div class="login-logo-icon">🏢</div>
+        <div class="login-title">おかえりなさい</div>
+        <div class="login-sub">AI社内ポータル Builder にログイン</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label class="form-label">メールアドレス</label>
+        <input class="form-input" type="email" placeholder="example@company.co.jp" value="yamada@eteam.co.jp">
+      </div>
+      <div>
+        <label class="form-label">パスワード</label>
+        <input class="form-input" type="password" placeholder="パスワードを入力" value="password123">
+      </div>
+      <div style="text-align:right;margin-top:8px;">
+        <a style="font-size:12px;color:var(--primary);cursor:pointer;">パスワードを忘れた方</a>
+      </div>
+      <button class="btn-primary" onclick="showPage('onboarding')">ログイン</button>
+      <div style="text-align:center;margin-top:20px;font-size:13px;color:#64748B;">
+        アカウントをお持ちでない方は
+        <a style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="showPage('onboarding')">新規登録</a>
+      </div>
+      <div style="margin-top:20px;text-align:center;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="flex:1;height:1px;background:#E2E8F0;"></div>
+          <span style="font-size:12px;color:#94A3B8;">または</span>
+          <div style="flex:1;height:1px;background:#E2E8F0;"></div>
+        </div>
+        <button onclick="showPage('portal')" style="width:100%;padding:10px;border:2px solid #E2E8F0;border-radius:8px;font-size:13px;color:#64748B;cursor:pointer;background:white;font-family:inherit;font-weight:600;">👀 デモポータルを見る</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: ONBOARDING ========== -->
+<div id="page-onboarding" class="page">
+  <div class="onboarding-page">
+    <div class="onboarding-card fade-in">
+      <div class="onboarding-header" id="ob-header">
+        <div class="onboarding-step-label">ステップ 1 / 4</div>
+        <div class="onboarding-step-title">会社の情報を教えてください</div>
+        <div class="onboarding-progress">
+          <div class="progress-dot done" id="p1"></div>
+          <div class="progress-dot" id="p2"></div>
+          <div class="progress-dot" id="p3"></div>
+          <div class="progress-dot" id="p4"></div>
+        </div>
+      </div>
+      <div class="onboarding-body" id="ob-body">
+        <!-- filled by JS -->
+      </div>
+      <div class="onboarding-footer">
+        <button class="btn-back" id="ob-back" onclick="obBack()">← 戻る</button>
+        <button class="btn-next" id="ob-next" onclick="obNext()">次へ →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: PORTAL ========== -->
+<div id="page-portal" class="page page-portal">
+
+  <!-- SIDEBAR (PC) -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-badge">
+        <div class="sidebar-logo-icon">🏢</div>
+        <div>
+          <div class="sidebar-company">Eチーム株式会社</div>
+          <div class="sidebar-tagline">社内ポータル</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">メインメニュー</div>
+      <a class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">🏠</span> ホーム
+      </a>
+      <a class="nav-item" onclick="showView('news')" id="nav-news">
+        <span class="nav-icon">📢</span> お知らせ
+        <span class="nav-badge">3</span>
+      </a>
+      <a class="nav-item" onclick="showView('links')" id="nav-links">
+        <span class="nav-icon">🔗</span> よく使うリンク
+      </a>
+      <a class="nav-item" onclick="showView('members')" id="nav-members">
+        <span class="nav-icon">👥</span> メンバー
+      </a>
+      <a class="nav-item" onclick="showView('faq')" id="nav-faq">
+        <span class="nav-icon">❓</span> FAQ
+      </a>
+      <div class="sidebar-section-label" style="margin-top:16px;">管理</div>
+      <a class="nav-item" onclick="showPage('admin')">
+        <span class="nav-icon">⚙️</span> 管理画面
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">山</div>
+        <div>
+          <div class="sidebar-user-name">山田 太郎</div>
+          <div class="sidebar-user-dept">営業部</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <div class="mobile-topbar">
+    <div class="mobile-topbar-logo">🏢 Eチーム社内ポータル</div>
+    <div class="mobile-topbar-actions">
+      <div class="topbar-btn">🔔</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="portal-content">
+    <!-- PC TOPBAR -->
+    <header class="portal-topbar">
+      <div class="portal-topbar-title" id="topbar-title">ホーム</div>
+      <div class="portal-topbar-actions">
+        <div class="topbar-btn" title="検索">🔍</div>
+        <div class="topbar-btn" title="通知">🔔</div>
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">
+          <div class="sidebar-avatar" style="width:28px;height:28px;font-size:11px;">山</div>
+          <span style="font-size:13px;font-weight:600;color:#374151;">山田 太郎</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+    <main class="portal-main">
+
+      <!-- VIEW: DASHBOARD -->
+      <div class="view active fade-in" id="view-dashboard">
+        <div class="section-header">
+          <div class="section-title">おはようございます、山田さん 👋</div>
+          <div class="section-sub">今日も一日よろしくお願いします</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid-4" style="margin-bottom:24px;">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#EFF6FF;color:#3B82F6;">📢</div>
+            <div class="stat-value">3</div>
+            <div class="stat-label">未読のお知らせ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#F0FDF4;color:#22C55E;">👥</div>
+            <div class="stat-value">24</div>
+            <div class="stat-label">メンバー数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FFF7ED;color:#F97316;">📅</div>
+            <div class="stat-value">2</div>
+            <div class="stat-label">今週のイベント</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FAF5FF;color:#A855F7;">✅</div>
+            <div class="stat-value">5</div>
+            <div class="stat-label">未対応のタスク</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+          <!-- Latest News -->
+          <div class="card">
+            <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F8FAFC;">
+              <div style="font-size:15px;font-weight:700;color:#1E293B;">最新のお知らせ</div>
+              <a onclick="showView('news')" style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;">すべて見る →</a>
+            </div>
+            <div class="news-item" onclick="showView('news')">
+              <div>
+                <span class="news-badge badge-important">重要</span>
+              </div>
+              <div>
+                <div class="news-date">2025年4月1日</div>
+                <div class="news-title">2025年度 健康診断のご案内</div>
+              </div>
+            </div>
+            <div class="news-item" onclick="showView('news')">
+              <div><span class="news-badge badge-event">イベント</span></div>
+              <div>
+                <div class="news-date">2025年3月28日</div>
+                <div class="news-title">4月の全社会議について</div>
+              </div>
+            </div>
+            <div class="news-item" onclick="showView('news')">
+              <div><span class="news-badge badge-general">一般</span></div>
+              <div>
+                <div class="news-date">2025年3月25日</div>
+                <div class="news-title">オフィスの清掃日程変更</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Access -->
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#1E293B;margin-bottom:12px;">よく使うもの</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">📧</div>
+                <div class="shortcut-label">メール</div>
+              </div>
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">📅</div>
+                <div class="shortcut-label">カレンダー</div>
+              </div>
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">📁</div>
+                <div class="shortcut-label">ファイル</div>
+              </div>
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">💬</div>
+                <div class="shortcut-label">チャット</div>
+              </div>
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">📊</div>
+                <div class="shortcut-label">報告書</div>
+              </div>
+              <div class="shortcut-card" onclick="showView('links')">
+                <div class="shortcut-icon">🎓</div>
+                <div class="shortcut-label">研修</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="card card-p">
+          <div style="font-size:15px;font-weight:700;color:#1E293B;margin-bottom:14px;">本日のスケジュール</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:#EFF6FF;border-radius:8px;">
+              <div style="font-size:12px;font-weight:700;color:#3B82F6;min-width:50px;">09:30</div>
+              <div style="width:3px;height:32px;background:#3B82F6;border-radius:2px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#1E293B;">朝礼・チームミーティング</div>
+                <div style="font-size:12px;color:#64748B;">会議室A・30分</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:#F8FAFC;border-radius:8px;">
+              <div style="font-size:12px;font-weight:700;color:#64748B;min-width:50px;">14:00</div>
+              <div style="width:3px;height:32px;background:#CBD5E1;border-radius:2px;flex-shrink:0;"></div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#1E293B;">新規顧客プレゼン</div>
+                <div style="font-size:12px;color:#64748B;">オンライン・1時間</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: NEWS -->
+      <div class="view fade-in" id="view-news">
+        <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="section-title">お知らせ</div>
+            <div class="section-sub">社内のお知らせ・連絡をここで確認できます</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button style="padding:8px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ 投稿する</button>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar" style="margin-bottom:16px;max-width:360px;">
+          <span>🔍</span>
+          <input placeholder="お知らせを検索...">
+        </div>
+
+        <!-- Filter Tabs -->
+        <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+          <button onclick="filterNews(this,'all')" style="padding:6px 14px;background:#1E293B;color:white;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" class="filter-btn active-filter">すべて</button>
+          <button onclick="filterNews(this,'重要')" style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" class="filter-btn">重要</button>
+          <button onclick="filterNews(this,'イベント')" style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" class="filter-btn">イベント</button>
+          <button onclick="filterNews(this,'人事')" style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" class="filter-btn">人事</button>
+          <button onclick="filterNews(this,'一般')" style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;" class="filter-btn">一般</button>
+        </div>
+
+        <!-- News List -->
+        <div class="card" id="news-list">
+          <div class="news-item" data-category="重要">
+            <div style="flex-shrink:0;width:48px;text-align:center;padding-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#3B82F6;">4月</div>
+              <div style="font-size:22px;font-weight:800;color:#1E293B;line-height:1;">1</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="news-badge badge-important">重要</span>
+                <span style="font-size:12px;color:#94A3B8;">人事部</span>
+              </div>
+              <div class="news-title">2025年度 健康診断のご案内</div>
+              <div class="news-excerpt">今年度の健康診断を下記の日程で実施します。対象者は必ずご参加ください。</div>
+            </div>
+            <div style="font-size:20px;color:#CBD5E1;flex-shrink:0;">›</div>
+          </div>
+          <div class="news-item" data-category="イベント">
+            <div style="flex-shrink:0;width:48px;text-align:center;padding-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#7C3AED;">3月</div>
+              <div style="font-size:22px;font-weight:800;color:#1E293B;line-height:1;">28</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="news-badge badge-event">イベント</span>
+                <span style="font-size:12px;color:#94A3B8;">経営企画部</span>
+              </div>
+              <div class="news-title">4月の全社会議について</div>
+              <div class="news-excerpt">4月15日（火）15:00より、全社会議を開催します。全員参加をお願いします。</div>
+            </div>
+            <div style="font-size:20px;color:#CBD5E1;flex-shrink:0;">›</div>
+          </div>
+          <div class="news-item" data-category="人事">
+            <div style="flex-shrink:0;width:48px;text-align:center;padding-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#059669;">3月</div>
+              <div style="font-size:22px;font-weight:800;color:#1E293B;line-height:1;">25</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="news-badge badge-hr">人事</span>
+                <span style="font-size:12px;color:#94A3B8;">人事部</span>
+              </div>
+              <div class="news-title">2025年度 新入社員のご紹介</div>
+              <div class="news-excerpt">この度、4名の新しい仲間が加わりました。温かくお迎えください。</div>
+            </div>
+            <div style="font-size:20px;color:#CBD5E1;flex-shrink:0;">›</div>
+          </div>
+          <div class="news-item" data-category="一般">
+            <div style="flex-shrink:0;width:48px;text-align:center;padding-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#64748B;">3月</div>
+              <div style="font-size:22px;font-weight:800;color:#1E293B;line-height:1;">20</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="news-badge badge-general">一般</span>
+                <span style="font-size:12px;color:#94A3B8;">総務部</span>
+              </div>
+              <div class="news-title">オフィスの清掃日程変更のお知らせ</div>
+              <div class="news-excerpt">4月より毎週火曜日の清掃を水曜日に変更します。ご協力をお願いします。</div>
+            </div>
+            <div style="font-size:20px;color:#CBD5E1;flex-shrink:0;">›</div>
+          </div>
+          <div class="news-item" data-category="一般">
+            <div style="flex-shrink:0;width:48px;text-align:center;padding-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#64748B;">3月</div>
+              <div style="font-size:22px;font-weight:800;color:#1E293B;line-height:1;">15</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="news-badge badge-general">一般</span>
+                <span style="font-size:12px;color:#94A3B8;">IT部</span>
+              </div>
+              <div class="news-title">社内WiFiパスワード変更について</div>
+              <div class="news-excerpt">セキュリティ強化のため、社内WiFiのパスワードを変更します。詳細はIT部まで。</div>
+            </div>
+            <div style="font-size:20px;color:#CBD5E1;flex-shrink:0;">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: LINKS -->
+      <div class="view fade-in" id="view-links">
+        <div class="section-header">
+          <div class="section-title">よく使うリンク</div>
+          <div class="section-sub">業務でよく使うサービスへのリンク集</div>
+        </div>
+
+        <div class="search-bar" style="margin-bottom:20px;max-width:360px;">
+          <span>🔍</span>
+          <input placeholder="リンクを検索...">
+        </div>
+
+        <div style="margin-bottom:16px;font-size:14px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;">📧 コミュニケーション</div>
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div class="link-card">
+            <div class="link-icon" style="background:#EFF6FF;">📧</div>
+            <div>
+              <div class="link-title">Gmail（社用）</div>
+              <div class="link-desc">google.com/mail</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#EDE9FE;">💬</div>
+            <div>
+              <div class="link-title">Slack</div>
+              <div class="link-desc">チャット・連絡</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#F0FDF4;">📅</div>
+            <div>
+              <div class="link-title">Googleカレンダー</div>
+              <div class="link-desc">スケジュール管理</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#FFF7ED;">📹</div>
+            <div>
+              <div class="link-title">Google Meet</div>
+              <div class="link-desc">ビデオ会議</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;font-size:14px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;">📁 ドキュメント・ファイル</div>
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div class="link-card">
+            <div class="link-icon" style="background:#FFF7ED;">📊</div>
+            <div>
+              <div class="link-title">Google Drive</div>
+              <div class="link-desc">ファイル共有</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#EFF6FF;">📝</div>
+            <div>
+              <div class="link-title">Notion（社内Wiki）</div>
+              <div class="link-desc">マニュアル・議事録</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;font-size:14px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;">👔 人事・総務</div>
+        <div class="grid-2">
+          <div class="link-card">
+            <div class="link-icon" style="background:#ECFDF5;">💰</div>
+            <div>
+              <div class="link-title">給与明細確認</div>
+              <div class="link-desc">給与・源泉徴収</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#FEF3C7;">📋</div>
+            <div>
+              <div class="link-title">経費申請</div>
+              <div class="link-desc">経費・精算</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#FEE2E2;">🏥</div>
+            <div>
+              <div class="link-title">有給・休暇申請</div>
+              <div class="link-desc">各種申請フォーム</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+          <div class="link-card">
+            <div class="link-icon" style="background:#F5F3FF;">🎓</div>
+            <div>
+              <div class="link-title">社内研修システム</div>
+              <div class="link-desc">学習・スキルアップ</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: MEMBERS -->
+      <div class="view fade-in" id="view-members">
+        <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="section-title">メンバー</div>
+            <div class="section-sub">社員の連絡先・プロフィール一覧</div>
+          </div>
+        </div>
+
+        <div class="search-bar" style="margin-bottom:16px;max-width:360px;">
+          <span>🔍</span>
+          <input placeholder="名前・部署で検索...">
+        </div>
+
+        <!-- Dept Filter -->
+        <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+          <button style="padding:6px 14px;background:#1E293B;color:white;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">すべて</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">営業部</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">開発部</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">総務部</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">人事部</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">経営企画部</button>
+        </div>
+
+        <div class="grid-3" id="member-grid">
+          <!-- generated by JS -->
+        </div>
+      </div>
+
+      <!-- VIEW: FAQ -->
+      <div class="view fade-in" id="view-faq">
+        <div class="section-header">
+          <div class="section-title">FAQ・よくある質問</div>
+          <div class="section-sub">困ったときはまずここで確認してください</div>
+        </div>
+
+        <div class="search-bar" style="margin-bottom:20px;max-width:360px;">
+          <span>🔍</span>
+          <input placeholder="質問を検索...">
+        </div>
+
+        <!-- Categories -->
+        <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+          <button style="padding:6px 14px;background:#1E293B;color:white;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">すべて</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">💻 IT・システム</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">👔 人事・総務</button>
+          <button style="padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">💰 経費・給与</button>
+        </div>
+
+        <div id="faq-list">
+          <!-- generated by JS -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- BOTTOM TABS (MOBILE) -->
+  <div class="bottom-tabs">
+    <div class="bottom-tabs-inner">
+      <div class="tab-item active" onclick="showView('dashboard')" id="tab-dashboard">
+        <div class="tab-item-wrap">
+          <div class="tab-icon">🏠</div>
+          <div>ホーム</div>
+        </div>
+      </div>
+      <div class="tab-item" onclick="showView('news')" id="tab-news">
+        <div class="tab-item-wrap" style="position:relative;">
+          <div class="tab-icon">📢</div>
+          <div class="tab-dot"></div>
+          <div>お知らせ</div>
+        </div>
+      </div>
+      <div class="tab-item" onclick="showView('links')" id="tab-links">
+        <div class="tab-item-wrap">
+          <div class="tab-icon">🔗</div>
+          <div>リンク</div>
+        </div>
+      </div>
+      <div class="tab-item" onclick="showView('members')" id="tab-members">
+        <div class="tab-item-wrap">
+          <div class="tab-icon">👥</div>
+          <div>メンバー</div>
+        </div>
+      </div>
+      <div class="tab-item" onclick="showView('faq')" id="tab-faq">
+        <div class="tab-item-wrap">
+          <div class="tab-icon">❓</div>
+          <div>FAQ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: ADMIN ========== -->
+<div id="page-admin" class="page">
+  <div style="display:flex;min-height:100vh;">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <div>⚙️ 管理画面</div>
+        <div class="admin-logo-sub">Eチーム株式会社</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav-item active">
+          <span class="admin-nav-icon">📊</span> ダッシュボード
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">📢</span> お知らせ管理
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">👥</span> メンバー管理
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">🔗</span> リンク管理
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">❓</span> FAQ管理
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">🎨</span> デザイン設定
+        </div>
+        <div class="admin-nav-item">
+          <span class="admin-nav-icon">🔒</span> セキュリティ
+        </div>
+      </nav>
+      <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.08);">
+        <div onclick="showPage('portal')" style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:6px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.color='white';this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.color='rgba(255,255,255,0.5)';this.style.background=''">
+          <span>← </span> ポータルに戻る
+        </div>
+      </div>
+    </aside>
+
+    <!-- Admin Content -->
+    <div class="admin-content" style="flex:1;background:#F1F5F9;">
+      <div style="background:#fff;border-bottom:1px solid #E2E8F0;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:18px;font-weight:700;color:#1E293B;">管理ダッシュボード</div>
+        <div style="font-size:13px;color:#94A3B8;">最終更新: 2025年4月1日</div>
+      </div>
+
+      <div style="padding:28px;">
+        <!-- Stats -->
+        <div class="grid-4" style="margin-bottom:24px;">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#EFF6FF;color:#3B82F6;">👥</div>
+            <div class="stat-value">24</div>
+            <div class="stat-label">総メンバー数</div>
+            <div class="stat-change" style="color:#22C55E;">↑ 今月4名追加</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#ECFDF5;color:#22C55E;">📊</div>
+            <div class="stat-value">312</div>
+            <div class="stat-label">月間ページビュー</div>
+            <div class="stat-change" style="color:#22C55E;">↑ 先月比 +18%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FFF7ED;color:#F97316;">📢</div>
+            <div class="stat-value">18</div>
+            <div class="stat-label">公開中のお知らせ</div>
+            <div class="stat-change" style="color:#94A3B8;">今月3件投稿</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#FAF5FF;color:#A855F7;">❓</div>
+            <div class="stat-value">12</div>
+            <div class="stat-label">FAQ件数</div>
+            <div class="stat-change" style="color:#94A3B8;">先週1件追加</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:24px;">
+          <!-- Recent Activity -->
+          <div class="card card-p">
+            <div style="font-size:15px;font-weight:700;color:#1E293B;margin-bottom:16px;">最近の活動</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;background:#22C55E;border-radius:50%;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:13px;color:#374151;">山田さんがお知らせを投稿しました</div>
+                <div style="font-size:12px;color:#94A3B8;">1時間前</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;background:#3B82F6;border-radius:50%;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:13px;color:#374151;">新しいメンバーが4名追加されました</div>
+                <div style="font-size:12px;color:#94A3B8;">3時間前</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;background:#F59E0B;border-radius:50%;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:13px;color:#374151;">FAQが更新されました</div>
+                <div style="font-size:12px;color:#94A3B8;">昨日</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;background:#8B5CF6;border-radius:50%;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:13px;color:#374151;">デザイン設定が変更されました</div>
+                <div style="font-size:12px;color:#94A3B8;">2日前</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card card-p">
+            <div style="font-size:15px;font-weight:700;color:#1E293B;margin-bottom:14px;">クイックアクション</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button style="width:100%;padding:10px 14px;background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;">📢 お知らせを投稿する</button>
+              <button style="width:100%;padding:10px 14px;background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;">👤 メンバーを追加する</button>
+              <button style="width:100%;padding:10px 14px;background:#FFF7ED;border:1px solid #FED7AA;color:#9A3412;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;">🔗 リンクを追加する</button>
+              <button style="width:100%;padding:10px 14px;background:#F5F3FF;border:1px solid #DDD6FE;color:#5B21B6;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;">🎨 デザインを変更する</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color Theme Customization -->
+        <div class="card card-p" style="margin-bottom:24px;">
+          <div style="font-size:15px;font-weight:700;color:#1E293B;margin-bottom:4px;">カラーテーマ</div>
+          <div style="font-size:13px;color:#64748B;margin-bottom:16px;">ポータルのメインカラーを変更します（リアルタイムプレビュー）</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="swatch selected" style="background:#3B82F6;" onclick="changeTheme('#3B82F6','#2563EB','#EFF6FF',this)" title="ブルー"></div>
+            <div class="swatch" style="background:#10B981;" onclick="changeTheme('#10B981','#059669','#ECFDF5',this)" title="グリーン"></div>
+            <div class="swatch" style="background:#8B5CF6;" onclick="changeTheme('#8B5CF6','#7C3AED','#F5F3FF',this)" title="パープル"></div>
+            <div class="swatch" style="background:#F59E0B;" onclick="changeTheme('#F59E0B','#D97706','#FFFBEB',this)" title="イエロー"></div>
+            <div class="swatch" style="background:#EF4444;" onclick="changeTheme('#EF4444','#DC2626','#FEF2F2',this)" title="レッド"></div>
+            <div class="swatch" style="background:#EC4899;" onclick="changeTheme('#EC4899','#DB2777','#FDF2F8',this)" title="ピンク"></div>
+            <div class="swatch" style="background:#1E293B;" onclick="changeTheme('#1E293B','#0F172A','#F1F5F9',this)" title="ダーク"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PAGE NAVIGATION =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) {
+    page.classList.add('active');
+    page.scrollTop = 0;
+  }
+  if (id === 'portal') renderMembers();
+  if (id === 'portal') renderFAQ();
+  if (id === 'onboarding') initOnboarding();
+}
+
+// ===== VIEW NAVIGATION =====
+const viewTitles = {
+  dashboard: 'ホーム', news: 'お知らせ', links: 'よく使うリンク',
+  members: 'メンバー', faq: 'FAQ'
+};
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const view = document.getElementById('view-' + id);
+  if (view) { view.classList.add('active'); view.classList.remove('fade-in'); void view.offsetWidth; view.classList.add('fade-in'); }
+
+  // sidebar active
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+
+  // bottom tab active
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  const tabEl = document.getElementById('tab-' + id);
+  if (tabEl) tabEl.classList.add('active');
+
+  // topbar title
+  const titleEl = document.getElementById('topbar-title');
+  if (titleEl && viewTitles[id]) titleEl.textContent = viewTitles[id];
+
+  // scroll to top
+  const content = document.querySelector('.portal-content');
+  if (content) content.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+// ===== MEMBERS =====
+const members = [
+  { name: '山田 太郎', dept: '営業部', title: '部長', initials: '山', color: 'linear-gradient(135deg,#6366F1,#8B5CF6)' },
+  { name: '佐藤 花子', dept: '人事部', title: 'マネージャー', initials: '佐', color: 'linear-gradient(135deg,#EC4899,#F43F5E)' },
+  { name: '田中 一郎', dept: '開発部', title: 'エンジニア', initials: '田', color: 'linear-gradient(135deg,#3B82F6,#06B6D4)' },
+  { name: '鈴木 美咲', dept: '総務部', title: '主任', initials: '鈴', color: 'linear-gradient(135deg,#10B981,#34D399)' },
+  { name: '高橋 健太', dept: '開発部', title: 'シニアエンジニア', initials: '高', color: 'linear-gradient(135deg,#F59E0B,#FBBF24)' },
+  { name: '伊藤 さくら', dept: '営業部', title: '担当', initials: '伊', color: 'linear-gradient(135deg,#EF4444,#F87171)' },
+  { name: '渡辺 隆', dept: '経営企画部', title: '課長', initials: '渡', color: 'linear-gradient(135deg,#8B5CF6,#A78BFA)' },
+  { name: '小林 由美', dept: '人事部', title: '担当', initials: '小', color: 'linear-gradient(135deg,#14B8A6,#06B6D4)' },
+  { name: '加藤 誠', dept: '開発部', title: 'リードエンジニア', initials: '加', color: 'linear-gradient(135deg,#F97316,#FB923C)' },
+  { name: '松田 奈緒', dept: '総務部', title: '担当', initials: '松', color: 'linear-gradient(135deg,#D946EF,#EC4899)' },
+  { name: '中村 博', dept: '営業部', title: '担当', initials: '中', color: 'linear-gradient(135deg,#0EA5E9,#38BDF8)' },
+  { name: '木村 葵', dept: '経営企画部', title: '担当', initials: '木', color: 'linear-gradient(135deg,#84CC16,#A3E635)' },
+];
+function renderMembers() {
+  const grid = document.getElementById('member-grid');
+  if (!grid || grid.children.length > 0) return;
+  grid.innerHTML = members.map(m => `
+    <div class="member-card">
+      <div class="member-avatar" style="background:${m.color};">${m.initials}</div>
+      <div class="member-name">${m.name}</div>
+      <div><span class="member-dept">${m.dept}</span></div>
+      <div class="member-title">${m.title}</div>
+      <div class="member-contact">
+        <div class="member-contact-btn">✉️ メール</div>
+        <div class="member-contact-btn">💬 チャット</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== FAQ =====
+const faqs = [
+  { cat: 'IT', q: 'WiFiに接続できません', a: 'まず端末のWiFi設定を確認してください。SSID「eteam-office」を選択し、パスワードはIT部のドキュメントをご確認ください。解決しない場合はIT部（内線: 200）にご連絡ください。' },
+  { cat: 'IT', q: '社内メールの設定方法を教えてください', a: 'Gmailアプリを開き、設定→アカウント追加→会社のメールアドレスを入力してください。詳細な手順はNotionの「IT設定マニュアル」をご確認ください。' },
+  { cat: 'IT', q: 'パスワードを忘れてしまいました', a: 'ログイン画面の「パスワードを忘れた方」をクリックし、登録済みのメールアドレスにリセットリンクを送信できます。緊急の場合はIT部（内線: 200）まで。' },
+  { cat: '人事・総務', q: '有給休暇の申請方法は？', a: '有給申請はポータルの「よく使うリンク」→「有給・休暇申請」から行ってください。申請は5営業日前までに行い、上長の承認が必要です。' },
+  { cat: '人事・総務', q: '入社時の書類は何が必要ですか？', a: '①雇用保険被保険者証 ②年金手帳または基礎年金番号通知書 ③源泉徴収票（前職がある場合）④マイナンバー ⑤銀行口座情報が必要です。' },
+  { cat: '経費・給与', q: '経費精算の締め日はいつですか？', a: '経費精算の締め日は毎月20日です。21日以降の申請は翌月分となります。申請は「よく使うリンク」→「経費申請」から行ってください。' },
+  { cat: '経費・給与', q: '給与明細はどこで確認できますか？', a: '給与明細は「よく使うリンク」→「給与明細確認」からオンラインで確認できます。毎月25日に更新されます。' },
+  { cat: 'IT', q: '会議室の予約方法を教えてください', a: 'Googleカレンダーから会議室を予約できます。「新しいイベント」作成時に「会議室を追加」から空き室を確認して予約してください。' },
+];
+function renderFAQ() {
+  const list = document.getElementById('faq-list');
+  if (!list || list.children.length > 0) return;
+  list.innerHTML = faqs.map((f, i) => `
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-question" onclick="toggleFAQ(${i})">
+        <div class="faq-q-icon">Q</div>
+        ${f.q}
+        <span class="tag" style="margin-left:8px;">${f.cat}</span>
+        <span class="faq-arrow">▾</span>
+      </div>
+      <div class="faq-answer">${f.a}</div>
+    </div>
+  `).join('');
+}
+function toggleFAQ(i) {
+  const el = document.getElementById('faq-' + i);
+  el.classList.toggle('open');
+}
+
+// ===== NEWS FILTER =====
+function filterNews(btn, cat) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.style.background = '#F8FAFC'; b.style.color = '#64748B';
+    b.style.border = '1px solid #E2E8F0';
+  });
+  btn.style.background = '#1E293B'; btn.style.color = 'white'; btn.style.border = 'none';
+  document.querySelectorAll('.news-item[data-category]').forEach(item => {
+    item.style.display = (cat === 'all' || item.dataset.category === cat) ? '' : 'none';
+  });
+}
+
+// ===== ONBOARDING =====
+let obStep = 1;
+const obSteps = [
+  {
+    label: 'ステップ 1 / 4', title: '会社の情報を教えてください',
+    html: `
+      <div style="margin-bottom:16px;">
+        <label class="form-label">会社名</label>
+        <input class="form-input" placeholder="例: Eチーム株式会社" value="Eチーム株式会社">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label class="form-label">業種</label>
+        <select class="form-input" style="cursor:pointer;">
+          <option>IT・システム</option><option>製造業</option><option>小売・流通</option>
+          <option>医療・福祉</option><option>教育</option><option>その他</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">従業員数</label>
+        <select class="form-input" style="cursor:pointer;">
+          <option>〜10名</option><option selected>10〜50名</option><option>50〜100名</option><option>100名以上</option>
+        </select>
+      </div>`
+  },
+  {
+    label: 'ステップ 2 / 4', title: '使いたい機能を選んでください',
+    html: `
+      <div style="font-size:13px;color:#64748B;margin-bottom:14px;">必要な機能にチェックを入れてください（複数選択可）</div>
+      <div class="option-grid">
+        <div class="option-item selected" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">📢</div>
+          <div class="option-label">お知らせ</div>
+        </div>
+        <div class="option-item selected" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">👥</div>
+          <div class="option-label">社員名簿</div>
+        </div>
+        <div class="option-item selected" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">🔗</div>
+          <div class="option-label">リンク集</div>
+        </div>
+        <div class="option-item selected" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">❓</div>
+          <div class="option-label">FAQ</div>
+        </div>
+        <div class="option-item" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">📅</div>
+          <div class="option-label">カレンダー</div>
+        </div>
+        <div class="option-item" onclick="this.classList.toggle('selected')">
+          <div class="option-icon">🤖</div>
+          <div class="option-label">AI チャット</div>
+        </div>
+      </div>`
+  },
+  {
+    label: 'ステップ 3 / 4', title: 'テーマカラーを選んでください',
+    html: `
+      <div style="font-size:13px;color:#64748B;margin-bottom:16px;">会社のイメージカラーに合わせてください</div>
+      <div class="color-swatches" style="margin-bottom:20px;">
+        <div class="swatch selected" style="background:#3B82F6;" onclick="pickColor(this,'#3B82F6','#2563EB','#EFF6FF')"></div>
+        <div class="swatch" style="background:#10B981;" onclick="pickColor(this,'#10B981','#059669','#ECFDF5')"></div>
+        <div class="swatch" style="background:#8B5CF6;" onclick="pickColor(this,'#8B5CF6','#7C3AED','#F5F3FF')"></div>
+        <div class="swatch" style="background:#F59E0B;" onclick="pickColor(this,'#F59E0B','#D97706','#FFFBEB')"></div>
+        <div class="swatch" style="background:#EF4444;" onclick="pickColor(this,'#EF4444','#DC2626','#FEF2F2')"></div>
+        <div class="swatch" style="background:#EC4899;" onclick="pickColor(this,'#EC4899','#DB2777','#FDF2F8')"></div>
+      </div>
+      <div style="padding:16px;border-radius:12px;border:2px solid var(--primary);background:var(--primary-light);">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">プレビュー</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--primary);"></div>
+          <div style="font-size:14px;font-weight:600;color:#1E293B;">選択中のカラー</div>
+          <div style="margin-left:auto;padding:4px 12px;background:var(--primary);color:white;border-radius:6px;font-size:12px;font-weight:600;">ボタン</div>
+        </div>
+      </div>`
+  },
+  {
+    label: 'ステップ 4 / 4', title: '準備完了！',
+    html: `
+      <div style="text-align:center;padding:8px 0;">
+        <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+        <div style="font-size:18px;font-weight:700;color:#1E293B;margin-bottom:8px;">ポータルが完成しました！</div>
+        <div style="font-size:14px;color:#64748B;line-height:1.7;margin-bottom:20px;">AIが設定を最適化しました。<br>さっそくポータルを使い始めましょう。</div>
+        <div style="display:flex;flex-direction:column;gap:8px;text-align:left;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F0FDF4;border-radius:8px;">
+            <span style="font-size:16px;">✅</span>
+            <span style="font-size:13px;color:#374151;">お知らせページ 設定完了</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F0FDF4;border-radius:8px;">
+            <span style="font-size:16px;">✅</span>
+            <span style="font-size:13px;color:#374151;">メンバー名簿 設定完了</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F0FDF4;border-radius:8px;">
+            <span style="font-size:16px;">✅</span>
+            <span style="font-size:13px;color:#374151;">FAQ AIが10件を自動生成</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F0FDF4;border-radius:8px;">
+            <span style="font-size:16px;">✅</span>
+            <span style="font-size:13px;color:#374151;">テーマカラー 適用完了</span>
+          </div>
+        </div>
+      </div>`
+  }
+];
+function initOnboarding() {
+  obStep = 1;
+  renderObStep();
+}
+function renderObStep() {
+  const s = obSteps[obStep - 1];
+  document.querySelector('#ob-header .onboarding-step-label').textContent = s.label;
+  document.querySelector('#ob-header .onboarding-step-title').textContent = s.title;
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('p' + i);
+    if (dot) dot.className = 'progress-dot' + (i <= obStep ? ' done' : '');
+  }
+  document.getElementById('ob-body').innerHTML = s.html;
+  document.getElementById('ob-back').style.visibility = obStep === 1 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('ob-next');
+  nextBtn.textContent = obStep === 4 ? 'ポータルへ →' : '次へ →';
+}
+function obNext() {
+  if (obStep === 4) { showPage('portal'); return; }
+  if (obStep < 4) { obStep++; renderObStep(); }
+}
+function obBack() { if (obStep > 1) { obStep--; renderObStep(); } }
+
+function pickColor(el, c, cd, cl) {
+  document.querySelectorAll('#ob-body .swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  document.documentElement.style.setProperty('--primary', c);
+  document.documentElement.style.setProperty('--primary-dark', cd);
+  document.documentElement.style.setProperty('--primary-light', cl);
+}
+
+// ===== THEME CHANGE =====
+function changeTheme(c, cd, cl, el) {
+  document.documentElement.style.setProperty('--primary', c);
+  document.documentElement.style.setProperty('--primary-dark', cd);
+  document.documentElement.style.setProperty('--primary-light', cl);
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// Init
+renderMembers();
+renderFAQ();
+</script>
+</body>
+</html>
