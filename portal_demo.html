@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI社内ポータルBuilder | E-team AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .accordion-content.open { max-height: 500px; }
+  .step-indicator.active { background: #3B82F6; color: white; }
+  .step-indicator.done { background: #10B981; color: white; }
+  .step-indicator.pending { background: #E5E7EB; color: #9CA3AF; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; }
+  .modal.open { display: flex; }
+  .sidebar-link.active { background: rgba(59,130,246,0.15); color: #3B82F6; font-weight: 600; }
+  :root { --primary: #3B82F6; }
+  .btn-primary { background: var(--primary); }
+  .text-primary { color: var(--primary); }
+  .border-primary { border-color: var(--primary); }
+  .bg-primary-light { background: color-mix(in srgb, var(--primary) 10%, white); }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- ========== LANDING PAGE ========== -->
+<div id="page-landing" class="page active fade-in">
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <span class="font-bold text-gray-900">AI社内ポータルBuilder</span>
+        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">by E-team AI</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="showPage('page-login')" class="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5">ログイン</button>
+        <button onclick="showPage('page-onboarding')" class="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition">無料で始める</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur rounded-full px-4 py-1.5 text-sm mb-6">
+        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        AIが数分で社内ポータルを自動生成
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">会社情報を入力するだけで<br>社内ポータルが完成する</h1>
+      <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">非エンジニアの総務・経営者でも一人でセットアップ完結。固定レイアウトで迷わない日本語専用SaaS。</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="showPage('page-onboarding')" class="bg-white text-blue-700 font-semibold px-8 py-3 rounded-xl hover:bg-blue-50 transition text-lg">無料で始める →</button>
+        <button onclick="showPage('page-portal')" class="border border-white/50 text-white px-8 py-3 rounded-xl hover:bg-white/10 transition text-lg">デモを見る</button>
+      </div>
+      <p class="mt-4 text-blue-200 text-sm">クレジットカード不要・5分でセットアップ</p>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-2xl font-bold text-center text-gray-900 mb-3">シンプルな料金プラン</h2>
+      <p class="text-center text-gray-500 mb-10">IT導入補助金の対象価格設計</p>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="border border-gray-200 rounded-2xl p-6">
+          <div class="text-sm font-medium text-gray-500 mb-2">フリー</div>
+          <div class="text-3xl font-bold text-gray-900 mb-1">¥0<span class="text-base font-normal text-gray-400">/月</span></div>
+          <p class="text-sm text-gray-500 mb-4">まず試してみたい方に</p>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>ポータル1サイト</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>メンバー10名まで</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>基本4セクション</li>
+          </ul>
+        </div>
+        <div class="border-2 border-blue-500 rounded-2xl p-6 relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">人気</div>
+          <div class="text-sm font-medium text-blue-600 mb-2">スタンダード</div>
+          <div class="text-3xl font-bold text-gray-900 mb-1">¥5,000<span class="text-base font-normal text-gray-400">/月</span></div>
+          <p class="text-sm text-gray-500 mb-4">中小企業100名規模に最適</p>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>メンバー無制限</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>AI FAQ自動生成</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>カスタムドメイン</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>ロゴ・カラー設定</li>
+          </ul>
+        </div>
+        <div class="border border-gray-200 rounded-2xl p-6 bg-gray-50">
+          <div class="text-sm font-medium text-gray-500 mb-2">エンタープライズ</div>
+          <div class="text-3xl font-bold text-gray-900 mb-1">要相談</div>
+          <p class="text-sm text-gray-500 mb-4">300名以上・複数拠点</p>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>AI SearchScope連携</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>ChatBot連携</li>
+            <li class="flex items-center gap-2"><span class="text-green-500">✓</span>専任サポート</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section class="py-16 px-4 bg-gray-50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-center text-gray-900 mb-10">3ステップで完成</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">📝</div>
+          <h3 class="font-semibold text-gray-900 mb-2">① 会社情報を入力</h3>
+          <p class="text-sm text-gray-500">会社名・業種・部署などをフォームに入力するだけ</p>
+        </div>
+        <div class="text-center">
+          <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🤖</div>
+          <h3 class="font-semibold text-gray-900 mb-2">② AIが自動生成</h3>
+          <p class="text-sm text-gray-500">Claude AIがFAQや初期コンテンツを自動で作成</p>
+        </div>
+        <div class="text-center">
+          <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🚀</div>
+          <h3 class="font-semibold text-gray-900 mb-2">③ すぐに使える</h3>
+          <p class="text-sm text-gray-500">専用URLでメンバーを招待して即日運用開始</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-gray-900 text-gray-400 py-8 px-4 text-center text-sm">
+    <p>© 2026 E-team AI. All rights reserved.</p>
+    <p class="mt-1">AI社内ポータルBuilder | AI SearchScope | ChatBot</p>
+  </footer>
+</div>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="page-login" class="page fade-in">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h1 class="text-xl font-bold text-gray-900">AI社内ポータルBuilder</h1>
+        <p class="text-gray-500 text-sm mt-1">アカウントにログイン</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+          <input type="email" value="admin@bingoya.co.jp" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+          <input type="password" value="password123" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button onclick="showPage('page-portal')" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition">ログイン</button>
+        <div class="relative my-2">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+          <div class="relative text-center"><span class="bg-white px-2 text-xs text-gray-400">または</span></div>
+        </div>
+        <button onclick="showPage('page-portal')" class="w-full border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition text-sm">✉️ マジックリンクでログイン</button>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-6">アカウントをお持ちでない方は <button onclick="showPage('page-onboarding')" class="text-blue-600 hover:underline">新規登録</button></p>
+      <button onclick="showPage('page-landing')" class="mt-4 w-full text-center text-xs text-gray-400 hover:text-gray-600">← トップに戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ONBOARDING WIZARD ========== -->
+<div id="page-onboarding" class="page fade-in">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-4 py-4">
+      <div class="max-w-2xl mx-auto flex items-center justify-between">
+        <button onclick="showPage('page-landing')" class="text-sm text-gray-500 hover:text-gray-700">← 戻る</button>
+        <span class="font-semibold text-gray-900">社内ポータルを作成する</span>
+        <span class="text-sm text-gray-400" id="onb-step-label">Step 1 / 4</span>
+      </div>
+    </div>
+    <!-- Step indicator -->
+    <div class="max-w-2xl mx-auto px-4 py-6">
+      <div class="flex items-center gap-2 mb-8">
+        <div id="si-1" class="step-indicator active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all">1</div>
+        <div class="flex-1 h-1 bg-gray-200 rounded" id="step-line-1"></div>
+        <div id="si-2" class="step-indicator pending w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all">2</div>
+        <div class="flex-1 h-1 bg-gray-200 rounded" id="step-line-2"></div>
+        <div id="si-3" class="step-indicator pending w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all">3</div>
+        <div class="flex-1 h-1 bg-gray-200 rounded" id="step-line-3"></div>
+        <div id="si-4" class="step-indicator pending w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all">4</div>
+      </div>
+
+      <!-- Step 1: 基本情報 -->
+      <div id="onb-step-1" class="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-gray-900 mb-1">基本情報の入力</h2>
+        <p class="text-sm text-gray-500 mb-6">会社の基本情報とポータルのURLを設定します</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">会社名 <span class="text-red-500">*</span></label>
+            <input id="company-name" type="text" value="株式会社びんごや" placeholder="例：株式会社〇〇" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">業種</label>
+              <select id="industry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>製造業</option><option selected>サービス業</option><option>小売業</option>
+                <option>建設業</option><option>医療・福祉</option><option>その他</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">従業員数</label>
+              <select id="employee-count" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>〜30名</option><option selected>31〜100名</option><option>101〜300名</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ポータルURL（スラッグ）</label>
+            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+              <input id="slug" type="text" value="bingoya" class="flex-1 px-3 py-2.5 text-sm focus:outline-none">
+              <span class="bg-gray-50 border-l border-gray-300 px-3 py-2.5 text-sm text-gray-500">.e-team-portal.com</span>
+            </div>
+            <p class="text-xs text-green-600 mt-1">✓ bingoya.e-team-portal.com は利用可能です</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">管理者氏名</label>
+              <input type="text" value="田中 太郎" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+              <input type="email" value="admin@bingoya.co.jp" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
+        <button onclick="nextStep(2)" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition">次へ →</button>
+      </div>
+
+      <!-- Step 2: デザイン -->
+      <div id="onb-step-2" class="bg-white rounded-2xl p-6 shadow-sm hidden">
+        <h2 class="text-lg font-bold text-gray-900 mb-1">デザイン設定</h2>
+        <p class="text-sm text-gray-500 mb-6">ブランドに合わせてポータルをカスタマイズ</p>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">ロゴ画像</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition cursor-pointer">
+              <div class="text-3xl mb-2">📁</div>
+              <p class="text-sm text-gray-500">PNG / JPG / SVG（最大2MB）</p>
+              <p class="text-xs text-blue-600 mt-1">クリックしてアップロード</p>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">プライマリーカラー</label>
+            <div class="flex gap-3 flex-wrap">
+              <div onclick="setColor('#3B82F6', this)" class="w-10 h-10 rounded-xl cursor-pointer ring-2 ring-offset-2 ring-blue-500 transition" style="background:#3B82F6"></div>
+              <div onclick="setColor('#10B981', this)" class="w-10 h-10 rounded-xl cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-emerald-500 transition" style="background:#10B981"></div>
+              <div onclick="setColor('#F59E0B', this)" class="w-10 h-10 rounded-xl cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-amber-500 transition" style="background:#F59E0B"></div>
+              <div onclick="setColor('#EF4444', this)" class="w-10 h-10 rounded-xl cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-red-500 transition" style="background:#EF4444"></div>
+              <div onclick="setColor('#8B5CF6', this)" class="w-10 h-10 rounded-xl cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-violet-500 transition" style="background:#8B5CF6"></div>
+              <div onclick="setColor('#EC4899', this)" class="w-10 h-10 rounded-xl cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-pink-500 transition" style="background:#EC4899"></div>
+              <input type="color" value="#3B82F6" onchange="setColor(this.value)" class="w-10 h-10 rounded-xl cursor-pointer border border-gray-300 p-0.5">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ウェルカムメッセージ</label>
+            <textarea id="welcome-msg" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none">社員の皆さんへ。このポータルは社内の情報共有を円滑にするために作成しました。お知らせや便利なリンクをご活用ください。</textarea>
+          </div>
+          <!-- Preview -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">プレビュー</label>
+            <div id="design-preview" class="rounded-xl overflow-hidden border border-gray-200">
+              <div id="preview-header" class="p-3 flex items-center gap-2" style="background:#3B82F6">
+                <div class="w-7 h-7 bg-white/30 rounded-lg flex items-center justify-center text-white text-xs font-bold">B</div>
+                <span class="text-white font-semibold text-sm">株式会社びんごや 社内ポータル</span>
+              </div>
+              <div class="p-3 bg-white">
+                <p id="preview-msg" class="text-xs text-gray-600">社員の皆さんへ。このポータルは社内の情報共有を円滑にするために作成しました。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="nextStep(1)" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition">← 戻る</button>
+          <button onclick="nextStep(3)" class="flex-2 flex-grow bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition">次へ →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 初期コンテンツ -->
+      <div id="onb-step-3" class="bg-white rounded-2xl p-6 shadow-sm hidden">
+        <h2 class="text-lg font-bold text-gray-900 mb-1">初期コンテンツ設定</h2>
+        <p class="text-sm text-gray-500 mb-6">よく使うリンクと部署を設定します</p>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">よく使うリンク（3〜10件）</label>
+            <div id="links-container" class="space-y-2">
+              <div class="flex gap-2">
+                <input type="text" value="勤怠システム" placeholder="ツール名" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <input type="url" value="https://kintai.example.com" placeholder="URL" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+              <div class="flex gap-2">
+                <input type="text" value="経費精算" placeholder="ツール名" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <input type="url" value="https://kehi.example.com" placeholder="URL" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+              <div class="flex gap-2">
+                <input type="text" value="社内Wiki" placeholder="ツール名" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <input type="url" value="https://wiki.example.com" placeholder="URL" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              </div>
+            </div>
+            <button onclick="addLinkRow()" class="mt-2 text-sm text-blue-600 hover:underline">+ リンクを追加</button>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">部署一覧</label>
+            <div class="flex flex-wrap gap-2" id="dept-list">
+              <span class="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full flex items-center gap-1">営業部 <button class="hover:text-red-500" onclick="removeDept(this)">×</button></span>
+              <span class="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full flex items-center gap-1">総務部 <button class="hover:text-red-500" onclick="removeDept(this)">×</button></span>
+              <span class="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full flex items-center gap-1">開発部 <button class="hover:text-red-500" onclick="removeDept(this)">×</button></span>
+              <span class="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full flex items-center gap-1">経理部 <button class="hover:text-red-500" onclick="removeDept(this)">×</button></span>
+            </div>
+            <input type="text" id="dept-input" placeholder="部署名を入力してEnter" onkeydown="addDept(event)" class="mt-2 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <!-- AI FAQ generation -->
+          <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-lg">🤖</span>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900">AI FAQ自動生成</h3>
+                <p class="text-xs text-gray-500">Claude AIが業種・規模から5件のFAQを自動提案</p>
+              </div>
+            </div>
+            <div id="ai-faq-result" class="hidden space-y-2 mb-3">
+              <div class="bg-white rounded-lg p-3 text-sm border border-purple-100">
+                <p class="font-medium text-gray-800">Q: 有給休暇の申請方法は？</p>
+                <p class="text-gray-600 text-xs mt-1">A: 勤怠システムにログインし、「休暇申請」から有給休暇を選択。上長承認後に確定します。</p>
+              </div>
+              <div class="bg-white rounded-lg p-3 text-sm border border-purple-100">
+                <p class="font-medium text-gray-800">Q: 経費精算の締め日は？</p>
+                <p class="text-gray-600 text-xs mt-1">A: 毎月25日が締め日です。領収書原本を総務部へ提出し、経費精算システムに入力してください。</p>
+              </div>
+              <div class="bg-white rounded-lg p-3 text-sm border border-purple-100">
+                <p class="font-medium text-gray-800">Q: PCのパスワードを忘れた場合は？</p>
+                <p class="text-gray-600 text-xs mt-1">A: 開発部のITヘルプデスク（内線:123）またはSlackの #it-support チャンネルへご連絡ください。</p>
+              </div>
+            </div>
+            <button onclick="generateFAQ()" id="ai-faq-btn" class="w-full bg-purple-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition">✨ AIでFAQを5件生成する</button>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="nextStep(2)" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition">← 戻る</button>
+          <button onclick="nextStep(4)" class="flex-grow bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition">次へ →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: メンバー招待 -->
+      <div id="onb-step-4" class="bg-white rounded-2xl p-6 shadow-sm hidden">
+        <h2 class="text-lg font-bold text-gray-900 mb-1">メンバーを招待する</h2>
+        <p class="text-sm text-gray-500 mb-6">CSVアップロードまたは手動でメンバーを招待できます</p>
+        <div class="space-y-5">
+          <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition cursor-pointer">
+            <div class="text-3xl mb-2">📊</div>
+            <p class="text-sm font-medium text-gray-700">CSVファイルをドロップ</p>
+            <p class="text-xs text-gray-400 mt-1">氏名,メールアドレス,部署 の形式</p>
+            <button class="mt-3 text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition">テンプレートをダウンロード</button>
+          </div>
+          <div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div><div class="relative text-center"><span class="bg-white px-2 text-xs text-gray-400">または手動入力</span></div></div>
+          <div id="invite-list" class="space-y-2">
+            <div class="flex gap-2">
+              <input type="text" placeholder="氏名" value="山田 花子" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              <input type="email" placeholder="メールアドレス" value="hanako@bingoya.co.jp" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              <select class="border border-gray-300 rounded-lg px-2 py-2 text-sm"><option>営業部</option><option>総務部</option><option>開発部</option><option>経理部</option></select>
+            </div>
+          </div>
+          <button onclick="addInviteRow()" class="text-sm text-blue-600 hover:underline">+ メンバーを追加</button>
+          <div class="bg-blue-50 rounded-xl p-4 text-sm text-blue-700 border border-blue-100">
+            <strong>招待メール文面：</strong><br>
+            株式会社びんごや の社内ポータルに招待されました。<br>
+            以下のURLからアクセスしてください：<br>
+            <span class="font-mono text-xs">https://bingoya.e-team-portal.com</span>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="nextStep(3)" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition">← 戻る</button>
+          <button onclick="completeOnboarding()" class="flex-grow bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 transition">🚀 ポータルを作成する！</button>
+        </div>
+        <button onclick="showPage('page-portal')" class="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600">今はスキップして後で招待する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PORTAL PAGE ========== -->
+<div id="page-portal" class="page fade-in">
+  <!-- Portal Header -->
+  <header id="portal-header" class="bg-blue-600 text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-sm">B</div>
+        <div>
+          <div class="font-semibold text-sm leading-tight" id="portal-company-name">株式会社びんごや</div>
+          <div class="text-xs text-blue-200">社内ポータル</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-1">
+        <a href="#announcements" class="px-3 py-1.5 rounded-lg text-sm hover:bg-white/20 transition">お知らせ</a>
+        <a href="#links" class="px-3 py-1.5 rounded-lg text-sm hover:bg-white/20 transition">リンク集</a>
+        <a href="#members" class="px-3 py-1.5 rounded-lg text-sm hover:bg-white/20 transition">メンバー</a>
+        <a href="#faq" class="px-3 py-1.5 rounded-lg text-sm hover:bg-white/20 transition">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <button onclick="showPage('page-admin')" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition">⚙ 管理</button>
+        <div class="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center text-sm font-bold">田</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Welcome Banner -->
+  <div id="portal-welcome" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-6 px-4">
+    <div class="max-w-6xl mx-auto">
+      <p class="text-sm text-blue-100 mb-1">👋 こんにちは、田中さん</p>
+      <p class="text-white/90 text-sm" id="portal-welcome-msg">社員の皆さんへ。このポータルは社内の情報共有を円滑にするために作成しました。お知らせや便利なリンクをご活用ください。</p>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+
+    <!-- お知らせ Section -->
+    <section id="announcements">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">📢</span>お知らせ
+        </h2>
+        <button class="text-sm text-blue-600 hover:underline">もっと見る →</button>
+      </div>
+      <div class="space-y-3" id="announcements-list">
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start gap-3 hover:shadow-md transition">
+          <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full mt-0.5 shrink-0">重要</span>
+          <div class="flex-1">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold text-gray-900 text-sm">【重要】2026年度 夏季休暇のお知らせ</h3>
+              <span class="text-xs text-gray-400 shrink-0">2026/03/28</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">今年の夏季休暇は8月13日〜8月16日（木・金・土・日）となります。業務の調整をお早めにお願いします。</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start gap-3 hover:shadow-md transition">
+          <span class="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-full mt-0.5 shrink-0">新着</span>
+          <div class="flex-1">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold text-gray-900 text-sm">2026年度 健康診断のご案内</h3>
+              <span class="text-xs text-gray-400 shrink-0">2026/03/25</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">年一回の定期健康診断を4月に実施します。日程は別途メールでお知らせします。</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start gap-3 hover:shadow-md transition">
+          <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-0.5 rounded-full mt-0.5 shrink-0">一般</span>
+          <div class="flex-1">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold text-gray-900 text-sm">社内勉強会「AI活用術」参加者募集</h3>
+              <span class="text-xs text-gray-400 shrink-0">2026/03/20</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">4月10日（金）18時〜 大会議室にて開催予定です。AI入門から実践まで、どなたでも参加できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- リンク集 Section -->
+    <section id="links">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span class="w-6 h-6 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-sm">🔗</span>リンク集
+        </h2>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="flex border-b border-gray-100 overflow-x-auto" id="links-tabs">
+          <button onclick="switchLinkTab('all', this)" class="px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-500 whitespace-nowrap">すべて</button>
+          <button onclick="switchLinkTab('hr', this)" class="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap">人事・労務</button>
+          <button onclick="switchLinkTab('it', this)" class="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap">IT・システム</button>
+          <button onclick="switchLinkTab('biz', this)" class="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap">業務</button>
+        </div>
+        <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="links-grid">
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="hr">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl">🕒</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">勤怠システム</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="hr">
+            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl">💰</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">経費精算</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="it">
+            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-xl">📚</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">社内Wiki</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="biz">
+            <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-xl">💬</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">チャット</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="biz">
+            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-xl">📊</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">売上レポート</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="it">
+            <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-xl">☁️</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">クラウドストレージ</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="hr">
+            <div class="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center text-xl">📋</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">就業規則</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition group" data-cat="biz">
+            <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-xl">📅</div>
+            <span class="text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">社内カレンダー</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- メンバー Section -->
+    <section id="members">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span class="w-6 h-6 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm">👥</span>メンバー
+        </h2>
+        <input type="text" placeholder="名前・部署で検索..." oninput="filterMembers(this.value)" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44">
+      </div>
+      <!-- Dept filter -->
+      <div class="flex gap-2 mb-3 flex-wrap" id="dept-filter">
+        <button onclick="filterDept('all', this)" class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 transition">すべて</button>
+        <button onclick="filterDept('営業部', this)" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">営業部</button>
+        <button onclick="filterDept('総務部', this)" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">総務部</button>
+        <button onclick="filterDept('開発部', this)" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">開発部</button>
+        <button onclick="filterDept('経理部', this)" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">経理部</button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" id="members-grid">
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span class="w-6 h-6 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center text-sm">❓</span>FAQ
+        </h2>
+        <div class="flex gap-2 text-xs">
+          <button onclick="filterFAQ('all', this)" class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">すべて</button>
+          <button onclick="filterFAQ('勤怠・休暇', this)" class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600">勤怠・休暇</button>
+          <button onclick="filterFAQ('経費・精算', this)" class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600">経費・精算</button>
+          <button onclick="filterFAQ('IT・システム', this)" class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600">IT・システム</button>
+        </div>
+      </div>
+      <div class="space-y-2" id="faq-list"></div>
+    </section>
+
+    <!-- Upsell Banner -->
+    <section id="upsell-banner" class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <div class="text-xs font-medium text-blue-200 mb-1">🤖 E-team AI からのご提案</div>
+          <h3 class="text-lg font-bold mb-1">社内文書・マニュアルをAIで瞬時に検索したい方へ</h3>
+          <p class="text-sm text-blue-100">AI SearchScope で社内のあらゆる情報を自然言語で検索。FAQへの問い合わせが激減します。</p>
+        </div>
+        <a href="#" class="shrink-0 bg-white text-blue-700 font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-blue-50 transition whitespace-nowrap">詳しく見る →</a>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ========== ADMIN PAGE ========== -->
+<div id="page-admin" class="page fade-in">
+  <div class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <div class="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0">
+      <div class="p-4 border-b border-gray-100">
+        <div class="text-sm font-bold text-gray-900">管理ダッシュボード</div>
+        <div class="text-xs text-gray-400 mt-0.5">株式会社びんごや</div>
+      </div>
+      <nav class="flex-1 p-3 space-y-1">
+        <button onclick="switchAdmin('dashboard', this)" class="sidebar-link active w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+          <span>📊</span>ダッシュボード
+        </button>
+        <button onclick="switchAdmin('announcements', this)" class="sidebar-link w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>📢</span>お知らせ
+        </button>
+        <button onclick="switchAdmin('links', this)" class="sidebar-link w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>🔗</span>リンク集
+        </button>
+        <button onclick="switchAdmin('members', this)" class="sidebar-link w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>👥</span>メンバー
+        </button>
+        <button onclick="switchAdmin('faq', this)" class="sidebar-link w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>❓</span>FAQ
+        </button>
+        <button onclick="switchAdmin('settings', this)" class="sidebar-link w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>⚙️</span>設定
+        </button>
+      </nav>
+      <div class="p-3 border-t border-gray-100">
+        <button onclick="showPage('page-portal')" class="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 flex items-center gap-2 transition">
+          <span>←</span>ポータルへ戻る
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Dashboard -->
+      <div id="admin-dashboard" class="p-6">
+        <h1 class="text-xl font-bold text-gray-900 mb-6">ダッシュボード</h1>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="text-2xl font-bold text-blue-600">3</div>
+            <div class="text-sm text-gray-500 mt-1">お知らせ</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="text-2xl font-bold text-green-600">8</div>
+            <div class="text-sm text-gray-500 mt-1">リンク数</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="text-2xl font-bold text-purple-600">12</div>
+            <div class="text-sm text-gray-500 mt-1">メンバー数</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="text-2xl font-bold text-yellow-600">5</div>
+            <div class="text-sm text-gray-500 mt-1">FAQ件数</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <h2 class="font-semibold text-gray-900 mb-4">ポータル設定</h2>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+              <div>
+                <div class="text-sm font-medium text-gray-700">お知らせセクション</div>
+                <div class="text-xs text-gray-400">最新のお知らせを表示</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-10 h-5 bg-blue-600 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+              <div>
+                <div class="text-sm font-medium text-gray-700">リンク集セクション</div>
+                <div class="text-xs text-gray-400">よく使うツールリンク</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-10 h-5 bg-blue-600 rounded-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+              <div>
+                <div class="text-sm font-medium text-gray-700">メンバーセクション</div>
+                <div class="text-xs text-gray-400">組織メンバー一覧</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-10 h-5 bg-blue-600 rounded-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between py-2">
+              <div>
+                <div class="text-sm font-medium text-gray-700">FAQセクション</div>
+                <div class="text-xs text-gray-400">よくある質問</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-10 h-5 bg-blue-600 rounded-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Announcements Admin -->
+      <div id="admin-announcements" class="p-6 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-bold text-gray-900">お知らせ管理</h1>
+          <button onclick="openModal('modal-announcement')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center gap-2">
+            <span>＋</span>新規作成
+          </button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">タイトル</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">種別</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">投稿日</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">操作</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3">【重要】2026年度 夏季休暇のお知らせ</td>
+                <td class="px-4 py-3"><span class="bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">ピン留め</span></td>
+                <td class="px-4 py-3 text-gray-400">2026/03/28</td>
+                <td class="px-4 py-3 flex gap-2">
+                  <button class="text-blue-500 hover:underline text-xs">編集</button>
+                  <button class="text-red-500 hover:underline text-xs">削除</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3">2026年度 健康診断のご案内</td>
+                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">通常</span></td>
+                <td class="px-4 py-3 text-gray-400">2026/03/25</td>
+                <td class="px-4 py-3 flex gap-2">
+                  <button class="text-blue-500 hover:underline text-xs">編集</button>
+                  <button class="text-red-500 hover:underline text-xs">削除</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3">社内勉強会「AI活用術」参加者募集</td>
+                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">通常</span></td>
+                <td class="px-4 py-3 text-gray-400">2026/03/20</td>
+                <td class="px-4 py-3 flex gap-2">
+                  <button class="text-blue-500 hover:underline text-xs">編集</button>
+                  <button class="text-red-500 hover:underline text-xs">削除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Members Admin -->
+      <div id="admin-members" class="p-6 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-bold text-gray-900">メンバー管理</h1>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center gap-2">
+            <span>＋</span>メンバー招待
+          </button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">名前</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">部署</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">役職</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">権限</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">操作</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50" id="admin-members-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FAQ Admin -->
+      <div id="admin-faq" class="p-6 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-bold text-gray-900">FAQ管理</h1>
+          <div class="flex gap-2">
+            <button onclick="openModal('modal-ai-faq')" class="border border-purple-300 text-purple-600 px-4 py-2 rounded-lg text-sm hover:bg-purple-50 transition flex items-center gap-2">
+              🤖 AI生成
+            </button>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center gap-2">
+              <span>＋</span>新規追加
+            </button>
+          </div>
+        </div>
+        <div class="space-y-3" id="admin-faq-list"></div>
+      </div>
+
+      <!-- Settings Admin -->
+      <div id="admin-settings" class="p-6 hidden">
+        <h1 class="text-xl font-bold text-gray-900 mb-6">ポータル設定</h1>
+        <div class="space-y-4 max-w-lg">
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <h2 class="font-semibold text-gray-900 mb-4">基本設定</h2>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">会社名</label>
+                <input type="text" value="株式会社びんごや" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ウェルカムメッセージ</label>
+                <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none">社員の皆さんへ。このポータルは社内の情報共有を円滑にするために作成しました。</textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">プライマリーカラー</label>
+                <div class="flex gap-2 flex-wrap">
+                  <div class="w-8 h-8 rounded-lg ring-2 ring-offset-2 ring-blue-500 cursor-pointer" style="background:#3B82F6"></div>
+                  <div class="w-8 h-8 rounded-lg cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-emerald-500" style="background:#10B981"></div>
+                  <div class="w-8 h-8 rounded-lg cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-amber-500" style="background:#F59E0B"></div>
+                  <div class="w-8 h-8 rounded-lg cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-violet-500" style="background:#8B5CF6"></div>
+                </div>
+              </div>
+              <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">保存する</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <h2 class="font-semibold text-gray-900 mb-2">プランと請求</h2>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-gray-800">スタンダードプラン</div>
+                <div class="text-xs text-gray-400">¥5,000/月 · 次回更新: 2026/04/30</div>
+              </div>
+              <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">有効</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links Admin -->
+      <div id="admin-links" class="p-6 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-bold text-gray-900">リンク集管理</h1>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center gap-2">
+            <span>＋</span>リンク追加
+          </button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">名前</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">URL</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">カテゴリ</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">操作</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr class="hover:bg-gray-50"><td class="px-4 py-3">勤怠システム</td><td class="px-4 py-3 text-blue-500 text-xs">https://kintai.example.com</td><td class="px-4 py-3 text-gray-400">人事・労務</td><td class="px-4 py-3 flex gap-2"><button class="text-blue-500 hover:underline text-xs">編集</button><button class="text-red-500 hover:underline text-xs">削除</button></td></tr>
+              <tr class="hover:bg-gray-50"><td class="px-4 py-3">経費精算</td><td class="px-4 py-3 text-blue-500 text-xs">https://kehi.example.com</td><td class="px-4 py-3 text-gray-400">人事・労務</td><td class="px-4 py-3 flex gap-2"><button class="text-blue-500 hover:underline text-xs">編集</button><button class="text-red-500 hover:underline text-xs">削除</button></td></tr>
+              <tr class="hover:bg-gray-50"><td class="px-4 py-3">社内Wiki</td><td class="px-4 py-3 text-blue-500 text-xs">https://wiki.example.com</td><td class="px-4 py-3 text-gray-400">IT・システム</td><td class="px-4 py-3 flex gap-2"><button class="text-blue-500 hover:underline text-xs">編集</button><button class="text-red-500 hover:underline text-xs">削除</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODALS ========== -->
+<!-- New Announcement Modal -->
+<div id="modal-announcement" class="modal">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900">お知らせを作成</h2>
+      <button onclick="closeModal('modal-announcement')" class="text-gray-400 hover:text-gray-600 text-xl">×</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">タイトル</label>
+        <input type="text" placeholder="お知らせのタイトルを入力" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">本文</label>
+        <textarea placeholder="本文を入力..." class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-28 resize-none"></textarea>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="is-pinned" class="rounded">
+        <label for="is-pinned" class="text-sm text-gray-700">重要としてピン留めする</label>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeModal('modal-announcement')" class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50">キャンセル</button>
+      <button onclick="closeModal('modal-announcement')" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-sm hover:bg-blue-700">投稿する</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI FAQ Modal -->
+<div id="modal-ai-faq" class="modal">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900">🤖 AI FAQを生成</h2>
+      <button onclick="closeModal('modal-ai-faq')" class="text-gray-400 hover:text-gray-600 text-xl">×</button>
+    </div>
+    <div class="bg-purple-50 rounded-xl p-4 mb-4 text-sm text-purple-700">
+      Claude AIが業種・従業員規模・部署構成をもとにFAQを自動生成します
+    </div>
+    <div id="modal-ai-loading" class="hidden text-center py-8">
+      <div class="inline-block w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-3"></div>
+      <p class="text-sm text-gray-500">AIがFAQを生成中...</p>
+    </div>
+    <div id="modal-ai-results" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeModal('modal-ai-faq')" class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-xl text-sm">キャンセル</button>
+      <button onclick="runAdminAIFAQ()" class="flex-1 bg-purple-600 text-white py-2.5 rounded-xl text-sm hover:bg-purple-700">✨ 生成する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Completion Modal -->
+<div id="modal-complete" class="modal">
+  <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl text-center">
+    <div class="text-5xl mb-4">🎉</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">ポータルが完成しました！</h2>
+    <p class="text-gray-500 mb-2">あなたの社内ポータルURLはこちら：</p>
+    <div class="bg-blue-50 rounded-xl px-4 py-3 mb-6 font-mono text-blue-700 text-sm">bingoya.e-team-portal.com</div>
+    <button onclick="closeModal('modal-complete'); showPage('page-portal')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">ポータルを開く →</button>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+const membersData = [
+  { name: '田中 太郎', dept: '営業部', title: '部長', role: 'admin', email: 'tanaka@bingoya.co.jp' },
+  { name: '山田 花子', dept: '総務部', title: '課長', role: 'member', email: 'yamada@bingoya.co.jp' },
+  { name: '佐藤 健', dept: '開発部', title: 'エンジニア', role: 'member', email: 'sato@bingoya.co.jp' },
+  { name: '鈴木 美咲', dept: '営業部', title: '営業担当', role: 'member', email: 'suzuki@bingoya.co.jp' },
+  { name: '高橋 隆', dept: '経理部', title: '経理担当', role: 'member', email: 'takahashi@bingoya.co.jp' },
+  { name: '伊藤 裕子', dept: '開発部', title: 'デザイナー', role: 'member', email: 'ito@bingoya.co.jp' },
+  { name: '渡辺 大輔', dept: '営業部', title: '営業担当', role: 'member', email: 'watanabe@bingoya.co.jp' },
+  { name: '中村 さゆり', dept: '総務部', title: '総務担当', role: 'member', email: 'nakamura@bingoya.co.jp' },
+  { name: '小林 誠', dept: '開発部', title: 'エンジニア', role: 'member', email: 'kobayashi@bingoya.co.jp' },
+  { name: '加藤 由美', dept: '経理部', title: '経理課長', role: 'member', email: 'kato@bingoya.co.jp' },
+  { name: '吉田 拓也', dept: '営業部', title: '営業部長補佐', role: 'member', email: 'yoshida@bingoya.co.jp' },
+  { name: '松本 あかり', dept: '開発部', title: 'PMO', role: 'member', email: 'matsumoto@bingoya.co.jp' },
+];
+
+const faqData = [
+  { q: '有給休暇の申請方法は？', a: '勤怠システムにログインし「休暇申請」から有給休暇を選択してください。上長の承認後に確定します。申請は取得希望日の3営業日前までにお願いします。', cat: '勤怠・休暇' },
+  { q: '経費精算の締め日はいつですか？', a: '毎月25日が締め日です。領収書原本を総務部へ提出し、経費精算システムにも入力してください。26日以降の提出は翌月分になります。', cat: '経費・精算' },
+  { q: 'PCのパスワードを忘れた場合は？', a: '開発部のITヘルプデスク（内線:123）またはSlackの #it-support チャンネルへご連絡ください。本人確認後にリセット対応します。', cat: 'IT・システム' },
+  { q: '在宅勤務の申請は必要ですか？', a: '前日の17時までに直属の上長に口頭またはチャットで連絡してください。週3日まで利用可能です（部署によって異なる場合があります）。', cat: '勤怠・休暇' },
+  { q: '名刺を印刷したい場合は？', a: '総務部の山田までメールでご依頼ください。デザインテンプレートがあります。通常5営業日で納品します（急ぎの場合はご相談ください）。', cat: '経費・精算' },
+];
+
+// ==================== NAVIGATION ====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById(id);
+  page.classList.add('active');
+  page.classList.add('fade-in');
+  setTimeout(() => page.classList.remove('fade-in'), 400);
+  window.scrollTo(0, 0);
+}
+
+// ==================== ONBOARDING ====================
+let currentStep = 1;
+
+function nextStep(step) {
+  document.getElementById('onb-step-' + currentStep).classList.add('hidden');
+  currentStep = step;
+  document.getElementById('onb-step-' + step).classList.remove('hidden');
+  document.getElementById('onb-step-label').textContent = 'Step ' + step + ' / 4';
+  updateStepIndicators();
+}
+
+function updateStepIndicators() {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('si-' + i);
+    el.className = 'step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all';
+    if (i < currentStep) el.classList.add('done');
+    else if (i === currentStep) el.classList.add('active');
+    else el.classList.add('pending');
+  }
+}
+
+function setColor(color, el) {
+  document.documentElement.style.setProperty('--primary', color);
+  document.getElementById('preview-header').style.background = color;
+  // Remove ring from all swatches
+  document.querySelectorAll('#onb-step-2 .w-10.h-10.rounded-xl').forEach(s => {
+    s.classList.remove('ring-2', 'ring-offset-2');
+  });
+  if (el && el.classList) {
+    el.classList.add('ring-2', 'ring-offset-2');
+  }
+  // Update portal header
+  document.getElementById('portal-header').style.background = color;
+  document.getElementById('portal-welcome').style.background = `linear-gradient(to right, ${color}, ${color}dd)`;
+}
+
+function addLinkRow() {
+  const c = document.getElementById('links-container');
+  const d = document.createElement('div');
+  d.className = 'flex gap-2';
+  d.innerHTML = '<input type="text" placeholder="ツール名" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"><input type="url" placeholder="URL" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">';
+  c.appendChild(d);
+}
+
+function addDept(e) {
+  if (e.key !== 'Enter') return;
+  const val = e.target.value.trim();
+  if (!val) return;
+  const span = document.createElement('span');
+  span.className = 'bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full flex items-center gap-1';
+  span.innerHTML = val + ' <button class="hover:text-red-500" onclick="removeDept(this)">×</button>';
+  document.getElementById('dept-list').appendChild(span);
+  e.target.value = '';
+}
+
+function removeDept(btn) { btn.parentElement.remove(); }
+
+function generateFAQ() {
+  const btn = document.getElementById('ai-faq-btn');
+  btn.textContent = '⏳ 生成中...';
+  btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('ai-faq-result').classList.remove('hidden');
+    btn.textContent = '✓ FAQを再生成する';
+    btn.disabled = false;
+  }, 2000);
+}
+
+function addInviteRow() {
+  const c = document.getElementById('invite-list');
+  const d = document.createElement('div');
+  d.className = 'flex gap-2';
+  d.innerHTML = '<input type="text" placeholder="氏名" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"><input type="email" placeholder="メールアドレス" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"><select class="border border-gray-300 rounded-lg px-2 py-2 text-sm"><option>営業部</option><option>総務部</option><option>開発部</option><option>経理部</option></select>';
+  c.appendChild(d);
+}
+
+function completeOnboarding() {
+  openModal('modal-complete');
+}
+
+// ==================== PORTAL ====================
+function renderMembers(data) {
+  const colors = ['bg-blue-500','bg-green-500','bg-purple-500','bg-yellow-500','bg-red-500','bg-indigo-500','bg-pink-500','bg-teal-500'];
+  const grid = document.getElementById('members-grid');
+  grid.innerHTML = data.map((m, i) => `
+    <div class="member-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center hover:shadow-md transition cursor-pointer" data-dept="${m.dept}" data-name="${m.name}">
+      <div class="w-12 h-12 ${colors[i % colors.length]} rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2">${m.name[0]}</div>
+      <div class="text-sm font-semibold text-gray-900">${m.name}</div>
+      <div class="text-xs text-gray-400 mt-0.5">${m.dept}</div>
+      <div class="text-xs text-gray-400">${m.title}</div>
+    </div>
+  `).join('');
+}
+
+function filterMembers(val) {
+  document.querySelectorAll('.member-card').forEach(c => {
+    const match = c.dataset.name.includes(val) || c.dataset.dept.includes(val);
+    c.style.display = match ? '' : 'none';
+  });
+}
+
+function filterDept(dept, btn) {
+  document.querySelectorAll('#dept-filter button').forEach(b => {
+    b.className = 'px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition';
+  });
+  btn.className = 'px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 transition';
+  document.querySelectorAll('.member-card').forEach(c => {
+    c.style.display = (dept === 'all' || c.dataset.dept === dept) ? '' : 'none';
+  });
+}
+
+function renderFAQ(data) {
+  const list = document.getElementById('faq-list');
+  list.innerHTML = data.map((f, i) => `
+    <div class="faq-item bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" data-cat="${f.cat}">
+      <button onclick="toggleAccordion(this)" class="w-full text-left px-4 py-3.5 flex items-center justify-between gap-3 hover:bg-gray-50 transition">
+        <div class="flex items-center gap-3">
+          <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full shrink-0">${f.cat}</span>
+          <span class="text-sm font-medium text-gray-900">${f.q}</span>
+        </div>
+        <svg class="w-4 h-4 text-gray-400 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="accordion-content">
+        <div class="px-4 pb-4 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">${f.a}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAccordion(btn) {
+  const content = btn.nextElementSibling;
+  const icon = btn.querySelector('svg');
+  content.classList.toggle('open');
+  icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+function filterFAQ(cat, btn) {
+  document.querySelectorAll('#faq button.px-3').forEach(b => {
+    b.className = 'px-3 py-1 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600';
+  });
+  btn.className = 'px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium';
+  document.querySelectorAll('.faq-item').forEach(f => {
+    f.style.display = (cat === 'all' || f.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+function switchLinkTab(cat, btn) {
+  document.querySelectorAll('#links-tabs button').forEach(b => {
+    b.className = 'px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap';
+  });
+  btn.className = 'px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-500 whitespace-nowrap';
+  document.querySelectorAll('#links-grid a').forEach(a => {
+    a.style.display = (cat === 'all' || a.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+// ==================== ADMIN ====================
+function switchAdmin(section, btn) {
+  ['dashboard','announcements','links','members','faq','settings'].forEach(s => {
+    document.getElementById('admin-' + s).classList.add('hidden');
+  });
+  document.getElementById('admin-' + section).classList.remove('hidden');
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (section === 'members') renderAdminMembers();
+  if (section === 'faq') renderAdminFAQ();
+}
+
+function renderAdminMembers() {
+  const tbody = document.getElementById('admin-members-table');
+  tbody.innerHTML = membersData.map(m => `
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-3 font-medium">${m.name}</td>
+      <td class="px-4 py-3 text-gray-500">${m.dept}</td>
+      <td class="px-4 py-3 text-gray-500">${m.title}</td>
+      <td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full ${m.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}">${m.role === 'admin' ? '管理者' : 'メンバー'}</span></td>
+      <td class="px-4 py-3 flex gap-2">
+        <button class="text-blue-500 hover:underline text-xs">編集</button>
+        <button class="text-red-500 hover:underline text-xs">削除</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderAdminFAQ() {
+  const list = document.getElementById('admin-faq-list');
+  list.innerHTML = faqData.map((f, i) => `
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-start justify-between gap-4">
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">${f.cat}</span>
+        </div>
+        <p class="text-sm font-medium text-gray-900">Q: ${f.q}</p>
+        <p class="text-xs text-gray-500 mt-1">A: ${f.a.substring(0, 60)}...</p>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <button class="text-blue-500 hover:underline text-xs">編集</button>
+        <button class="text-red-500 hover:underline text-xs">削除</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function runAdminAIFAQ() {
+  document.getElementById('modal-ai-loading').classList.remove('hidden');
+  document.getElementById('modal-ai-results').innerHTML = '';
+  setTimeout(() => {
+    document.getElementById('modal-ai-loading').classList.add('hidden');
+    document.getElementById('modal-ai-results').innerHTML = faqData.map(f => `
+      <div class="bg-purple-50 rounded-lg p-3 border border-purple-100">
+        <label class="flex items-start gap-2 cursor-pointer">
+          <input type="checkbox" checked class="mt-0.5">
+          <div>
+            <p class="text-sm font-medium text-gray-800">Q: ${f.q}</p>
+            <p class="text-xs text-gray-500 mt-0.5">A: ${f.a.substring(0, 60)}...</p>
+          </div>
+        </label>
+      </div>
+    `).join('');
+  }, 2000);
+}
+
+// ==================== MODALS ====================
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) closeModal(this.id);
+  });
+});
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderMembers(membersData);
+  renderFAQ(faqData);
+});
+</script>
+</body>
+</html>
