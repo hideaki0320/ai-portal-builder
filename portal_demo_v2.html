@@ -206,10 +206,25 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 .bld-device-frame.mobile .portal-mobile-header{display:flex !important;}
 .bld-device-frame.mobile .portal-mobile-tabs{display:flex !important;}
 .bld-device-frame.mobile .portal-topbar{display:none;}
-.bld-device-frame.mobile .portal-main{padding:16px;}
+.bld-device-frame.mobile .portal-main{padding:14px;}
+.bld-device-frame.mobile .stat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+.bld-device-frame.mobile .stat-num{font-size:22px;}
+.bld-device-frame.mobile .stat-sub{flex-direction:column;align-items:flex-start;}
+.bld-device-frame.mobile .news-card{flex-direction:column;}
+.bld-device-frame.mobile .news-thumb{width:100%;height:100px;}
+.bld-device-frame.mobile .proj-grid{grid-template-columns:1fr;}
+.bld-device-frame.mobile .member-grid{grid-template-columns:1fr 1fr;}
+.bld-device-frame.mobile .link-grid{grid-template-columns:1fr 1fr;}
+.bld-device-frame.mobile .doc-layout{flex-direction:column;}
+.bld-device-frame.mobile .doc-sidebar{width:100%;}
+.bld-device-frame.mobile .doc-grid{grid-template-columns:1fr 1fr;}
+.bld-device-frame.mobile [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
 /* tablet inside builder */
 .bld-device-frame.tablet .portal-sidebar{width:180px;min-width:180px;}
 .bld-device-frame.tablet .sb-company{font-size:12px;}
+.bld-device-frame.tablet .stat-grid{grid-template-columns:1fr 1fr;}
+.bld-device-frame.tablet .proj-grid{grid-template-columns:1fr 1fr;}
+.bld-device-frame.tablet .member-grid{grid-template-columns:1fr 1fr 1fr;}
 /* mobile header/tabs */
 .portal-mobile-header{display:none;align-items:center;justify-content:space-between;padding:12px 16px;background:white;border-bottom:1px solid var(--border);flex-shrink:0;}
 .portal-mobile-header-title{font-size:14px;font-weight:700;color:var(--h1);}
@@ -1141,8 +1156,17 @@ function initBuilder(){
   renderNews();
   renderFAQ();
   renderSpreadsheet('users');
-  setTimeout(()=>setDevice('pc',document.getElementById('dev-pc')),100);
+  // delay to ensure layout is computed
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    setDevice('pc', document.getElementById('dev-pc'));
+  }));
 }
+window.addEventListener('resize', ()=>{
+  const active = document.querySelector('.bld-device-btn.active');
+  if(!active) return;
+  const dev = active.id.replace('dev-','');
+  setDevice(dev, active);
+});
 
 /* ── DATA ── */
 const MEMBERS=[
