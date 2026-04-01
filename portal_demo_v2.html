@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ── TOKENS ── */
 :root {
@@ -1442,6 +1443,41 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 </div>
 
 <script>
+/* ── SUPABASE ── */
+const SUPA_URL = 'https://rkpnprhatxidaneyuxmw.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrcG5wcmhhdHhpZGFuZXl1eG13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMTc4MjUsImV4cCI6MjA5MDU5MzgyNX0.9eYgqwJZHqbIQZ-fS0jPynkcNarJvaYbxkHdjxA3YQ4';
+const supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+async function loadSupabaseData() {
+  const [membersRes, projectsRes, newsRes, docsRes, faqRes] = await Promise.all([
+    supabase.from('members').select('*').order('id'),
+    supabase.from('projects').select('*').order('id'),
+    supabase.from('news').select('*').order('id'),
+    supabase.from('docs').select('*').order('id'),
+    supabase.from('faq').select('*').order('id'),
+  ]);
+  if (membersRes.data && membersRes.data.length) {
+    MEMBERS.length = 0;
+    membersRes.data.forEach(r => MEMBERS.push({name:r.name,dept:r.dept,role:r.role,init:r.init,grad:r.grad,photo:r.photo}));
+  }
+  if (projectsRes.data && projectsRes.data.length) {
+    PROJECTS.length = 0;
+    projectsRes.data.forEach(r => PROJECTS.push({name:r.name,client:r.client,status:r.status,pct:r.pct,end:r.end_date,imgs:[33,40,52],img:'proj1'}));
+  }
+  if (newsRes.data && newsRes.data.length) {
+    NEWS_DATA.length = 0;
+    newsRes.data.forEach(r => NEWS_DATA.push({cat:r.cat,title:r.title,date:r.date,author:r.author,img:'n1'}));
+  }
+  if (docsRes.data && docsRes.data.length) {
+    DOCS.length = 0;
+    docsRes.data.forEach(r => DOCS.push({name:r.name,type:r.type,folder:r.folder,size:r.size,updated:r.updated}));
+  }
+  if (faqRes.data && faqRes.data.length) {
+    FAQ_DATA.length = 0;
+    faqRes.data.forEach(r => FAQ_DATA.push({q:r.question,a:r.answer}));
+  }
+}
+
 /* ── PAGE NAV ── */
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1529,12 +1565,22 @@ function dataTab(tab, el){
 
 /* ── BUILDER INIT ── */
 function initBuilder(){
-  renderProjects();
-  renderDocuments();
-  renderMembers();
-  renderNews();
-  renderFAQ();
-  renderSpreadsheet('users');
+  loadSupabaseData().then(()=>{
+    renderProjects();
+    renderDocuments();
+    renderMembers();
+    renderNews();
+    renderFAQ();
+    renderSpreadsheet('users');
+  }).catch(()=>{
+    // fallback to local data if Supabase fails
+    renderProjects();
+    renderDocuments();
+    renderMembers();
+    renderNews();
+    renderFAQ();
+    renderSpreadsheet('users');
+  });
   // delay to ensure layout is computed
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     setDevice('pc', document.getElementById('dev-pc'));
