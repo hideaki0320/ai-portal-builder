@@ -1598,30 +1598,37 @@ async function doLogout(){
 }
 
 async function initAuth(){
+  let _navigated = false;
+
+  // getSession()より先に登録してイベントを取りこぼさない
+  sb.auth.onAuthStateChange(async(_event,session)=>{
+    if(_event==='SIGNED_OUT'){
+      _navigated=false; _currentUser=null; _userRole=null;
+      showPage('login');
+      return;
+    }
+    if((_event==='SIGNED_IN'||_event==='TOKEN_REFRESHED') && session && !_navigated){
+      _navigated=true;
+      await _loadUserRole(session.user);
+      showPage('builder');
+    }
+  });
+
   const {data:{session}}=await sb.auth.getSession();
-  if(session){
+  if(session && !_navigated){
+    _navigated=true;
     await _loadUserRole(session.user);
     showPage('builder');
     return;
   }
-
-  // PKCEフロー: ?code=xxx、implicitフロー: #access_token=xxx
-  const isOAuthCallback = window.location.search.includes('code=')
-                       || window.location.hash.includes('access_token');
-  if(!isOAuthCallback){
-    showPage('landing');
-  }
-  // OAuthコールバック中はローディングのまま SIGNED_IN を待つ
-
-  sb.auth.onAuthStateChange(async(_event,session)=>{
-    if((_event==='SIGNED_IN'||_event==='TOKEN_REFRESHED') && session && !_currentUser){
-      await _loadUserRole(session.user);
-      showPage('builder');
-    } else if(_event==='SIGNED_OUT'){
-      _currentUser=null; _userRole=null;
-      showPage('login');
+  if(!session && !_navigated){
+    const isOAuth=window.location.search.includes('code=')||window.location.hash.includes('access_token');
+    if(!isOAuth){ _navigated=true; showPage('landing'); }
+    else {
+      // フォールバック: 6秒経っても遷移しなければLPへ
+      setTimeout(()=>{ if(!_navigated){ _navigated=true; showPage('landing'); } },6000);
     }
-  });
+  }
 }
 
 /* ── PAGE NAV ── */
