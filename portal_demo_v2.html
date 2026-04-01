@@ -1598,13 +1598,25 @@ async function doLogout(){
 }
 
 async function initAuth(){
-  // INITIAL_SESSION と SIGNED_IN の両方を処理（OAuth コールバック対応）
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    await _loadUserRole(session.user);
+    showPage('builder');
+    return;
+  }
+
+  // PKCEフロー: ?code=xxx、implicitフロー: #access_token=xxx
+  const isOAuthCallback = window.location.search.includes('code=')
+                       || window.location.hash.includes('access_token');
+  if(!isOAuthCallback){
+    showPage('landing');
+  }
+  // OAuthコールバック中はローディングのまま SIGNED_IN を待つ
+
   sb.auth.onAuthStateChange(async(_event,session)=>{
-    if((_event==='SIGNED_IN'||_event==='INITIAL_SESSION') && session && !_currentUser){
+    if((_event==='SIGNED_IN'||_event==='TOKEN_REFRESHED') && session && !_currentUser){
       await _loadUserRole(session.user);
       showPage('builder');
-    } else if(_event==='INITIAL_SESSION' && !session){
-      showPage('landing');
     } else if(_event==='SIGNED_OUT'){
       _currentUser=null; _userRole=null;
       showPage('login');
