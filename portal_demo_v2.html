@@ -1392,39 +1392,32 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
       </div>
     </div>
 
-    <!-- Main: Users (権限管理) -->
+    <!-- Main: Users (ユーザー管理) -->
     <div class="bld-main" id="bld-main-users" style="display:none;">
       <div style="flex:1;padding:32px;overflow-y:auto;">
-        <div class="pg-title">ユーザー・権限管理</div>
-        <div class="pg-sub">部署・役職ごとにアクセス権限を設定できます</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="pg-title">ユーザー管理</div>
+          <button onclick="openInviteModal()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--primary);color:white;border:none;border-radius:var(--rsm);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">
+            <i data-lucide="user-plus" style="width:15px;height:15px;"></i>メンバーを招待
+          </button>
+        </div>
+        <div class="pg-sub">ポータルにアクセスできるメンバーを管理します</div>
         <div class="divider"></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
-          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#EDE9FE;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="shield" style="width:18px;height:18px;color:#6D28D9;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">管理者</div><div style="font-size:12px;color:var(--muted);">3名</div></div></div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー管理</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>全ドキュメント</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>権限設定</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
-            </div>
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;">
+          <div style="padding:14px 20px;border-bottom:1px solid var(--border-lt);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:13px;font-weight:600;color:var(--h1);">メンバー一覧</div>
+            <div id="users-count" style="font-size:12px;color:var(--muted);"></div>
           </div>
-          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#DBEAFE;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="briefcase" style="width:18px;height:18px;color:#1D4ED8;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">部長・マネージャー</div><div style="font-size:12px;color:var(--muted);">5名</div></div></div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">閲覧・編集</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー管理</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>部署ドキュメント</span><span style="color:#10B981;font-weight:600;">閲覧・編集</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>権限設定</span><span style="color:#DC2626;font-weight:600;">アクセス不可</span></div>
-            </div>
+          <div id="users-list" style="padding:0 20px;">
+            <div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center;">Usersタブを開くと読み込まれます</div>
           </div>
-          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#D1FAE5;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="user" style="width:18px;height:18px;color:#059669;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">一般社員</div><div style="font-size:12px;color:var(--muted);">16名</div></div></div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー名簿</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>一般ドキュメント</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>機密資料</span><span style="color:#DC2626;font-weight:600;">アクセス不可</span></div>
-            </div>
+        </div>
+
+        <div style="margin-top:24px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--r);padding:16px 20px;">
+          <div style="font-size:13px;font-weight:600;color:#15803D;margin-bottom:4px;">アクセス権限のルール</div>
+          <div style="font-size:12px;color:#166534;line-height:1.7;">
+            管理者（admin）: ビルダー画面（/app）にアクセスし、データ編集・メンバー管理が可能<br>
+            メンバー（member）: ポータル画面（/portal）のみアクセス可能、閲覧専用
           </div>
         </div>
       </div>
@@ -1452,6 +1445,32 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
     </div>
 
   </div><!-- bld-body -->
+</div>
+
+<!-- ── INVITE MODAL ── -->
+<div id="invite-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:12px;width:440px;max-width:90vw;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:700;color:var(--h1);">メンバーを招待</div>
+      <div onclick="closeInviteModal()" style="cursor:pointer;color:var(--muted);padding:4px;"><i data-lucide="x" style="width:18px;height:18px;"></i></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">メールアドレス</label>
+      <input id="invite-email" type="email" placeholder="member@example.com" style="width:100%;border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--h1);" oninput="document.getElementById('invite-err').style.display='none'">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">権限</label>
+      <select id="invite-role" style="width:100%;border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--h1);background:white;">
+        <option value="member">メンバー（/portal のみアクセス可）</option>
+        <option value="admin">管理者（ビルダーにもアクセス可）</option>
+      </select>
+    </div>
+    <div id="invite-err" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--rsm);padding:9px 12px;font-size:13px;color:#DC2626;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="closeInviteModal()" style="padding:9px 18px;border:1px solid var(--border);border-radius:var(--rsm);background:white;cursor:pointer;font-size:14px;font-family:inherit;color:var(--h2);">キャンセル</button>
+      <button id="invite-btn" onclick="sendInvite()" style="padding:9px 20px;border:none;border-radius:var(--rsm);background:var(--primary);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">招待メールを送る</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1542,7 +1561,7 @@ async function doLogin(){
   if(btn){btn.disabled=false;btn.textContent='ログイン';}
   if(error){if(errEl){errEl.style.display='block';errEl.textContent='メールアドレスまたはパスワードが違います';}return;}
   await _loadUserRole(data.user);
-  showPage('builder');
+  _routeByRole();
 }
 
 async function doGoogleLogin(){
@@ -1566,6 +1585,14 @@ async function doLogout(){
   showPage('login');
 }
 
+function _routeByRole(){
+  if(_userRole === 'admin'){
+    showPage('builder');
+  } else {
+    window.location.href = '/portal';
+  }
+}
+
 function initAuth(){
   const isAppPath = window.location.pathname==='/app';
   let handled = false;
@@ -1574,20 +1601,19 @@ function initAuth(){
     if(handled) return;
     handled = true;
     if(session){
-      _loadUserRole(session.user).then(()=>showPage('builder'));
+      _loadUserRole(session.user).then(()=>_routeByRole());
     } else {
       showPage(isAppPath ? 'login' : 'landing');
     }
   }
 
-  // INITIAL_SESSION が必ず最初に発火する（セッションあり/なし両方）
   sb.auth.onAuthStateChange(async(_event, session)=>{
     if(_event==='INITIAL_SESSION'){
       _go(session);
     } else if(_event==='SIGNED_IN' && session){
       if(!_currentUser){
         await _loadUserRole(session.user);
-        showPage('builder');
+        _routeByRole();
       }
     } else if(_event==='SIGNED_OUT'){
       _currentUser=null; _userRole=null; handled=false;
@@ -1595,7 +1621,6 @@ function initAuth(){
     }
   });
 
-  // 万が一INITIAL_SESSIONが来ない場合のフォールバック（3秒）
   setTimeout(()=>_go(null), 3000);
 }
 
@@ -1625,6 +1650,7 @@ function bldTab(tab, btn){
     const el=document.getElementById('bld-main-'+t);
     if(el) el.style.display = t===tab ? 'flex' : 'none';
   });
+  if(tab === 'users') renderUsersTab();
   lucide.createIcons();
 }
 
@@ -2377,6 +2403,103 @@ function toggleBilling(el){
   const pro = document.getElementById('price-pro');
   if(std) std.textContent = yearly ? '¥3,980' : '¥4,980';
   if(pro) pro.textContent = yearly ? '¥9,800' : '¥12,800';
+}
+
+/* ── USERS TAB ── */
+async function renderUsersTab(){
+  const list = document.getElementById('users-list');
+  const cnt = document.getElementById('users-count');
+  if(!list) return;
+  list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center;">読み込み中...</div>';
+
+  const {data, error} = await sb.from('profiles').select('*').order('created_at');
+  if(error || !data){
+    list.innerHTML = '<div style="color:#DC2626;font-size:13px;padding:24px 0;text-align:center;">読み込みに失敗しました。Supabaseのプロフィールテーブルのポリシーを確認してください。</div>';
+    return;
+  }
+  if(cnt) cnt.textContent = data.length + '名';
+  if(data.length === 0){
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center;">メンバーがいません</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(u => {
+    const isMe = u.id === _currentUser?.id;
+    const initial = (u.email||'?').charAt(0).toUpperCase();
+    const isAdmin = u.role === 'admin';
+    return `
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border-lt);">
+      <div style="width:36px;height:36px;border-radius:50%;background:${isAdmin?'#EDE9FE':'#D1FAE5'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${isAdmin?'#6D28D9':'#065F46'};flex-shrink:0;">${initial}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--h1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${u.email||''}</div>
+        ${isMe ? '<div style="font-size:11px;color:var(--primary);font-weight:500;">あなた</div>' : ''}
+      </div>
+      <span style="display:inline-flex;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:${isAdmin?'#EDE9FE':'#D1FAE5'};color:${isAdmin?'#6D28D9':'#065F46'};flex-shrink:0;">${isAdmin?'管理者':'メンバー'}</span>
+      ${!isMe ? `
+        <button onclick="changeUserRole('${u.id}','${isAdmin?'member':'admin'}')" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:white;font-size:12px;cursor:pointer;font-family:inherit;color:var(--h2);white-space:nowrap;flex-shrink:0;">${isAdmin?'メンバーに変更':'管理者に変更'}</button>
+        <button onclick="removeUser('${u.id}','${u.email}')" style="padding:5px 8px;border:1px solid #FEE2E2;border-radius:6px;background:#FEF2F2;cursor:pointer;display:flex;align-items:center;flex-shrink:0;"><i data-lucide="trash-2" style="width:13px;height:13px;color:#DC2626;"></i></button>
+      ` : '<div style="width:158px;"></div>'}
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+async function changeUserRole(userId, newRole){
+  const {error} = await sb.from('profiles').update({role: newRole}).eq('id', userId);
+  if(error){ alert('ロール変更に失敗しました: ' + error.message); return; }
+  renderUsersTab();
+}
+
+async function removeUser(userId, email){
+  if(!confirm(email + ' をポータルから削除しますか？\n（Supabase Authのアカウントは残ります）')) return;
+  const {error} = await sb.from('profiles').delete().eq('id', userId);
+  if(error){ alert('削除に失敗しました: ' + error.message); return; }
+  renderUsersTab();
+}
+
+function openInviteModal(){
+  const m = document.getElementById('invite-modal');
+  if(m){ m.style.display='flex'; }
+  const e = document.getElementById('invite-email');
+  if(e) e.focus();
+  lucide.createIcons();
+}
+
+function closeInviteModal(){
+  const m = document.getElementById('invite-modal');
+  if(m) m.style.display='none';
+  const e = document.getElementById('invite-email');
+  if(e) e.value='';
+  const err = document.getElementById('invite-err');
+  if(err) err.style.display='none';
+}
+
+async function sendInvite(){
+  const email = (document.getElementById('invite-email')?.value||'').trim();
+  const role = document.getElementById('invite-role')?.value || 'member';
+  const errEl = document.getElementById('invite-err');
+  const btn = document.getElementById('invite-btn');
+  if(!email){
+    if(errEl){ errEl.style.display='block'; errEl.textContent='メールアドレスを入力してください'; }
+    return;
+  }
+  if(btn){ btn.disabled=true; btn.textContent='送信中...'; }
+  try {
+    const res = await fetch('/api/invite', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, role})
+    });
+    const json = await res.json();
+    if(!res.ok) throw new Error(json.error || '招待に失敗しました');
+    closeInviteModal();
+    alert(email + ' に招待メールを送信しました');
+    renderUsersTab();
+  } catch(e){
+    if(errEl){ errEl.style.display='block'; errEl.textContent=e.message; }
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='招待メールを送る'; }
+  }
 }
 
 /* ── INIT ── */
