@@ -28,7 +28,7 @@ a{text-decoration:none;}button{font-family:inherit;cursor:pointer;}
 
 /* ── PORTAL SHELL ── */
 #portal-shell{display:none;height:100vh;overflow:hidden;}
-#portal-shell.visible{display:flex;}
+#portal-shell.visible{display:flex;flex-direction:column;}
 
 /* ── SIDEBAR ── */
 .portal-sidebar{width:var(--sw);min-width:var(--sw);background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
@@ -495,8 +495,12 @@ let _userRole = null;
 /* ── AUTH ── */
 async function _loadUserRole(user){
   _currentUser = user;
-  const {data} = await sb.from('profiles').select('role').eq('id', user.id).single();
-  _userRole = data ? data.role : 'member';
+  try {
+    const {data} = await sb.from('profiles').select('role').eq('id', user.id).single();
+    _userRole = data ? data.role : 'member';
+  } catch(e){
+    _userRole = 'member';
+  }
 }
 
 async function doLogout(){
@@ -521,11 +525,6 @@ function _applyUserUI(user, role){
   // Show admin bar for admins
   const bar = document.getElementById('admin-bar');
   if(bar && role === 'admin') bar.classList.add('visible');
-
-  // Also adjust shell height if admin bar visible
-  if(role === 'admin'){
-    document.getElementById('portal-shell').style.flexDirection = 'column';
-  }
 }
 
 function _applyCompanyName(){
@@ -540,16 +539,20 @@ function initPortal(){
     if(handled) return;
     handled = true;
     if(session){
-      _loadUserRole(session.user).then(()=>{
-        _applyUserUI(session.user, _userRole);
-        _applyCompanyName();
-        loadData().then(()=>{
+      _loadUserRole(session.user)
+        .catch(()=>{ _userRole='member'; })
+        .then(()=>{
+          _applyUserUI(session.user, _userRole);
+          _applyCompanyName();
+          return loadData();
+        })
+        .catch(()=>{})
+        .then(()=>{
           renderAll();
           document.getElementById('app-loading').classList.add('hidden');
           document.getElementById('portal-shell').classList.add('visible');
           lucide.createIcons();
         });
-      });
     } else {
       // Not logged in → redirect to login
       window.location.href = '/app';
