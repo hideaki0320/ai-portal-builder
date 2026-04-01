@@ -855,12 +855,12 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         <div class="login-title">おかえりなさい</div>
         <div class="login-sub">AI社内ポータル Builder にログイン</div>
       </div>
-      <div class="field"><label>メールアドレス</label><input type="email" value="yamada@eteam.co.jp"></div>
-      <div class="field"><label>パスワード</label><input type="password" value="password123"></div>
-      <div style="text-align:right;margin-top:-6px;margin-bottom:14px;"><span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;">パスワードを忘れた方</span></div>
-      <button class="btn-login" onclick="showPage('onboarding')">ログイン</button>
+      <div class="field"><label>メールアドレス</label><input id="login-email" type="email" placeholder="your@email.com"></div>
+      <div class="field"><label>パスワード</label><input id="login-pass" type="password" placeholder="パスワード"></div>
+      <div id="login-err" style="display:none;color:#DC2626;font-size:13px;margin-bottom:10px;padding:8px 12px;background:#FEE2E2;border-radius:6px;"></div>
+      <button class="btn-login" onclick="doLogin()">ログイン</button>
       <div class="login-or"><div class="login-or-line"></div><span class="login-or-text">または</span><div class="login-or-line"></div></div>
-      <button class="btn-demo-login" onclick="showPage('templates')"><i data-lucide="layout-template"></i>テンプレートを選んで始める</button>
+      <button class="btn-demo-login" onclick="showPage('onboarding')"><i data-lucide="user-plus"></i>新規アカウント作成</button>
       <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--muted);">アカウントをお持ちでない方は <span style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="showPage('onboarding')">新規登録</span></div>
     </div>
   </div>
@@ -896,7 +896,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         <div class="tmpl-logo-icon"><i data-lucide="building-2"></i></div>
         <span class="tmpl-logo-text">AI社内ポータル Builder</span>
       </div>
-      <button onclick="showPage('login')" style="padding:6px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h2);cursor:pointer;display:flex;align-items:center;gap:6px;"><i data-lucide="log-out" style="width:14px;height:14px;"></i>ログアウト</button>
+      <button onclick="doLogout()" style="padding:6px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h2);cursor:pointer;display:flex;align-items:center;gap:6px;"><i data-lucide="log-out" style="width:14px;height:14px;"></i>ログアウト</button>
     </div>
     <div class="tmpl-body">
       <div class="tmpl-header">
@@ -1392,7 +1392,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
           <button class="data-toolbar-btn"><i data-lucide="arrow-up-down"></i>並び替え</button>
           <button class="data-toolbar-btn"><i data-lucide="eye"></i>表示項目</button>
           <span class="data-count" id="data-count">7件</span>
-          <button class="data-toolbar-btn" onclick="openAddModal(_currentDataTab)" style="margin-left:8px;background:var(--h1);color:white;border-color:var(--h1);"><i data-lucide="plus"></i>レコード追加</button>
+          <button id="btn-add-record" class="data-toolbar-btn" onclick="openAddModal(_currentDataTab)" style="margin-left:8px;background:var(--h1);color:white;border-color:var(--h1);"><i data-lucide="plus"></i>レコード追加</button>
         </div>
         <div class="spreadsheet" id="spreadsheet-area"></div>
       </div>
@@ -1493,6 +1493,47 @@ async function loadSupabaseData() {
   if (faqRes.data && faqRes.data.length) {
     FAQ_DATA.length = 0;
     faqRes.data.forEach(r => FAQ_DATA.push({_id:r.id,q:r.question,a:r.answer}));
+  }
+}
+
+/* ── AUTH ── */
+let _currentUser = null;
+let _userRole = null;
+
+async function _loadUserRole(user){
+  if(!user){ _userRole=null; return; }
+  _currentUser = user;
+  const {data}=await sb.from('profiles').select('role').eq('id',user.id).single();
+  _userRole = data ? data.role : 'member';
+}
+
+async function doLogin(){
+  const email=(document.getElementById('login-email')||{}).value||'';
+  const pass=(document.getElementById('login-pass')||{}).value||'';
+  const errEl=document.getElementById('login-err');
+  if(!email||!pass){if(errEl){errEl.style.display='block';errEl.textContent='メールアドレスとパスワードを入力してください';}return;}
+  const btn=document.querySelector('.btn-login');
+  if(btn){btn.disabled=true;btn.textContent='ログイン中...';}
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(btn){btn.disabled=false;btn.textContent='ログイン';}
+  if(error){if(errEl){errEl.style.display='block';errEl.textContent='メールアドレスまたはパスワードが違います';}return;}
+  await _loadUserRole(data.user);
+  showPage('builder');
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  _currentUser=null; _userRole=null;
+  showPage('login');
+}
+
+async function initAuth(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    await _loadUserRole(session.user);
+    showPage('builder');
+  } else {
+    showPage('login');
   }
 }
 
@@ -1906,6 +1947,8 @@ function renderSpreadsheet(tab){
   const area=document.getElementById('spreadsheet-area');
   const cnt=document.getElementById('data-count');
   if(!area) return;
+  const addBtn=document.getElementById('btn-add-record');
+  if(addBtn) addBtn.style.display=_userRole==='admin'?'':'none';
   if(tab==='users'){
     if(cnt) cnt.textContent=MEMBERS.length+'件';
     area.innerHTML=`<table>
@@ -1923,10 +1966,10 @@ function renderSpreadsheet(tab){
         <td><span class="ss-badge employee">${m.role||''}</span></td>
         <td><img class="ss-photo" src="${m.photo||''}"></td>
         <td>${(m.skills||'').split(',').filter(s=>s.trim()).map(s=>`<span class="ss-skill s1">${s.trim()}</span>`).join('')}</td>
-        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('users',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('users',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
+        ${_userRole==='admin'?`<td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('users',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('users',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>`:'<td></td>'}
       </tr>`).join('')}</tbody>
     </table>
-    <div class="ss-add-row" onclick="openAddModal('users')"><i data-lucide="plus"></i>レコードを追加</div>`;
+    ${_userRole==='admin'?`<div class="ss-add-row" onclick="openAddModal('users')"><i data-lucide="plus"></i>レコードを追加</div>`:''}`;
   } else if(tab==='projects'){
     if(cnt) cnt.textContent=PROJECTS.length+'件';
     area.innerHTML=`<table>
@@ -1943,10 +1986,10 @@ function renderSpreadsheet(tab){
         <td><span class="ss-badge ${p.status}">${STATUS_LABELS[p.status]||p.status}</span></td>
         <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:5px;background:var(--border-lt);border-radius:2px;overflow:hidden;"><div style="width:${p.pct}%;height:100%;background:var(--primary);border-radius:2px;"></div></div><span style="font-size:11px;font-weight:600;color:var(--primary);">${p.pct}%</span></div></td>
         <td style="color:var(--muted);">${p.end||''}</td>
-        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('projects',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('projects',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
+        ${_userRole==='admin'?`<td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('projects',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('projects',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>`:'<td></td>'}
       </tr>`).join('')}</tbody>
     </table>
-    <div class="ss-add-row" onclick="openAddModal('projects')"><i data-lucide="plus"></i>レコードを追加</div>`;
+    ${_userRole==='admin'?`<div class="ss-add-row" onclick="openAddModal('projects')"><i data-lucide="plus"></i>レコードを追加</div>`:''}`;
   } else if(tab==='files'){
     if(cnt) cnt.textContent=DOCS.length+'件';
     area.innerHTML=`<table>
@@ -1963,10 +2006,10 @@ function renderSpreadsheet(tab){
         <td style="color:var(--muted);">${d.folder||''}</td>
         <td style="color:var(--muted);">${d.size||''}</td>
         <td style="color:var(--muted);">${d.updated||''}</td>
-        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('files',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('files',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
+        ${_userRole==='admin'?`<td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('files',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('files',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>`:'<td></td>'}
       </tr>`}).join('')}</tbody>
     </table>
-    <div class="ss-add-row" onclick="openAddModal('files')"><i data-lucide="plus"></i>レコードを追加</div>`;
+    ${_userRole==='admin'?`<div class="ss-add-row" onclick="openAddModal('files')"><i data-lucide="plus"></i>レコードを追加</div>`:''}`;
   } else if(tab==='tasks'){
     if(cnt) cnt.textContent='4件';
     const tasks=[
@@ -2124,10 +2167,11 @@ async function deleteCrudRecord(tab, idx){
 /* ── ONBOARDING ── */
 let obStep=1;
 const OB=[
-  {lbl:'ステップ 1 / 3',title:'会社の情報を教えてください',html:`
-    <div class="ob-field"><label>会社名</label><input type="text" placeholder="例：株式会社Eチーム" value="Eチーム株式会社"></div>
-    <div class="ob-field"><label>業種</label><select><option>IT・ソフトウェア</option><option>製造業</option><option>小売・流通</option><option>サービス業</option></select></div>
-    <div class="ob-field"><label>従業員数</label><select><option>1〜10名</option><option>11〜50名</option><option selected>51〜200名</option><option>201名以上</option></select></div>`},
+  {lbl:'ステップ 1 / 3',title:'アカウントを作成してください',html:`
+    <div class="ob-field"><label>メールアドレス</label><input id="ob-email" type="email" placeholder="your@email.com"></div>
+    <div class="ob-field"><label>パスワード（8文字以上）</label><input id="ob-pass" type="password" placeholder="パスワードを設定"></div>
+    <div class="ob-field"><label>会社名</label><input id="ob-company" type="text" placeholder="例：株式会社Eチーム"></div>
+    <div id="ob-err" style="display:none;color:#DC2626;font-size:13px;padding:8px 12px;background:#FEE2E2;border-radius:6px;"></div>`},
   {lbl:'ステップ 2 / 3',title:'使いたい機能を選んでください',html:`
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">必要な機能を選んでください（複数選択可）</p>
     <div class="ob-grid">
@@ -2166,7 +2210,26 @@ function renderOB(){
     : '次へ<i data-lucide="arrow-right"></i>';
   lucide.createIcons();
 }
-function obNext(){if(obStep<3){obStep++;renderOB();}else{showPage('builder');}}
+async function obNext(){
+  if(obStep===1){
+    const email=(document.getElementById('ob-email')||{}).value||'';
+    const pass=(document.getElementById('ob-pass')||{}).value||'';
+    const errEl=document.getElementById('ob-err');
+    if(!email||!pass){if(errEl){errEl.style.display='block';errEl.textContent='メールアドレスとパスワードを入力してください';}return;}
+    if(pass.length<8){if(errEl){errEl.style.display='block';errEl.textContent='パスワードは8文字以上にしてください';}return;}
+    const btn=document.getElementById('ob-next');
+    if(btn){btn.disabled=true;btn.textContent='作成中...';}
+    const {data,error}=await sb.auth.signUp({email,password:pass});
+    if(btn){btn.disabled=false;btn.innerHTML='次へ<i data-lucide="arrow-right"></i>';lucide.createIcons();}
+    if(error){if(errEl){errEl.style.display='block';errEl.textContent=error.message;}return;}
+    _currentUser=data.user;_userRole='member';
+    obStep++;renderOB();
+  } else if(obStep<3){
+    obStep++;renderOB();
+  } else {
+    showPage('builder');
+  }
+}
 function obBack(){if(obStep>1){obStep--;renderOB();}}
 
 /* ── PRICING TOGGLE ── */
@@ -2184,6 +2247,7 @@ function toggleBilling(el){
 
 /* ── INIT ── */
 lucide.createIcons();
+initAuth();
 </script>
 </body>
 </html>
