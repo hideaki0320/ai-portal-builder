@@ -55,6 +55,61 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 .h-cta:hover{background:var(--primary-h);transform:translateY(-1px);}
 .h-demo{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:13px 26px;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;}
 .h-demo:hover{background:rgba(255,255,255,.16);}
+/* hero product mockup */
+.hero-mockup-wrap{width:100%;max-width:960px;margin:52px auto 0;padding:0 24px;}
+.hero-browser{background:#1e2130;border-radius:12px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.3);}
+.hero-browser-bar{background:#161824;height:38px;display:flex;align-items:center;padding:0 16px;gap:8px;}
+.hero-browser-dot{width:11px;height:11px;border-radius:50%;}
+.hero-browser-url{flex:1;background:rgba(255,255,255,.07);border-radius:5px;height:22px;margin:0 12px;display:flex;align-items:center;padding:0 10px;}
+.hero-browser-url-text{font-size:11px;color:rgba(255,255,255,.35);font-family:monospace;}
+.hero-builder-top{background:#fff;height:42px;display:flex;align-items:center;padding:0 14px;gap:10px;border-bottom:1px solid #E5E7EB;}
+.hero-builder-appname{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#111827;padding:4px 8px;border-radius:5px;background:#F3F4F6;}
+.hero-builder-appname-icon{width:20px;height:20px;background:#4F46E5;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.hero-builder-appname-icon svg{width:11px;height:11px;}
+.hero-builder-tabs{display:flex;gap:1px;margin-left:6px;}
+.hero-builder-tab{padding:4px 11px;font-size:11px;font-weight:500;border-radius:5px;color:#6B7280;}
+.hero-builder-tab.active{background:#EEF2FF;color:#4F46E5;font-weight:600;}
+.hero-builder-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.hero-builder-device{display:flex;background:#F3F4F6;border-radius:5px;padding:2px;gap:1px;}
+.hero-builder-dev-btn{width:24px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;}
+.hero-builder-dev-btn svg{width:12px;height:12px;color:#9CA3AF;}
+.hero-builder-dev-btn.active{background:white;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.hero-builder-dev-btn.active svg{color:#111827;}
+.hero-builder-publish{background:#111827;color:white;font-size:10px;font-weight:600;padding:4px 10px;border-radius:5px;}
+.hero-builder-body{display:flex;height:420px;}
+.hero-builder-left{width:180px;background:#fff;border-right:1px solid #E5E7EB;padding:10px 7px;flex-shrink:0;}
+.hero-builder-label{font-size:9px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.08em;padding:4px 7px 8px;}
+.hero-builder-nav{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;font-size:11px;color:#6B7280;margin-bottom:1px;}
+.hero-builder-nav svg{width:12px;height:12px;flex-shrink:0;}
+.hero-builder-nav.active{background:#EEF2FF;color:#4F46E5;font-weight:600;}
+.hero-builder-center{flex:1;background:#EAECF0;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow:hidden;}
+.hero-portal-frame{background:white;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);width:100%;overflow:hidden;}
+.hero-portal-bar{background:#fff;height:40px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #E5E7EB;gap:10px;}
+.hero-portal-logo{width:22px;height:22px;background:#4F46E5;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hero-portal-logo svg{width:11px;height:11px;}
+.hero-portal-company{font-size:11px;font-weight:700;color:#111827;}
+.hero-portal-body{display:flex;height:380px;}
+.hero-portal-side{width:140px;background:#fff;border-right:1px solid #E5E7EB;padding:8px 6px;flex-shrink:0;}
+.hero-portal-nav-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;font-size:10px;color:#6B7280;margin-bottom:1px;}
+.hero-portal-nav-item svg{width:11px;height:11px;flex-shrink:0;}
+.hero-portal-nav-item.active{background:#EEF2FF;color:#4F46E5;font-weight:600;}
+.hero-portal-content{flex:1;background:#F9FAFB;padding:16px;overflow:hidden;}
+.hero-portal-title{font-size:14px;font-weight:800;color:#111827;margin-bottom:4px;}
+.hero-portal-sub{font-size:10px;color:#9CA3AF;margin-bottom:14px;}
+.hero-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.hero-stat{background:white;border:1px solid #E5E7EB;border-radius:7px;padding:10px 12px;}
+.hero-stat-num{font-size:18px;font-weight:800;color:#111827;line-height:1;}
+.hero-stat-lbl{font-size:9px;color:#9CA3AF;margin-top:3px;}
+.hero-content-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.hero-news-card{background:white;border:1px solid #E5E7EB;border-radius:6px;overflow:hidden;display:flex;margin-bottom:7px;}
+.hero-news-thumb{width:50px;height:42px;object-fit:cover;flex-shrink:0;}
+.hero-news-body{padding:6px 8px;}
+.hero-news-cat{font-size:8px;font-weight:700;color:#4F46E5;text-transform:uppercase;}
+.hero-news-title{font-size:10px;font-weight:600;color:#111827;line-height:1.3;}
+.hero-proj-card{background:white;border:1px solid #E5E7EB;border-radius:6px;padding:10px;margin-bottom:7px;}
+.hero-proj-name{font-size:10px;font-weight:600;color:#111827;margin-bottom:4px;}
+.hero-proj-bar{height:3px;background:#E5E7EB;border-radius:2px;overflow:hidden;}
+.hero-proj-fill{height:100%;border-radius:2px;background:#4F46E5;}
 .features{background:white;padding:80px 40px;}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1100px;margin:0 auto;}
 .feat-card{padding:28px;border:1px solid var(--border);border-radius:var(--r);transition:box-shadow .15s;}
@@ -500,6 +555,88 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
       <div class="h-btns">
         <button class="h-cta" onclick="showPage('templates')"><i data-lucide="arrow-right"></i>テンプレートを選ぶ</button>
         <button class="h-demo" onclick="showPage('builder')"><i data-lucide="monitor"></i>デモを見る</button>
+      </div>
+    </div>
+    <!-- Product mockup -->
+    <div class="hero-mockup-wrap">
+      <div class="hero-browser">
+        <div class="hero-browser-bar">
+          <div class="hero-browser-dot" style="background:#FF5F57;"></div>
+          <div class="hero-browser-dot" style="background:#FFBD2E;"></div>
+          <div class="hero-browser-dot" style="background:#28C840;"></div>
+          <div class="hero-browser-url"><span class="hero-browser-url-text">app.ai-portal-builder.jp/builder</span></div>
+        </div>
+        <div class="hero-builder-top">
+          <div class="hero-builder-appname">
+            <div class="hero-builder-appname-icon"><i data-lucide="building-2" style="width:11px;height:11px;color:white;"></i></div>
+            Eチーム株式会社
+          </div>
+          <div class="hero-builder-tabs">
+            <div class="hero-builder-tab active">Interface</div>
+            <div class="hero-builder-tab">Data</div>
+            <div class="hero-builder-tab">Users</div>
+            <div class="hero-builder-tab">Workflows</div>
+          </div>
+          <div class="hero-builder-right">
+            <div class="hero-builder-device">
+              <div class="hero-builder-dev-btn active"><i data-lucide="monitor" style="width:12px;height:12px;"></i></div>
+              <div class="hero-builder-dev-btn"><i data-lucide="tablet" style="width:12px;height:12px;"></i></div>
+              <div class="hero-builder-dev-btn"><i data-lucide="smartphone" style="width:12px;height:12px;"></i></div>
+            </div>
+            <div class="hero-builder-publish">公開する</div>
+          </div>
+        </div>
+        <div class="hero-builder-body">
+          <div class="hero-builder-left">
+            <div class="hero-builder-label">ページ</div>
+            <div class="hero-builder-nav active"><i data-lucide="home"></i>ダッシュボード</div>
+            <div class="hero-builder-nav"><i data-lucide="layers"></i>プロジェクト</div>
+            <div class="hero-builder-nav"><i data-lucide="folder"></i>ドキュメント</div>
+            <div class="hero-builder-nav"><i data-lucide="users"></i>メンバー</div>
+            <div class="hero-builder-nav"><i data-lucide="bell"></i>お知らせ</div>
+            <div class="hero-builder-nav"><i data-lucide="help-circle"></i>FAQ</div>
+          </div>
+          <div class="hero-builder-center">
+            <div class="hero-portal-frame">
+              <div class="hero-portal-bar">
+                <div class="hero-portal-logo"><i data-lucide="building-2" style="width:11px;height:11px;color:white;"></i></div>
+                <span class="hero-portal-company">Eチーム株式会社 — 社内ポータル</span>
+              </div>
+              <div class="hero-portal-body">
+                <div class="hero-portal-side">
+                  <div class="hero-portal-nav-item active"><i data-lucide="home"></i>ホーム</div>
+                  <div class="hero-portal-nav-item"><i data-lucide="layers"></i>プロジェクト</div>
+                  <div class="hero-portal-nav-item"><i data-lucide="folder"></i>ドキュメント</div>
+                  <div class="hero-portal-nav-item"><i data-lucide="users"></i>メンバー</div>
+                  <div class="hero-portal-nav-item"><i data-lucide="bell"></i>お知らせ</div>
+                </div>
+                <div class="hero-portal-content">
+                  <div class="hero-portal-title">おはようございます、山田さん</div>
+                  <div class="hero-portal-sub">2026年4月1日（水）— 今日も一日よろしくお願いします</div>
+                  <div class="hero-stat-row">
+                    <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-lbl">未読お知らせ</div></div>
+                    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">進行中PJ</div></div>
+                    <div class="hero-stat"><div class="hero-stat-num">24</div><div class="hero-stat-lbl">メンバー数</div></div>
+                    <div class="hero-stat"><div class="hero-stat-num">86</div><div class="hero-stat-lbl">社内資料</div></div>
+                  </div>
+                  <div class="hero-content-row">
+                    <div>
+                      <div style="font-size:10px;font-weight:700;color:#111827;margin-bottom:7px;">最新のお知らせ</div>
+                      <div class="hero-news-card"><img class="hero-news-thumb" src="https://picsum.photos/seed/n1/100/84"><div class="hero-news-body"><div class="hero-news-cat">重要</div><div class="hero-news-title">2026年度夏季休暇のご案内</div></div></div>
+                      <div class="hero-news-card"><img class="hero-news-thumb" src="https://picsum.photos/seed/n2/100/84"><div class="hero-news-body"><div class="hero-news-cat">お知らせ</div><div class="hero-news-title">システムメンテナンスのお知らせ</div></div></div>
+                    </div>
+                    <div>
+                      <div style="font-size:10px;font-weight:700;color:#111827;margin-bottom:7px;">進行中プロジェクト</div>
+                      <div class="hero-proj-card"><div class="hero-proj-name">社内ポータルリニューアル</div><div class="hero-proj-bar"><div class="hero-proj-fill" style="width:68%;"></div></div></div>
+                      <div class="hero-proj-card"><div class="hero-proj-name">ECサイト構築</div><div class="hero-proj-bar"><div class="hero-proj-fill" style="width:32%;"></div></div></div>
+                      <div class="hero-proj-card"><div class="hero-proj-name">営業管理ツール</div><div class="hero-proj-bar"><div class="hero-proj-fill" style="width:90%;"></div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
