@@ -377,6 +377,24 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 .ss-add-row{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:13px;color:var(--muted);cursor:pointer;border-top:1px solid var(--border-lt);}
 .ss-add-row:hover{color:var(--primary);background:var(--primary-lt);}
 .ss-add-row svg{width:14px;height:14px;}
+/* ── CRUD MODAL ── */
+.crud-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center;}
+.crud-modal{background:white;border-radius:12px;width:520px;max-width:90vw;max-height:82vh;overflow-y:auto;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.crud-modal h3{font-size:16px;font-weight:700;color:var(--h1);margin-bottom:20px;}
+.crud-field{margin-bottom:14px;}
+.crud-field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.crud-field input,.crud-field select,.crud-field textarea{width:100%;border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--h1);}
+.crud-field input:focus,.crud-field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+.crud-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-lt);}
+.crud-btn-cancel{padding:8px 18px;border:1px solid var(--border);border-radius:var(--rsm);background:white;cursor:pointer;font-size:14px;font-family:inherit;color:var(--h2);}
+.crud-btn-save{padding:8px 20px;border:none;border-radius:var(--rsm);background:var(--primary);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;}
+.crud-btn-save:hover{background:var(--primary-h);}
+.row-actions{display:flex;gap:2px;align-items:center;opacity:0;transition:opacity .15s;}
+.spreadsheet tbody tr:hover .row-actions{opacity:1;}
+.row-act-btn{background:none;border:none;padding:4px 5px;border-radius:4px;cursor:pointer;color:var(--muted);display:flex;align-items:center;}
+.row-act-btn:hover{background:var(--border);color:var(--h1);}
+.row-act-btn.del:hover{color:#DC2626;background:#FEE2E2;}
+.row-act-btn svg{width:13px;height:13px;}
 
 /* ── PORTAL SIDEBAR (in builder) ── */
 .sb-brand{padding:14px 12px;border-bottom:1px solid var(--border-lt);}
@@ -1374,7 +1392,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
           <button class="data-toolbar-btn"><i data-lucide="arrow-up-down"></i>並び替え</button>
           <button class="data-toolbar-btn"><i data-lucide="eye"></i>表示項目</button>
           <span class="data-count" id="data-count">7件</span>
-          <button class="data-toolbar-btn" style="margin-left:8px;background:var(--h1);color:white;border-color:var(--h1);"><i data-lucide="plus"></i>レコード追加</button>
+          <button class="data-toolbar-btn" onclick="openAddModal(_currentDataTab)" style="margin-left:8px;background:var(--h1);color:white;border-color:var(--h1);"><i data-lucide="plus"></i>レコード追加</button>
         </div>
         <div class="spreadsheet" id="spreadsheet-area"></div>
       </div>
@@ -1458,23 +1476,23 @@ async function loadSupabaseData() {
   ]);
   if (membersRes.data && membersRes.data.length) {
     MEMBERS.length = 0;
-    membersRes.data.forEach(r => MEMBERS.push({name:r.name,dept:r.dept,role:r.role,init:r.init,grad:r.grad,photo:r.photo}));
+    membersRes.data.forEach(r => MEMBERS.push({_id:r.id,name:r.name,dept:r.dept,role:r.role,init:r.init,grad:r.grad,photo:r.photo}));
   }
   if (projectsRes.data && projectsRes.data.length) {
     PROJECTS.length = 0;
-    projectsRes.data.forEach(r => PROJECTS.push({name:r.name,client:r.client,status:r.status,pct:r.pct,end:r.end_date,imgs:[33,40,52],img:'proj1'}));
+    projectsRes.data.forEach(r => PROJECTS.push({_id:r.id,name:r.name,client:r.client,status:r.status,pct:r.pct,end:r.end_date,end_date:r.end_date,imgs:[33,40,52],img:'proj1'}));
   }
   if (newsRes.data && newsRes.data.length) {
     NEWS_DATA.length = 0;
-    newsRes.data.forEach(r => NEWS_DATA.push({cat:r.cat,title:r.title,date:r.date,author:r.author,img:'n1'}));
+    newsRes.data.forEach(r => NEWS_DATA.push({_id:r.id,cat:r.cat,title:r.title,date:r.date,author:r.author,img:'n1'}));
   }
   if (docsRes.data && docsRes.data.length) {
     DOCS.length = 0;
-    docsRes.data.forEach(r => DOCS.push({name:r.name,type:r.type,folder:r.folder,size:r.size,updated:r.updated}));
+    docsRes.data.forEach(r => DOCS.push({_id:r.id,name:r.name,type:r.type,folder:r.folder,size:r.size,updated:r.updated}));
   }
   if (faqRes.data && faqRes.data.length) {
     FAQ_DATA.length = 0;
-    faqRes.data.forEach(r => FAQ_DATA.push({q:r.question,a:r.answer}));
+    faqRes.data.forEach(r => FAQ_DATA.push({_id:r.id,q:r.question,a:r.answer}));
   }
 }
 
@@ -1557,7 +1575,9 @@ function bldNav(view, el){
 }
 
 /* ── DATA TAB ── */
+let _currentDataTab = 'users';
 function dataTab(tab, el){
+  _currentDataTab = tab;
   document.querySelectorAll('.data-tab').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
   renderSpreadsheet(tab);
@@ -1899,53 +1919,55 @@ function renderSpreadsheet(tab){
         <td class="col-num">${i+1}</td>
         <td class="ss-name">${m.name}</td>
         <td style="color:var(--muted);">${m.name.toLowerCase().replace(' ','.')}@eteam.co.jp</td>
-        <td>${m.dept}</td>
-        <td><span class="ss-badge employee">${m.role}</span></td>
-        <td><img class="ss-photo" src="${m.photo}"></td>
-        <td><span class="ss-skill s1">営業</span><span class="ss-skill s2">マーケ</span></td>
+        <td>${m.dept||''}</td>
+        <td><span class="ss-badge employee">${m.role||''}</span></td>
+        <td><img class="ss-photo" src="${m.photo||''}"></td>
+        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('users',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('users',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
       </tr>`).join('')}</tbody>
     </table>
-    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+    <div class="ss-add-row" onclick="openAddModal('users')"><i data-lucide="plus"></i>レコードを追加</div>`;
   } else if(tab==='projects'){
     if(cnt) cnt.textContent=PROJECTS.length+'件';
     area.innerHTML=`<table>
       <thead><tr>
         <th class="col-chk"><input type="checkbox"></th>
         <th class="col-num">#</th>
-        <th>プロジェクト名</th><th>クライアント</th><th>ステータス</th><th>進捗</th><th>期限</th>
+        <th>プロジェクト名</th><th>クライアント</th><th>ステータス</th><th>進捗</th><th>期限</th><th></th>
       </tr></thead>
       <tbody>${PROJECTS.map((p,i)=>`<tr>
         <td class="col-chk"><input type="checkbox"></td>
         <td class="col-num">${i+1}</td>
         <td class="ss-name">${p.name}</td>
-        <td style="color:var(--muted);">${p.client}</td>
-        <td><span class="ss-badge ${p.status}">${STATUS_LABELS[p.status]}</span></td>
+        <td style="color:var(--muted);">${p.client||''}</td>
+        <td><span class="ss-badge ${p.status}">${STATUS_LABELS[p.status]||p.status}</span></td>
         <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:5px;background:var(--border-lt);border-radius:2px;overflow:hidden;"><div style="width:${p.pct}%;height:100%;background:var(--primary);border-radius:2px;"></div></div><span style="font-size:11px;font-weight:600;color:var(--primary);">${p.pct}%</span></div></td>
-        <td style="color:var(--muted);">${p.end}</td>
+        <td style="color:var(--muted);">${p.end||''}</td>
+        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('projects',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('projects',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
       </tr>`).join('')}</tbody>
     </table>
-    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+    <div class="ss-add-row" onclick="openAddModal('projects')"><i data-lucide="plus"></i>レコードを追加</div>`;
   } else if(tab==='files'){
     if(cnt) cnt.textContent=DOCS.length+'件';
     area.innerHTML=`<table>
       <thead><tr>
         <th class="col-chk"><input type="checkbox"></th>
         <th class="col-num">#</th>
-        <th>ファイル名</th><th>種類</th><th>フォルダ</th><th>サイズ</th><th>更新日</th>
+        <th>ファイル名</th><th>種類</th><th>フォルダ</th><th>サイズ</th><th>更新日</th><th></th>
       </tr></thead>
       <tbody>${DOCS.map((d,i)=>{const c=typeColors(d.type);return`<tr>
         <td class="col-chk"><input type="checkbox"></td>
         <td class="col-num">${i+1}</td>
         <td class="ss-name">${d.name}</td>
-        <td><span style="display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${c.bg};color:${c.color};">${d.type.toUpperCase()}</span></td>
-        <td style="color:var(--muted);">${d.folder}</td>
-        <td style="color:var(--muted);">${d.size}</td>
-        <td style="color:var(--muted);">2026/${d.updated}</td>
+        <td><span style="display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${c.bg};color:${c.color};">${(d.type||'').toUpperCase()}</span></td>
+        <td style="color:var(--muted);">${d.folder||''}</td>
+        <td style="color:var(--muted);">${d.size||''}</td>
+        <td style="color:var(--muted);">${d.updated||''}</td>
+        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('files',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('files',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
       </tr>`}).join('')}</tbody>
     </table>
-    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+    <div class="ss-add-row" onclick="openAddModal('files')"><i data-lucide="plus"></i>レコードを追加</div>`;
   } else if(tab==='tasks'){
-    if(cnt) cnt.textContent='8件';
+    if(cnt) cnt.textContent='4件';
     const tasks=[
       {name:'トップページデザイン',proj:'社内ポータルリニューアル',user:'佐藤 恵美',due:'4/10',status:'progress'},
       {name:'API設計',proj:'ECサイト構築',user:'田中 健一',due:'4/15',status:'active'},
@@ -1975,20 +1997,127 @@ function renderSpreadsheet(tab){
       <thead><tr>
         <th class="col-chk"><input type="checkbox"></th>
         <th class="col-num">#</th>
-        <th>タイトル</th><th>カテゴリ</th><th>投稿者</th><th>公開日</th>
+        <th>タイトル</th><th>カテゴリ</th><th>投稿者</th><th>公開日</th><th></th>
       </tr></thead>
       <tbody>${NEWS_DATA.map((n,i)=>`<tr>
         <td class="col-chk"><input type="checkbox"></td>
         <td class="col-num">${i+1}</td>
         <td class="ss-name">${n.title}</td>
         <td><span class="ss-badge ${n.cat==='重要'?'admin':'employee'}">${n.cat}</span></td>
-        <td style="color:var(--muted);">${n.author}</td>
-        <td style="color:var(--muted);">${n.date}</td>
+        <td style="color:var(--muted);">${n.author||''}</td>
+        <td style="color:var(--muted);">${n.date||''}</td>
+        <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('news',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('news',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
       </tr>`).join('')}</tbody>
     </table>
-    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+    <div class="ss-add-row" onclick="openAddModal('news')"><i data-lucide="plus"></i>レコードを追加</div>`;
   }
   lucide.createIcons();
+}
+
+/* ── CRUD ── */
+const CRUD_SCHEMAS = {
+  users:    { table:'members',  label:'メンバー',     fields:[{k:'name',l:'名前',t:'text',req:true},{k:'dept',l:'部署',t:'text'},{k:'role',l:'役職',t:'text'},{k:'init',l:'イニシャル（1文字）',t:'text'},{k:'photo',l:'写真URL',t:'text'}]},
+  projects: { table:'projects', label:'プロジェクト', fields:[{k:'name',l:'プロジェクト名',t:'text',req:true},{k:'client',l:'クライアント',t:'text'},{k:'status',l:'ステータス',t:'select',opts:['active','progress','review','done']},{k:'pct',l:'進捗（%）',t:'number'},{k:'end_date',l:'期限（例：2026/12/31）',t:'text'}]},
+  news:     { table:'news',     label:'お知らせ',     fields:[{k:'title',l:'タイトル',t:'text',req:true},{k:'cat',l:'カテゴリ',t:'select',opts:['重要','お知らせ','イベント']},{k:'author',l:'投稿者',t:'text'},{k:'date',l:'日付（例：2026/4/1）',t:'text'}]},
+  files:    { table:'docs',     label:'ドキュメント', fields:[{k:'name',l:'ファイル名',t:'text',req:true},{k:'type',l:'種類',t:'select',opts:['pdf','xlsx','docx','pptx']},{k:'folder',l:'フォルダ',t:'text'},{k:'size',l:'サイズ（例：1.2MB）',t:'text'},{k:'updated',l:'更新日（例：4/1）',t:'text'}]},
+};
+const DATA_FOR_TAB = {
+  users: ()=>MEMBERS,
+  projects: ()=>PROJECTS,
+  news: ()=>NEWS_DATA,
+  files: ()=>DOCS,
+};
+let _crudTab='', _crudIdx=null;
+
+function openAddModal(tab){
+  if(!CRUD_SCHEMAS[tab]) return;
+  _crudTab=tab; _crudIdx=null;
+  _showCrudModal(tab, null);
+}
+function openEditModal(tab, idx){
+  if(!CRUD_SCHEMAS[tab]) return;
+  _crudTab=tab; _crudIdx=idx;
+  const arr=DATA_FOR_TAB[tab]();
+  _showCrudModal(tab, arr[idx]);
+}
+function _showCrudModal(tab, rec){
+  const s=CRUD_SCHEMAS[tab];
+  const isEdit=rec!==null;
+  const fields=s.fields.map(f=>{
+    const val=rec?(rec[f.k]!==undefined?rec[f.k]:''):'';
+    if(f.t==='select'){
+      const opts=f.opts.map(o=>`<option value="${o}"${val==o?' selected':''}>${o==='active'?'開始':o==='progress'?'進行中':o==='review'?'レビュー中':o==='done'?'完了':o}</option>`).join('');
+      return `<div class="crud-field"><label>${f.l}</label><select name="${f.k}">${opts}</select></div>`;
+    }
+    return `<div class="crud-field"><label>${f.l}${f.req?' <span style="color:#EF4444">*</span>':''}</label><input name="${f.k}" type="${f.t||'text'}" value="${String(val).replace(/"/g,'&quot;')}" style="width:100%;"></div>`;
+  }).join('');
+  const el=document.createElement('div');
+  el.id='_crud_wrap';
+  el.innerHTML=`<div class="crud-overlay" id="_crud_ov">
+    <div class="crud-modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h3 style="margin:0;">${isEdit?'編集':'新規追加'} — ${s.label}</h3>
+        <button onclick="closeCrudModal()" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+      </div>
+      <form id="_crud_form">${fields}</form>
+      <div class="crud-actions">
+        <button class="crud-btn-cancel" onclick="closeCrudModal()">キャンセル</button>
+        <button class="crud-btn-save" onclick="saveCrudRecord()">${isEdit?'更新':'保存'}</button>
+      </div>
+    </div>
+  </div>`;
+  const old=document.getElementById('_crud_wrap');
+  if(old) old.remove();
+  document.body.appendChild(el);
+  document.getElementById('_crud_ov').addEventListener('click',e=>{if(e.target.id==='_crud_ov')closeCrudModal();});
+  lucide.createIcons();
+}
+function closeCrudModal(){
+  const el=document.getElementById('_crud_wrap');
+  if(el) el.remove();
+}
+async function saveCrudRecord(){
+  const s=CRUD_SCHEMAS[_crudTab];
+  if(!s) return;
+  const form=document.getElementById('_crud_form');
+  const data={};
+  s.fields.forEach(f=>{
+    const el=form.querySelector('[name="'+f.k+'"]');
+    if(el) data[f.k]=f.t==='number'?Number(el.value):el.value;
+  });
+  const saveBtn=form.closest('.crud-modal').querySelector('.crud-btn-save');
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='保存中...';}
+  let error;
+  if(_crudIdx!==null){
+    const arr=DATA_FOR_TAB[_crudTab]();
+    const id=arr[_crudIdx]._id;
+    ({error}=await supabase.from(s.table).update(data).eq('id',id));
+  } else {
+    ({error}=await supabase.from(s.table).insert(data));
+  }
+  if(error){alert('エラー: '+error.message);if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='保存';}return;}
+  closeCrudModal();
+  await loadSupabaseData();
+  renderSpreadsheet(_crudTab);
+  if(_crudTab==='users') renderMembers();
+  if(_crudTab==='projects') renderProjects();
+  if(_crudTab==='news') renderNews();
+  if(_crudTab==='files') renderDocuments();
+}
+async function deleteCrudRecord(tab, idx){
+  if(!confirm('このレコードを削除しますか？')) return;
+  const s=CRUD_SCHEMAS[tab];
+  if(!s) return;
+  const arr=DATA_FOR_TAB[tab]();
+  const id=arr[idx]._id;
+  const {error}=await supabase.from(s.table).delete().eq('id',id);
+  if(error){alert('エラー: '+error.message);return;}
+  await loadSupabaseData();
+  renderSpreadsheet(tab);
+  if(tab==='users') renderMembers();
+  if(tab==='projects') renderProjects();
+  if(tab==='news') renderNews();
+  if(tab==='files') renderDocuments();
 }
 
 /* ── ONBOARDING ── */
