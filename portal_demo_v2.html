@@ -1624,10 +1624,15 @@ async function initAuth(){
   }
   if(!session && !_navigated){
     const isOAuth=window.location.search.includes('code=')||window.location.hash.includes('access_token');
-    if(!isOAuth){ _navigated=true; showPage('landing'); }
-    else {
-      // フォールバック: 6秒経っても遷移しなければLPへ
-      setTimeout(()=>{ if(!_navigated){ _navigated=true; showPage('landing'); } },6000);
+    const isAppPath=window.location.pathname==='/app';
+    if(!isOAuth){
+      _navigated=true;
+      showPage(isAppPath ? 'login' : 'landing');
+    } else {
+      // OAuthコールバック中 - フォールバック6秒
+      setTimeout(()=>{
+        if(!_navigated){ _navigated=true; showPage(isAppPath ? 'login' : 'landing'); }
+      },6000);
     }
   }
 }
