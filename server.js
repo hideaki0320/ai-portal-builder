@@ -17,6 +17,11 @@ app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'portal_demo_v2.html'));
 });
 
+// /portal → メンバー向けスタンドアロンポータル（スケール変換なし、完全操作可能）
+app.get('/portal', (req, res) => {
+  res.sendFile(path.join(__dirname, 'portal.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`AI社内ポータルBuilder running on port ${PORT}`);
 });

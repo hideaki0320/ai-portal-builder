@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社内ポータル — IntraCanvas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --primary:#4F46E5; --primary-h:#4338CA; --primary-lt:#EEF2FF;
+  --h1:#111827; --h2:#374151; --muted:#6B7280; --faint:#9CA3AF;
+  --border:#E5E7EB; --border-lt:#F3F4F6; --bg:#F9FAFB; --card:#FFFFFF;
+  --r:10px; --rsm:7px; --sw:232px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Inter','Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--h2);-webkit-font-smoothing:antialiased;line-height:1.6;}
+a{text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── LOADING ── */
+#app-loading{position:fixed;inset:0;background:#f8fafc;display:flex;align-items:center;justify-content:center;z-index:9999;}
+#app-loading.hidden{display:none;}
+
+/* ── PORTAL SHELL ── */
+#portal-shell{display:none;height:100vh;overflow:hidden;}
+#portal-shell.visible{display:flex;}
+
+/* ── SIDEBAR ── */
+.portal-sidebar{width:var(--sw);min-width:var(--sw);background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sb-brand{padding:14px 12px;border-bottom:1px solid var(--border-lt);}
+.sb-brand-inner{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--rsm);}
+.sb-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white;}
+.sb-icon svg{width:14px;height:14px;stroke-width:2;}
+.sb-company{font-size:13px;font-weight:700;color:var(--h1);}
+.sb-tagline{font-size:10px;color:var(--muted);}
+.sb-nav{padding:8px 6px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .1s;margin-bottom:1px;position:relative;}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;}
+.nav-item:hover{background:var(--border-lt);color:var(--h2);}
+.nav-item.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.nav-pill{margin-left:auto;background:#EF4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px;}
+.nav-sep{height:1px;background:var(--border-lt);margin:6px 0;}
+.sb-footer{padding:12px;border-top:1px solid var(--border-lt);margin-top:auto;}
+.sb-user{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:var(--rsm);position:relative;}
+.sb-ava{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;background:var(--primary);flex-shrink:0;}
+.sb-uname{font-size:12px;font-weight:600;color:var(--h1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-udept{font-size:10px;color:var(--muted);}
+.sb-logout{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--muted);}
+.sb-logout:hover{background:#FEE2E2;color:#DC2626;}
+.sb-logout svg{width:15px;height:15px;}
+
+/* ── ADMIN BADGE ── */
+.admin-bar{background:#EDE9FE;border-bottom:1px solid #C4B5FD;padding:6px 16px;display:none;align-items:center;justify-content:space-between;font-size:12px;color:#6D28D9;font-weight:500;flex-shrink:0;}
+.admin-bar.visible{display:flex;}
+.admin-bar a{color:var(--primary);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.admin-bar a svg{width:13px;height:13px;}
+.admin-bar a:hover{text-decoration:underline;}
+
+/* ── CONTENT ── */
+.portal-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg);}
+.portal-topbar{background:white;border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10;}
+.portal-topbar-title{font-size:15px;font-weight:700;color:var(--h1);}
+.topbar-right{display:flex;align-items:center;gap:6px;}
+.tb-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);position:relative;}
+.tb-icon svg{width:17px;height:17px;}
+.tb-icon:hover{background:var(--border-lt);}
+.tb-user{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:8px;cursor:pointer;}
+.tb-user:hover{background:var(--border-lt);}
+.tb-uname{font-size:13px;font-weight:500;color:var(--h2);}
+.tb-user svg{width:14px;height:14px;color:var(--faint);}
+.portal-main{padding:28px;flex:1;}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;animation:fadeUp .18s ease;}
+.pg-title{font-size:22px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:4px;}
+.pg-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.divider{height:1px;background:var(--border-lt);margin:16px 0 20px;}
+
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.stat-num{font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.5px;line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:5px;font-weight:500;}
+
+/* Tabs */
+.tab-nav{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab-btn{padding:8px 16px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.tab-btn.is-on{color:var(--h1);border-bottom-color:var(--h1);font-weight:600;}
+
+/* Search */
+.search-row{display:flex;align-items:center;gap:8px;background:#F3F4F6;border-radius:var(--rsm);padding:8px 13px;margin-bottom:18px;}
+.search-row svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+.search-row input{border:none;background:none;outline:none;font-size:13px;color:var(--h1);width:100%;font-family:inherit;}
+.search-row input::placeholder{color:var(--faint);}
+
+/* News */
+.news-list{display:flex;flex-direction:column;gap:12px;}
+.news-card{background:white;border:1px solid var(--border);border-radius:var(--r);display:flex;overflow:hidden;transition:box-shadow .12s;}
+.news-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.news-thumb{width:90px;height:75px;object-fit:cover;flex-shrink:0;}
+.news-body{padding:12px 16px;flex:1;}
+.news-cat{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.news-title{font-size:13px;font-weight:600;color:var(--h1);line-height:1.45;margin-bottom:4px;}
+.news-meta{font-size:11px;color:var(--faint);}
+
+/* Members */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.member-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;transition:box-shadow .12s;}
+.member-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.m-photo-wrap{position:relative;width:56px;height:56px;margin:0 auto 12px;}
+.m-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;}
+.m-ava{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;display:none;}
+.m-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:3px;}
+.m-dept{font-size:12px;color:var(--muted);}
+.m-role-badge{display:inline-flex;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-top:8px;}
+.m-role-badge.dept{background:var(--primary-lt);color:var(--primary);}
+
+/* Projects */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.proj-card{background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:box-shadow .15s;cursor:pointer;}
+.proj-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);}
+.proj-thumb{height:110px;object-fit:cover;width:100%;}
+.proj-body{padding:16px;}
+.proj-status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-bottom:8px;}
+.proj-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.proj-status.progress{background:#DBEAFE;color:#1D4ED8;}
+.proj-status.active{background:#D1FAE5;color:#065F46;}
+.proj-status.review{background:#FEF3C7;color:#92400E;}
+.proj-status.done{background:#F3F4F6;color:var(--muted);}
+.proj-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:3px;}
+.proj-client{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.proj-progress-bar{height:4px;background:var(--border-lt);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.proj-progress-fill{height:100%;border-radius:2px;background:var(--primary);transition:width .3s;}
+.proj-meta{display:flex;align-items:center;justify-content:space-between;}
+.proj-pct{font-size:11px;font-weight:600;color:var(--primary);}
+.proj-avatars{display:flex;}
+.proj-avatar{width:22px;height:22px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover;}
+.proj-avatar:first-child{margin-left:0;}
+
+/* Project detail */
+.proj-detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;margin-bottom:20px;padding:5px 10px;border-radius:6px;transition:all .12s;}
+.proj-detail-back svg{width:15px;height:15px;}
+.proj-detail-back:hover{background:var(--border-lt);color:var(--h2);}
+.proj-detail-hero{display:flex;gap:24px;margin-bottom:28px;align-items:flex-start;}
+.proj-detail-img{width:160px;height:120px;border-radius:var(--r);object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
+.proj-detail-info{flex:1;}
+.proj-detail-title{font-size:22px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:4px;}
+.proj-detail-client{font-size:14px;color:var(--muted);margin-bottom:10px;}
+.proj-detail-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+.proj-detail-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:24px;background:white;}
+.proj-detail-meta-item{padding:16px 20px;border-right:1px solid var(--border);}
+.proj-detail-meta-item:last-child{border-right:none;}
+.proj-detail-meta-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.proj-detail-meta-value{font-size:14px;font-weight:600;color:var(--h1);}
+.proj-detail-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.proj-detail-tab{display:flex;align-items:center;gap:6px;padding:9px 16px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:nowrap;transition:all .12s;}
+.proj-detail-tab svg{width:14px;height:14px;}
+.proj-detail-tab:hover{color:var(--h1);}
+.proj-detail-tab.active{color:var(--h1);border-bottom-color:var(--h1);font-weight:600;}
+.proj-member-list{display:flex;flex-direction:column;gap:14px;}
+.proj-member-row{display:flex;align-items:center;gap:14px;background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.proj-member-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.proj-member-ava{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0;}
+.proj-member-info{flex:1;}
+.proj-member-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:2px;}
+.proj-member-email{font-size:12px;color:var(--muted);}
+.proj-member-role{display:inline-flex;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+.proj-member-role.lead{background:#EDE9FE;color:#6D28D9;}
+.proj-member-role.member{background:#D1FAE5;color:#065F46;}
+.proj-member-role.freelancer{background:#FEF3C7;color:#92400E;}
+.proj-plan-list{display:flex;flex-direction:column;gap:0;}
+.proj-plan-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border-lt);}
+.proj-plan-item:last-child{border-bottom:none;}
+.proj-plan-num{width:28px;height:28px;border-radius:50%;background:var(--primary-lt);color:var(--primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.proj-plan-name{font-size:13px;font-weight:600;color:var(--h1);flex:1;}
+.proj-plan-date{font-size:12px;color:var(--muted);}
+.proj-milestone-list{display:flex;flex-direction:column;gap:12px;}
+.proj-milestone-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;border:1px solid var(--border);border-radius:var(--r);}
+.proj-milestone-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.proj-milestone-name{font-size:13px;font-weight:600;color:var(--h1);flex:1;}
+.proj-milestone-date{font-size:12px;color:var(--muted);}
+.proj-milestone-status{font-size:11px;font-weight:600;padding:2px 9px;border-radius:100px;}
+
+/* Documents */
+.doc-layout{display:flex;gap:20px;}
+.doc-sidebar{width:180px;flex-shrink:0;}
+.doc-folder{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:6px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .1s;}
+.doc-folder svg{width:14px;height:14px;flex-shrink:0;}
+.doc-folder:hover{background:var(--border-lt);color:var(--h2);}
+.doc-folder.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.doc-folder.active svg{color:var(--primary);}
+.doc-main{flex:1;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px;}
+.doc-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .12s;}
+.doc-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.07);border-color:var(--primary);}
+.doc-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.doc-icon svg{width:20px;height:20px;}
+.doc-name{font-size:13px;font-weight:600;color:var(--h1);margin-bottom:4px;line-height:1.4;}
+.doc-meta{font-size:11px;color:var(--faint);}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:8px;}
+.faq-item{background:white;border:1px solid var(--border);border-radius:var(--r);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--h1);}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.faq-item.open .faq-q svg{transform:rotate(180deg);}
+.faq-a{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.65;display:none;}
+.faq-item.open .faq-a{display:block;}
+
+/* Links */
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.link-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .12s;}
+.link-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);border-color:var(--primary);}
+.link-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.link-icon svg{width:22px;height:22px;}
+.link-name{font-size:13px;font-weight:600;color:var(--h1);}
+.link-url{font-size:11px;color:var(--faint);}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* Responsive */
+@media(max-width:768px){
+  .portal-sidebar{display:none;}
+  .portal-mobile-tabs{display:flex !important;}
+  .portal-topbar{display:none;}
+  .portal-mobile-header{display:flex !important;}
+  .portal-main{padding:14px;}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-num{font-size:22px;}
+  .news-card{flex-direction:column;}
+  .news-thumb{width:100%;height:100px;}
+  .proj-grid{grid-template-columns:1fr;}
+  .member-grid{grid-template-columns:1fr 1fr;}
+  .link-grid{grid-template-columns:1fr 1fr;}
+  .doc-layout{flex-direction:column;}
+  .doc-sidebar{width:100%;}
+  .doc-grid{grid-template-columns:1fr 1fr;}
+  .proj-detail-hero{flex-direction:column;}
+  .proj-detail-img{width:100%;height:140px;}
+  .proj-detail-meta{grid-template-columns:1fr 1fr;}
+}
+
+/* Mobile header/tabs */
+.portal-mobile-header{display:none;background:white;border-bottom:1px solid var(--border);height:52px;align-items:center;padding:0 16px;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10;}
+.portal-mobile-header-title{font-size:15px;font-weight:700;color:var(--h1);}
+.portal-mobile-tabs{display:none;background:white;border-top:1px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:100;}
+.portal-mobile-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;}
+.portal-mobile-tab svg{width:20px;height:20px;}
+.portal-mobile-tab.active{color:var(--primary);}
+@media(max-width:768px){
+  .portal-main{padding-bottom:80px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="app-loading">
+  <div style="text-align:center;">
+    <div style="width:48px;height:48px;border:4px solid #E0E7FF;border-top-color:#4F46E5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 18px;"></div>
+    <div style="font-size:15px;font-weight:600;color:#4F46E5;">読み込み中...</div>
+    <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">しばらくお待ちください</div>
+  </div>
+</div>
+
+<!-- PORTAL SHELL -->
+<div id="portal-shell">
+
+  <!-- Admin bar (admins only) -->
+  <div id="admin-bar" class="admin-bar">
+    <span>管理者モードで閲覧中</span>
+    <a href="/app" id="admin-back-link"><i data-lucide="settings"></i>管理画面へ戻る</a>
+  </div>
+
+  <div style="display:flex;flex:1;overflow:hidden;height:100%;">
+    <!-- SIDEBAR -->
+    <div class="portal-sidebar">
+      <div class="sb-brand">
+        <div class="sb-brand-inner">
+          <div class="sb-icon"><i data-lucide="building-2"></i></div>
+          <div>
+            <div class="sb-company" id="sp-company-name">会社名</div>
+            <div class="sb-tagline">社内ポータル</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sb-nav">
+        <div class="nav-item active" id="spnav-dashboard" onclick="spNav('dashboard',this)"><i data-lucide="home"></i>ホーム</div>
+        <div class="nav-item" id="spnav-projects" onclick="spNav('projects',this)"><i data-lucide="layers"></i>プロジェクト</div>
+        <div class="nav-item" id="spnav-documents" onclick="spNav('documents',this)"><i data-lucide="folder"></i>ドキュメント</div>
+        <div class="nav-item" id="spnav-members" onclick="spNav('members',this)"><i data-lucide="users"></i>メンバー</div>
+        <div class="nav-item" id="spnav-news" onclick="spNav('news',this)"><i data-lucide="bell"></i>お知らせ<span class="nav-pill" id="sp-news-pill">3</span></div>
+        <div class="nav-item" id="spnav-links" onclick="spNav('links',this)"><i data-lucide="link-2"></i>よく使うリンク</div>
+        <div class="nav-item" id="spnav-faq" onclick="spNav('faq',this)"><i data-lucide="help-circle"></i>FAQ</div>
+      </nav>
+      <div class="sb-footer">
+        <div class="sb-user">
+          <div class="sb-ava" id="sp-user-ava">?</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sb-uname" id="sp-user-name">読み込み中...</div>
+            <div class="sb-udept" id="sp-user-role"></div>
+          </div>
+          <div class="sb-logout" onclick="doLogout()" title="ログアウト"><i data-lucide="log-out"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="portal-content">
+      <!-- Mobile header -->
+      <div class="portal-mobile-header">
+        <div class="portal-mobile-header-title" id="sp-mobile-title">ホーム</div>
+        <div style="display:flex;gap:4px;">
+          <div class="tb-icon"><i data-lucide="search"></i></div>
+          <div class="tb-icon" style="position:relative;"><i data-lucide="bell"></i><span style="position:absolute;top:7px;right:7px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span></div>
+        </div>
+      </div>
+
+      <!-- Desktop topbar -->
+      <div class="portal-topbar">
+        <span class="portal-topbar-title" id="sp-portal-title">ホーム</span>
+        <div class="topbar-right">
+          <div class="tb-icon"><i data-lucide="search"></i></div>
+          <div class="tb-icon" style="position:relative;"><i data-lucide="bell"></i><span style="position:absolute;top:7px;right:7px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span></div>
+          <div class="tb-user" onclick="doLogout()">
+            <div class="sb-ava" style="width:26px;height:26px;font-size:10px;" id="sp-topbar-ava">?</div>
+            <span class="tb-uname" id="sp-topbar-name">ログイン中</span>
+            <i data-lucide="chevron-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Views -->
+      <div class="portal-main">
+
+        <!-- DASHBOARD -->
+        <div class="view active" id="spview-dashboard">
+          <div id="sp-dashboard-content"></div>
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="view" id="spview-projects">
+          <div class="pg-title">プロジェクト</div>
+          <div class="pg-sub">進行中・完了したプロジェクトを管理</div>
+          <div class="divider"></div>
+          <div class="tab-nav">
+            <button class="tab-btn is-on">すべて (4)</button>
+            <button class="tab-btn">進行中 (3)</button>
+            <button class="tab-btn">レビュー中 (1)</button>
+            <button class="tab-btn">完了 (1)</button>
+          </div>
+          <div class="proj-grid" id="sp-proj-grid"></div>
+        </div>
+
+        <!-- PROJECT DETAIL -->
+        <div class="view" id="spview-project-detail">
+          <div class="proj-detail-back" onclick="spNav('projects',document.getElementById('spnav-projects'))"><i data-lucide="arrow-left"></i>プロジェクト一覧に戻る</div>
+          <div class="proj-detail-hero">
+            <img class="proj-detail-img" id="sp-pd-img" src="">
+            <div class="proj-detail-info">
+              <div class="proj-detail-title" id="sp-pd-title"></div>
+              <div class="proj-detail-client" id="sp-pd-client"></div>
+              <div id="sp-pd-status" style="margin-bottom:12px;"></div>
+              <div class="proj-detail-desc" id="sp-pd-desc"></div>
+            </div>
+          </div>
+          <div class="proj-detail-meta">
+            <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">START DATE</div><div class="proj-detail-meta-value" id="sp-pd-start"></div></div>
+            <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">END DATE</div><div class="proj-detail-meta-value" id="sp-pd-end"></div></div>
+            <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">PROJECT LEAD</div><div class="proj-detail-meta-value" id="sp-pd-lead"></div></div>
+            <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">CLIENT</div><div class="proj-detail-meta-value" id="sp-pd-client2"></div></div>
+          </div>
+          <div class="proj-detail-tabs">
+            <button class="proj-detail-tab active" onclick="spPdTab('members',this)"><i data-lucide="users"></i>Project Members</button>
+            <button class="proj-detail-tab" onclick="spPdTab('plan',this)"><i data-lucide="list-checks"></i>Project Plan</button>
+            <button class="proj-detail-tab" onclick="spPdTab('milestones',this)"><i data-lucide="flag"></i>Milestones</button>
+            <button class="proj-detail-tab" onclick="spPdTab('files',this)"><i data-lucide="folder"></i>Files</button>
+            <button class="proj-detail-tab" onclick="spPdTab('comments',this)"><i data-lucide="message-circle"></i>Comments</button>
+          </div>
+          <div id="sp-pd-tab-content"></div>
+        </div>
+
+        <!-- DOCUMENTS -->
+        <div class="view" id="spview-documents">
+          <div class="pg-title">ドキュメント</div>
+          <div class="pg-sub">社内資料を検索・閲覧できます</div>
+          <div class="divider"></div>
+          <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="ファイル名・キーワードで検索..."></div>
+          <div class="doc-layout">
+            <div class="doc-sidebar">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:4px 8px 10px;">フォルダ</div>
+              <div class="doc-folder active"><i data-lucide="folder-open"></i>すべて (86)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>経営資料 (12)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>規程・規則 (8)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>営業資料 (24)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>人事資料 (15)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>会議資料 (18)</div>
+              <div class="doc-folder"><i data-lucide="folder"></i>総務資料 (9)</div>
+            </div>
+            <div class="doc-main">
+              <div style="font-size:13px;color:var(--muted);">86件のファイル</div>
+              <div class="doc-grid" id="sp-doc-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MEMBERS -->
+        <div class="view" id="spview-members">
+          <div class="pg-title">メンバー</div>
+          <div class="pg-sub">部署・役職で検索できます</div>
+          <div class="divider"></div>
+          <div class="tab-nav">
+            <button class="tab-btn is-on">全員</button>
+            <button class="tab-btn">営業部</button>
+            <button class="tab-btn">開発部</button>
+            <button class="tab-btn">マーケティング</button>
+            <button class="tab-btn">総務・人事</button>
+          </div>
+          <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="名前・部署で検索..."></div>
+          <div class="member-grid" id="sp-member-grid"></div>
+        </div>
+
+        <!-- NEWS -->
+        <div class="view" id="spview-news">
+          <div class="pg-title">お知らせ</div>
+          <div class="pg-sub">社内からの最新情報</div>
+          <div class="divider"></div>
+          <div class="tab-nav">
+            <button class="tab-btn is-on">すべて</button>
+            <button class="tab-btn">重要</button>
+            <button class="tab-btn">一般</button>
+            <button class="tab-btn">イベント</button>
+          </div>
+          <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="お知らせを検索..."></div>
+          <div class="news-list" id="sp-news-list"></div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="view" id="spview-links">
+          <div class="pg-title">よく使うリンク</div>
+          <div class="pg-sub">業務でよく使うツール・サービス</div>
+          <div class="divider"></div>
+          <div class="link-grid">
+            <div class="link-card"><div class="link-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="mail"></i></div><div class="link-name">社内メール</div><div class="link-url">mail.eteam.co.jp</div></div>
+            <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="calendar"></i></div><div class="link-name">Googleカレンダー</div><div class="link-url">calendar.google.com</div></div>
+            <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="file-text"></i></div><div class="link-name">経費精算</div><div class="link-url">expense.eteam.co.jp</div></div>
+            <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="video"></i></div><div class="link-name">Zoom</div><div class="link-url">zoom.us</div></div>
+            <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="message-square"></i></div><div class="link-name">Slack</div><div class="link-url">eteam.slack.com</div></div>
+            <div class="link-card"><div class="link-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="git-branch"></i></div><div class="link-name">GitHub</div><div class="link-url">github.com</div></div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="view" id="spview-faq">
+          <div class="pg-title">よくある質問</div>
+          <div class="pg-sub">AIが自動回答します</div>
+          <div class="divider"></div>
+          <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="質問を検索..."></div>
+          <div class="faq-list" id="sp-faq-list"></div>
+        </div>
+
+      </div><!-- portal-main -->
+    </div><!-- portal-content -->
+  </div><!-- flex row -->
+
+  <!-- Mobile bottom tabs -->
+  <div class="portal-mobile-tabs">
+    <div class="portal-mobile-tab active" onclick="spNav('dashboard',document.getElementById('spnav-dashboard'));spMobileTab(this,'ホーム')"><i data-lucide="home"></i>ホーム</div>
+    <div class="portal-mobile-tab" onclick="spNav('projects',document.getElementById('spnav-projects'));spMobileTab(this,'プロジェクト')"><i data-lucide="layers"></i>プロジェクト</div>
+    <div class="portal-mobile-tab" onclick="spNav('documents',document.getElementById('spnav-documents'));spMobileTab(this,'ドキュメント')"><i data-lucide="folder"></i>書類</div>
+    <div class="portal-mobile-tab" onclick="spNav('members',document.getElementById('spnav-members'));spMobileTab(this,'メンバー')"><i data-lucide="users"></i>メンバー</div>
+    <div class="portal-mobile-tab" onclick="spNav('news',document.getElementById('spnav-news'));spMobileTab(this,'お知らせ')"><i data-lucide="bell"></i>お知らせ</div>
+  </div>
+
+</div><!-- portal-shell -->
+
+<script>
+/* ── SUPABASE ── */
+const SUPA_URL = 'https://rkpnprhatxidaneyuxmw.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrcG5wcmhhdHhpZGFuZXl1eG13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMTc4MjUsImV4cCI6MjA5MDU5MzgyNX0.9eYgqwJZHqbIQZ-fS0jPynkcNarJvaYbxkHdjxA3YQ4';
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let _currentUser = null;
+let _userRole = null;
+
+/* ── AUTH ── */
+async function _loadUserRole(user){
+  _currentUser = user;
+  const {data} = await sb.from('profiles').select('role').eq('id', user.id).single();
+  _userRole = data ? data.role : 'member';
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  window.location.href = '/app';
+}
+
+function _applyUserUI(user, role){
+  const name = (user?.user_metadata?.full_name || user?.email || '').split('@')[0];
+  const initial = name ? name.charAt(0).toUpperCase() : '?';
+  const ava = document.getElementById('sp-user-ava');
+  const uname = document.getElementById('sp-user-name');
+  const urole = document.getElementById('sp-user-role');
+  const tava = document.getElementById('sp-topbar-ava');
+  const tname = document.getElementById('sp-topbar-name');
+  if(ava) ava.textContent = initial;
+  if(tava) tava.textContent = initial;
+  if(uname) uname.textContent = name || 'ユーザー';
+  if(tname) tname.textContent = name || 'ユーザー';
+  if(urole) urole.textContent = role === 'admin' ? '管理者' : 'メンバー';
+
+  // Show admin bar for admins
+  const bar = document.getElementById('admin-bar');
+  if(bar && role === 'admin') bar.classList.add('visible');
+
+  // Also adjust shell height if admin bar visible
+  if(role === 'admin'){
+    document.getElementById('portal-shell').style.flexDirection = 'column';
+  }
+}
+
+function _applyCompanyName(){
+  const name = localStorage.getItem('ic_company_name') || '';
+  const el = document.getElementById('sp-company-name');
+  if(el && name) el.textContent = name;
+}
+
+function initPortal(){
+  let handled = false;
+  function _go(session){
+    if(handled) return;
+    handled = true;
+    if(session){
+      _loadUserRole(session.user).then(()=>{
+        _applyUserUI(session.user, _userRole);
+        _applyCompanyName();
+        loadData().then(()=>{
+          renderAll();
+          document.getElementById('app-loading').classList.add('hidden');
+          document.getElementById('portal-shell').classList.add('visible');
+          lucide.createIcons();
+        });
+      });
+    } else {
+      // Not logged in → redirect to login
+      window.location.href = '/app';
+    }
+  }
+
+  sb.auth.onAuthStateChange((_event, session)=>{
+    if(_event === 'INITIAL_SESSION'){ _go(session); }
+    else if(_event === 'SIGNED_OUT'){ window.location.href = '/app'; }
+  });
+
+  // Fallback
+  setTimeout(()=>_go(null), 3000);
+}
+
+/* ── DATA ── */
+const MEMBERS=[
+  {name:'山田 太郎',dept:'営業部',role:'部長',init:'山',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)',photo:'https://i.pravatar.cc/64?img=33'},
+  {name:'鈴木 花子',dept:'マーケティング',role:'マネージャー',init:'鈴',grad:'linear-gradient(135deg,#10B981,#34D399)',photo:'https://i.pravatar.cc/64?img=44'},
+  {name:'田中 健一',dept:'開発部',role:'エンジニア',init:'田',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',photo:'https://i.pravatar.cc/64?img=52'},
+  {name:'佐藤 恵美',dept:'デザイン',role:'デザイナー',init:'佐',grad:'linear-gradient(135deg,#EF4444,#F87171)',photo:'https://i.pravatar.cc/64?img=40'},
+  {name:'伊藤 大輔',dept:'営業部',role:'リーダー',init:'伊',grad:'linear-gradient(135deg,#06B6D4,#22D3EE)',photo:'https://i.pravatar.cc/64?img=12'},
+  {name:'渡辺 さくら',dept:'総務・人事',role:'人事担当',init:'渡',grad:'linear-gradient(135deg,#8B5CF6,#A78BFA)',photo:'https://i.pravatar.cc/64?img=68'},
+  {name:'中村 浩二',dept:'開発部',role:'エンジニア',init:'中',grad:'linear-gradient(135deg,#F59E0B,#FCD34D)',photo:'https://i.pravatar.cc/64?img=55'},
+  {name:'小林 美咲',dept:'マーケティング',role:'担当',init:'小',grad:'linear-gradient(135deg,#EC4899,#F472B6)',photo:'https://i.pravatar.cc/64?img=71'},
+];
+const PROJECTS=[
+  {name:'社内ポータルリニューアル',client:'社内',status:'progress',pct:68,imgs:[33,40,52,12],end:'2026/6/30',img:'proj1'},
+  {name:'ECサイト構築',client:'株式会社サンプル',status:'active',pct:32,imgs:[55,68,71],end:'2026/9/30',img:'proj2'},
+  {name:'営業管理ツール',client:'営業部',status:'review',pct:90,imgs:[22,45,33],end:'2026/4/30',img:'proj3'},
+  {name:'マーケティングLP',client:'株式会社ABC',status:'done',pct:100,imgs:[40,71],end:'2026/3/15',img:'proj4'},
+];
+const DOCS=[
+  {name:'2026年度事業計画書.pdf',type:'pdf',folder:'経営資料',size:'2.4MB',updated:'4/1'},
+  {name:'就業規則_改訂版.pdf',type:'pdf',folder:'規程・規則',size:'1.1MB',updated:'3/28'},
+  {name:'営業報告書_3月.xlsx',type:'xlsx',folder:'営業資料',size:'845KB',updated:'4/1'},
+  {name:'採用面接シート.docx',type:'docx',folder:'人事資料',size:'324KB',updated:'3/25'},
+  {name:'プロジェクト提案書.pptx',type:'pptx',folder:'営業資料',size:'5.2MB',updated:'3/20'},
+  {name:'会議議事録_4月定例.docx',type:'docx',folder:'会議資料',size:'156KB',updated:'4/1'},
+  {name:'経費精算フォーム.xlsx',type:'xlsx',folder:'総務資料',size:'189KB',updated:'3/15'},
+  {name:'ブランドガイドライン.pdf',type:'pdf',folder:'マーケティング',size:'8.3MB',updated:'2/28'},
+];
+const NEWS_DATA=[
+  {cat:'重要',title:'2026年度 夏季休暇のご案内',date:'2026/4/1',author:'総務部',img:'n1'},
+  {cat:'お知らせ',title:'社内システムメンテナンスのお知らせ（4/10 深夜）',date:'2026/3/28',author:'IT部',img:'n2'},
+  {cat:'イベント',title:'4月度 全社ミーティング開催のご案内',date:'2026/3/25',author:'人事部',img:'n3'},
+  {cat:'お知らせ',title:'新入社員研修スケジュールのご連絡',date:'2026/3/20',author:'人事部',img:'n4'},
+];
+const FAQ_DATA=[
+  {q:'有給休暇の申請方法を教えてください',a:'社内ポータルの「申請」→「休暇申請」から申請できます。申請後、上長に承認依頼が自動送信されます。'},
+  {q:'経費精算はどこから行えますか？',a:'「よく使うリンク」→「経費精算」からアクセスできます。領収書は申請日より30日以内にアップロードしてください。'},
+  {q:'テレワーク申請の手続きを教えてください',a:'毎週月曜日18時までに翌週分をまとめて申請してください。突発的な場合は上長に直接連絡の上、申請してください。'},
+  {q:'社内Wi-Fiのパスワードを確認したい',a:'「ドキュメント」→「総務資料」→「オフィス設備ガイド」に記載されています。社外秘情報のため取り扱いにご注意ください。'},
+  {q:'新しいメンバーを招待するには？',a:'「管理・設定」→「メンバー管理」→「招待」からメールアドレスを入力して招待できます。管理者権限が必要です。'},
+];
+const STATUS_LABELS={progress:'進行中',active:'開始',review:'レビュー中',done:'完了'};
+const PROJ_DETAILS=[
+  {start:'2026/3/1',end:'2026/6/30',lead:'山田 太郎',desc:'社内ポータルシステムの全面リニューアル。新機能追加と既存機能の改善を行い、社員の業務効率を向上させる。',members:[{name:'山田 太郎',email:'yamada@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=33',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)',init:'山'},{name:'佐藤 恵美',email:'sato@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=40',grad:'linear-gradient(135deg,#EF4444,#F87171)',init:'佐'},{name:'田中 健一',email:'tanaka@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=52',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',init:'田'}],plan:['要件定義','UIデザイン','フロントエンド開発','バックエンド開発','テスト・QA','リリース'],planDates:['2026/3/1〜3/15','2026/3/15〜4/1','2026/4/1〜5/1','2026/4/1〜5/15','2026/5/15〜6/15','2026/6/30'],milestones:[{name:'要件定義完了',date:'2026/3/15',done:true},{name:'デザイン承認',date:'2026/4/1',done:true},{name:'α版リリース',date:'2026/5/1',done:false},{name:'β版リリース',date:'2026/6/1',done:false},{name:'本番リリース',date:'2026/6/30',done:false}]},
+  {start:'2026/4/1',end:'2026/9/30',lead:'鈴木 花子',desc:'顧客向けEコマースサイトの新規構築。モバイルファーストで開発を進め、直感的なUI/UXを実現する。',members:[{name:'鈴木 花子',email:'suzuki@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=44',grad:'linear-gradient(135deg,#10B981,#34D399)',init:'鈴'},{name:'中村 浩二',email:'nakamura@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=55',grad:'linear-gradient(135deg,#F59E0B,#FCD34D)',init:'中'},{name:'小林 美咲',email:'kobayashi@eteam.co.jp',role:'freelancer',photo:'https://i.pravatar.cc/64?img=71',grad:'linear-gradient(135deg,#EC4899,#F472B6)',init:'小'}],plan:['市場調査','システム設計','UI/UXデザイン','開発フェーズ1','開発フェーズ2','テスト・リリース'],planDates:['2026/4/1〜4/15','2026/4/15〜5/1','2026/5/1〜5/20','2026/5/20〜7/1','2026/7/1〜8/15','2026/8/15〜9/30'],milestones:[{name:'設計完了',date:'2026/5/1',done:false},{name:'デザイン完了',date:'2026/5/20',done:false},{name:'フェーズ1完了',date:'2026/7/1',done:false},{name:'本番リリース',date:'2026/9/30',done:false}]},
+  {start:'2026/1/15',end:'2026/4/30',lead:'田中 健一',desc:'営業活動の可視化と管理効率化のためのツール開発。SalesforceライクなCRMをSaaS形式で提供。現在レビュー段階。',members:[{name:'田中 健一',email:'tanaka@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=52',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',init:'田'},{name:'伊藤 大輔',email:'ito@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=12',grad:'linear-gradient(135deg,#06B6D4,#22D3EE)',init:'伊'}],plan:['要件定義','プロトタイプ','開発','テスト'],planDates:['2026/1/15〜2/1','2026/2/1〜2/28','2026/3/1〜4/15','2026/4/15〜4/30'],milestones:[{name:'要件定義完了',date:'2026/2/1',done:true},{name:'プロトタイプ完成',date:'2026/2/28',done:true},{name:'開発完了',date:'2026/4/15',done:true},{name:'最終レビュー',date:'2026/4/30',done:false}]},
+  {start:'2026/2/1',end:'2026/3/15',lead:'佐藤 恵美',desc:'新商品ローンチに向けたランディングページ制作。コンバージョン率最大化を目的としたデザインと、A/Bテストを実施。完了済み。',members:[{name:'佐藤 恵美',email:'sato@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=40',grad:'linear-gradient(135deg,#EF4444,#F87171)',init:'佐'},{name:'小林 美咲',email:'kobayashi@eteam.co.jp',role:'freelancer',photo:'https://i.pravatar.cc/64?img=71',grad:'linear-gradient(135deg,#EC4899,#F472B6)',init:'小'}],plan:['コンセプト策定','デザイン','コーディング','A/Bテスト'],planDates:['2026/2/1〜2/7','2026/2/7〜2/20','2026/2/20〜3/1','2026/3/1〜3/15'],milestones:[{name:'デザイン完了',date:'2026/2/20',done:true},{name:'コーディング完了',date:'2026/3/1',done:true},{name:'A/Bテスト完了',date:'2026/3/10',done:true},{name:'最終リリース',date:'2026/3/15',done:true}]},
+];
+
+async function loadData(){
+  try {
+    const [membersRes, projectsRes, newsRes, docsRes, faqRes] = await Promise.all([
+      sb.from('members').select('*').order('id'),
+      sb.from('projects').select('*').order('id'),
+      sb.from('news').select('*').order('id'),
+      sb.from('docs').select('*').order('id'),
+      sb.from('faq').select('*').order('id'),
+    ]);
+    if(membersRes.data?.length){ MEMBERS.length=0; membersRes.data.forEach(r=>MEMBERS.push({name:r.name,email:r.email||'',dept:r.dept,role:r.role,skills:r.skills||'',init:r.init,grad:r.grad,photo:r.photo})); }
+    if(projectsRes.data?.length){ PROJECTS.length=0; projectsRes.data.forEach(r=>PROJECTS.push({name:r.name,client:r.client,status:r.status,pct:r.pct,end:r.end_date,imgs:[33,40,52],img:'proj1'})); }
+    if(newsRes.data?.length){ NEWS_DATA.length=0; newsRes.data.forEach(r=>NEWS_DATA.push({cat:r.cat,title:r.title,date:r.date,author:r.author,img:'n1'})); }
+    if(docsRes.data?.length){ DOCS.length=0; docsRes.data.forEach(r=>DOCS.push({name:r.name,type:r.type,folder:r.folder,size:r.size,updated:r.updated})); }
+    if(faqRes.data?.length){ FAQ_DATA.length=0; faqRes.data.forEach(r=>FAQ_DATA.push({q:r.question,a:r.answer})); }
+  } catch(e){ /* use default data */ }
+}
+
+/* ── NAVIGATION ── */
+function spNav(view, el){
+  document.querySelectorAll('[id^="spnav-"]').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('[id^="spview-"]').forEach(v=>v.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const vEl = document.getElementById('spview-'+view);
+  if(vEl) vEl.classList.add('active');
+  const titles = {dashboard:'ホーム',projects:'プロジェクト',documents:'ドキュメント',members:'メンバー',news:'お知らせ',links:'よく使うリンク',faq:'FAQ'};
+  const t = document.getElementById('sp-portal-title');
+  if(t) t.textContent = titles[view]||view;
+  lucide.createIcons();
+}
+
+function spMobileTab(el, title){
+  document.querySelectorAll('.portal-mobile-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const mt = document.getElementById('sp-mobile-title');
+  if(mt) mt.textContent = title;
+}
+
+/* ── RENDER ── */
+function renderAll(){
+  renderDashboard();
+  renderProjects();
+  renderDocuments();
+  renderMembers();
+  renderNews();
+  renderFAQ();
+  // Update news pill
+  const pill = document.getElementById('sp-news-pill');
+  if(pill) pill.textContent = NEWS_DATA.length;
+}
+
+function renderDashboard(){
+  const now = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）`;
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'おはようございます' : hour < 18 ? 'こんにちは' : 'お疲れ様です';
+  const userName = (_currentUser?.user_metadata?.full_name || _currentUser?.email || '').split('@')[0];
+  const activeProjs = PROJECTS.filter(p=>p.status==='progress'||p.status==='active');
+
+  const newsHtml = NEWS_DATA.slice(0,2).map(n=>`
+    <div class="news-card">
+      <img class="news-thumb" src="https://picsum.photos/seed/${n.img||'n1'}/180/150">
+      <div class="news-body"><div class="news-cat">${n.cat||'お知らせ'}</div><div class="news-title">${n.title}</div><div class="news-meta">${n.date} · ${n.author}</div></div>
+    </div>`).join('');
+
+  const projHtml = activeProjs.slice(0,2).map(p=>`
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:600;color:var(--h1);">${p.name}</span>
+        <span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]||p.status}</span>
+      </div>
+      <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:${p.pct}%"></div></div>
+      <div style="font-size:11px;color:var(--primary);font-weight:600;">${p.pct}%</div>
+    </div>`).join('');
+
+  const el = document.getElementById('sp-dashboard-content');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="pg-title">${greet}${userName ? '、'+userName+'さん' : ''}</div>
+    <div class="pg-sub">${dateStr} — 今日も一日よろしくお願いします</div>
+    <div class="divider"></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">${NEWS_DATA.length}</div><div class="stat-lbl">お知らせ件数</div></div>
+      <div class="stat-card"><div class="stat-num">${activeProjs.length}</div><div class="stat-lbl">進行中プロジェクト</div></div>
+      <div class="stat-card"><div class="stat-num">${MEMBERS.length}</div><div class="stat-lbl">メンバー数</div></div>
+      <div class="stat-card"><div class="stat-num">${DOCS.length}</div><div class="stat-lbl">社内資料数</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">最新のお知らせ</div>
+        <div class="news-list">${newsHtml||'<div style="color:var(--faint);font-size:13px;">お知らせはありません</div>'}</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">進行中プロジェクト</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">${projHtml||'<div style="color:var(--faint);font-size:13px;">進行中のプロジェクトはありません</div>'}</div>
+      </div>
+    </div>`;
+  lucide.createIcons();
+}
+
+function renderProjects(){
+  const g = document.getElementById('sp-proj-grid');
+  if(!g) return;
+  g.innerHTML = PROJECTS.map((p,idx)=>`
+    <div class="proj-card" onclick="spShowProjectDetail(${idx})">
+      <img class="proj-thumb" src="https://picsum.photos/seed/${p.img}/400/200">
+      <div class="proj-body">
+        <span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]}</span>
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-client">${p.client}</div>
+        <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:${p.pct}%"></div></div>
+        <div class="proj-meta">
+          <span class="proj-pct">${p.pct}%</span>
+          <div class="proj-avatars">${p.imgs.map(i=>`<img class="proj-avatar" src="https://i.pravatar.cc/32?img=${i}">`).join('')}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function spShowProjectDetail(idx){
+  const p = PROJECTS[idx];
+  const d = PROJ_DETAILS[idx] || PROJ_DETAILS[0];
+  document.getElementById('sp-pd-img').src = `https://picsum.photos/seed/${p.img}/400/200`;
+  document.getElementById('sp-pd-title').textContent = p.name;
+  document.getElementById('sp-pd-client').textContent = p.client;
+  document.getElementById('sp-pd-client2').textContent = p.client;
+  document.getElementById('sp-pd-status').innerHTML = `<span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]}</span>`;
+  document.getElementById('sp-pd-desc').textContent = d.desc;
+  document.getElementById('sp-pd-start').textContent = d.start;
+  document.getElementById('sp-pd-end').textContent = d.end;
+  document.getElementById('sp-pd-lead').textContent = d.lead;
+  document.querySelectorAll('[id^="spview-"]').forEach(v=>v.classList.remove('active'));
+  document.getElementById('spview-project-detail').classList.add('active');
+  document.getElementById('sp-portal-title').textContent = p.name;
+  spPdTab('members', null, idx);
+  lucide.createIcons();
+}
+
+let _spProjIdx = 0;
+function spPdTab(tab, btn, idx){
+  if(idx !== undefined) _spProjIdx = idx;
+  document.querySelectorAll('.proj-detail-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    const tabs = document.querySelectorAll('.proj-detail-tab');
+    const map = {members:0,plan:1,milestones:2,files:3,comments:4};
+    if(tabs[map[tab]]) tabs[map[tab]].classList.add('active');
+  }
+  const d = PROJ_DETAILS[_spProjIdx] || PROJ_DETAILS[0];
+  const cont = document.getElementById('sp-pd-tab-content');
+  if(!cont) return;
+  if(tab==='members'){
+    cont.innerHTML = `<div class="proj-member-list">${d.members.map(m=>`
+      <div class="proj-member-row">
+        <img class="proj-member-photo" src="${m.photo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="proj-member-ava" style="background:${m.grad};display:none;">${m.init}</div>
+        <div class="proj-member-info"><div class="proj-member-name">${m.name}</div><div class="proj-member-email">${m.email}</div></div>
+        <span class="proj-member-role ${m.role}">${m.role==='lead'?'リーダー':m.role==='freelancer'?'フリーランス':'メンバー'}</span>
+      </div>`).join('')}</div>`;
+  } else if(tab==='plan'){
+    cont.innerHTML = `<div class="proj-plan-list">${d.plan.map((item,i)=>`
+      <div class="proj-plan-item">
+        <div class="proj-plan-num">${i+1}</div>
+        <div class="proj-plan-name">${item}</div>
+        <div class="proj-plan-date">${d.planDates[i]}</div>
+      </div>`).join('')}</div>`;
+  } else if(tab==='milestones'){
+    cont.innerHTML = `<div class="proj-milestone-list">${d.milestones.map(m=>`
+      <div class="proj-milestone-item">
+        <div class="proj-milestone-dot" style="background:${m.done?'#10B981':'#D1D5DB'};"></div>
+        <div class="proj-milestone-name">${m.name}</div>
+        <div class="proj-milestone-date">${m.date}</div>
+        <span class="proj-milestone-status" style="background:${m.done?'#D1FAE5':'#F3F4F6'};color:${m.done?'#065F46':'#6B7280'};">${m.done?'完了':'未完了'}</span>
+      </div>`).join('')}</div>`;
+  } else if(tab==='files'){
+    cont.innerHTML = `<div class="doc-grid">${DOCS.slice(0,4).map(d=>{const c=typeColors(d.type);return`
+      <div class="doc-card">
+        <div class="doc-icon" style="background:${c.bg};color:${c.color};"><i data-lucide="${c.icon}"></i></div>
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.size} · ${d.updated}</div>
+      </div>`;}).join('')}</div>`;
+  } else if(tab==='comments'){
+    cont.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><img src="https://i.pravatar.cc/32?img=33" style="width:32px;height:32px;border-radius:50%;"><div><div style="font-size:13px;font-weight:600;color:var(--h1);">山田 太郎</div><div style="font-size:11px;color:var(--faint);">2026/3/28</div></div></div>
+        <div style="font-size:13px;color:var(--h2);line-height:1.65;">UIのデザインレビューが完了しました。細かい修正点がいくつかありますが、全体的な方向性は承認します。</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="sb-ava" style="flex-shrink:0;">山</div>
+        <input type="text" placeholder="コメントを入力..." style="flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:var(--rsm);font-size:13px;outline:none;font-family:inherit;">
+        <button style="padding:8px 14px;border:none;border-radius:var(--rsm);background:var(--h1);color:white;font-size:13px;font-weight:600;cursor:pointer;">送信</button>
+      </div>
+    </div>`;
+  }
+  lucide.createIcons();
+}
+
+function renderDocuments(){
+  const g = document.getElementById('sp-doc-grid');
+  if(!g) return;
+  g.innerHTML = DOCS.map(d=>{
+    const c = typeColors(d.type);
+    return `<div class="doc-card">
+      <div class="doc-icon" style="background:${c.bg};color:${c.color};"><i data-lucide="${c.icon}"></i></div>
+      <div class="doc-name">${d.name}</div>
+      <div class="doc-meta">${d.folder} · ${d.updated} · ${d.size}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMembers(){
+  const g = document.getElementById('sp-member-grid');
+  if(!g) return;
+  g.innerHTML = MEMBERS.map(m=>`
+    <div class="member-card">
+      <div class="m-photo-wrap">
+        <img class="m-photo" src="${m.photo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="m-ava" style="background:${m.grad};">${m.init}</div>
+      </div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-dept">${m.dept}</div>
+      <span class="m-role-badge dept">${m.role}</span>
+    </div>`).join('');
+}
+
+function renderNews(){
+  const g = document.getElementById('sp-news-list');
+  if(!g) return;
+  g.innerHTML = NEWS_DATA.map(n=>`
+    <div class="news-card">
+      <img class="news-thumb" src="https://picsum.photos/seed/${n.img}/180/150">
+      <div class="news-body">
+        <div class="news-cat">${n.cat}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">${n.date} · ${n.author}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderFAQ(){
+  const g = document.getElementById('sp-faq-list');
+  if(!g) return;
+  g.innerHTML = FAQ_DATA.map((f,i)=>`
+    <div class="faq-item" id="spfaq-${i}">
+      <div class="faq-q" onclick="spToggleFAQ(${i})">${f.q}<i data-lucide="chevron-down"></i></div>
+      <div class="faq-a">${f.a}</div>
+    </div>`).join('');
+}
+
+function spToggleFAQ(i){
+  document.getElementById('spfaq-'+i).classList.toggle('open');
+  lucide.createIcons();
+}
+
+function typeColors(t){
+  if(t==='pdf') return {bg:'#FEE2E2',color:'#DC2626',icon:'file-text'};
+  if(t==='xlsx') return {bg:'#D1FAE5',color:'#059669',icon:'table'};
+  if(t==='docx') return {bg:'#DBEAFE',color:'#1D4ED8',icon:'file-text'};
+  if(t==='pptx') return {bg:'#FEF3C7',color:'#D97706',icon:'presentation'};
+  return {bg:'#F3F4F6',color:'#6B7280',icon:'file'};
+}
+
+/* ── BOOT ── */
+lucide.createIcons();
+initPortal();
+</script>
+</body>
+</html>
