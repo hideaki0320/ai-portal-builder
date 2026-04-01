@@ -1476,7 +1476,7 @@ async function loadSupabaseData() {
   ]);
   if (membersRes.data && membersRes.data.length) {
     MEMBERS.length = 0;
-    membersRes.data.forEach(r => MEMBERS.push({_id:r.id,name:r.name,dept:r.dept,role:r.role,init:r.init,grad:r.grad,photo:r.photo}));
+    membersRes.data.forEach(r => MEMBERS.push({_id:r.id,name:r.name,email:r.email||'',dept:r.dept,role:r.role,skills:r.skills||'',init:r.init,grad:r.grad,photo:r.photo}));
   }
   if (projectsRes.data && projectsRes.data.length) {
     PROJECTS.length = 0;
@@ -1912,16 +1912,17 @@ function renderSpreadsheet(tab){
       <thead><tr>
         <th class="col-chk"><input type="checkbox"></th>
         <th class="col-num">#</th>
-        <th>名前</th><th>メール</th><th>部署</th><th>役職</th><th>写真</th><th>スキル</th>
+        <th>名前</th><th>メール</th><th>部署</th><th>役職</th><th>写真</th><th>スキル</th><th></th>
       </tr></thead>
       <tbody>${MEMBERS.map((m,i)=>`<tr>
         <td class="col-chk"><input type="checkbox"></td>
         <td class="col-num">${i+1}</td>
         <td class="ss-name">${m.name}</td>
-        <td style="color:var(--muted);">${m.name.toLowerCase().replace(' ','.')}@eteam.co.jp</td>
+        <td style="color:var(--muted);">${m.email||''}</td>
         <td>${m.dept||''}</td>
         <td><span class="ss-badge employee">${m.role||''}</span></td>
         <td><img class="ss-photo" src="${m.photo||''}"></td>
+        <td>${(m.skills||'').split(',').filter(s=>s.trim()).map(s=>`<span class="ss-skill s1">${s.trim()}</span>`).join('')}</td>
         <td><div class="row-actions"><button class="row-act-btn" onclick="openEditModal('users',${i})" title="編集"><i data-lucide="pencil"></i></button><button class="row-act-btn del" onclick="deleteCrudRecord('users',${i})" title="削除"><i data-lucide="trash-2"></i></button></div></td>
       </tr>`).join('')}</tbody>
     </table>
@@ -2016,7 +2017,7 @@ function renderSpreadsheet(tab){
 
 /* ── CRUD ── */
 const CRUD_SCHEMAS = {
-  users:    { table:'members',  label:'メンバー',     fields:[{k:'name',l:'名前',t:'text',req:true},{k:'dept',l:'部署',t:'text'},{k:'role',l:'役職',t:'text'},{k:'init',l:'イニシャル（1文字）',t:'text'},{k:'photo',l:'写真URL',t:'text'}]},
+  users:    { table:'members',  label:'メンバー',     fields:[{k:'name',l:'名前',t:'text',req:true},{k:'email',l:'メールアドレス',t:'text'},{k:'dept',l:'部署',t:'text'},{k:'role',l:'役職',t:'text'},{k:'skills',l:'スキル（カンマ区切り）',t:'text'},{k:'init',l:'イニシャル（1文字）',t:'text'},{k:'photo',l:'写真URL',t:'text'}]},
   projects: { table:'projects', label:'プロジェクト', fields:[{k:'name',l:'プロジェクト名',t:'text',req:true},{k:'client',l:'クライアント',t:'text'},{k:'status',l:'ステータス',t:'select',opts:['active','progress','review','done']},{k:'pct',l:'進捗（%）',t:'number'},{k:'end_date',l:'期限（例：2026/12/31）',t:'text'}]},
   news:     { table:'news',     label:'お知らせ',     fields:[{k:'title',l:'タイトル',t:'text',req:true},{k:'cat',l:'カテゴリ',t:'select',opts:['重要','お知らせ','イベント']},{k:'author',l:'投稿者',t:'text'},{k:'date',l:'日付（例：2026/4/1）',t:'text'}]},
   files:    { table:'docs',     label:'ドキュメント', fields:[{k:'name',l:'ファイル名',t:'text',req:true},{k:'type',l:'種類',t:'select',opts:['pdf','xlsx','docx','pptx']},{k:'folder',l:'フォルダ',t:'text'},{k:'size',l:'サイズ（例：1.2MB）',t:'text'},{k:'updated',l:'更新日（例：4/1）',t:'text'}]},
