@@ -9,718 +9,389 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
-/* ────────────────────────────────
-   DESIGN TOKENS
-──────────────────────────────── */
+/* ── TOKENS ── */
 :root {
-  --primary: #4F46E5;
-  --primary-h: #4338CA;
-  --primary-lt: #EEF2FF;
-  --sw: 252px;
-  --h1: #111827;
-  --h2: #374151;
-  --muted: #6B7280;
-  --faint: #9CA3AF;
-  --border: #E5E7EB;
-  --border-lt: #F3F4F6;
-  --bg: #F9FAFB;
-  --card: #FFFFFF;
-  --r: 10px;
-  --rsm: 7px;
+  --primary:#4F46E5; --primary-h:#4338CA; --primary-lt:#EEF2FF;
+  --h1:#111827; --h2:#374151; --muted:#6B7280; --faint:#9CA3AF;
+  --border:#E5E7EB; --border-lt:#F3F4F6; --bg:#F9FAFB; --card:#FFFFFF;
+  --r:10px; --rsm:7px; --sw:232px;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:'Inter','Noto Sans JP',-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;background:var(--bg);color:var(--h2);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;line-height:1.6;}
+a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display:block;}
+.page{display:none;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.anim{animation:fadeUp .22s ease;}
+/* ── SHARED BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--rsm);font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all .12s;}
+.btn svg{width:15px;height:15px;}
+.btn-primary{background:var(--primary);color:#fff;} .btn-primary:hover{background:var(--primary-h);}
+.btn-ghost{background:transparent;color:var(--h2);border:1px solid var(--border);} .btn-ghost:hover{background:var(--border-lt);}
+.btn-dark{background:var(--h1);color:#fff;} .btn-dark:hover{background:#374151;}
 
-/* ────────────────────────────────
-   BASE
-──────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; }
-body {
-  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont,
-    'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', sans-serif;
-  background: var(--bg);
-  color: var(--h2);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  line-height: 1.6;
-}
-a { text-decoration: none; }
-button { font-family: inherit; }
-img { display: block; }
+/* ── LANDING ── */
+.hero{background:linear-gradient(160deg,#0f172a 0%,#1e1b4b 50%,#312e81 100%);min-height:100vh;display:flex;flex-direction:column;}
+.hero-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid rgba(255,255,255,.06);}
+.h-logo{display:flex;align-items:center;gap:10px;}
+.h-logo-icon{width:34px;height:34px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;}
+.h-logo-icon svg{width:18px;height:18px;stroke-width:2;}
+.h-logo-text{font-size:15px;font-weight:700;color:white;letter-spacing:-.3px;}
+.h-nav-btns{display:flex;gap:10px;}
+.h-btn-ghost{padding:7px 16px;border:1px solid rgba(255,255,255,.2);border-radius:7px;color:rgba(255,255,255,.8);background:transparent;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;}
+.h-btn-ghost:hover{border-color:rgba(255,255,255,.4);color:white;}
+.h-btn-white{padding:7px 16px;border:none;border-radius:7px;color:var(--h1);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;}
+.h-btn-white:hover{background:#F3F4F6;}
+.hero-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 24px 80px;text-align:center;}
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;margin-bottom:24px;}
+.h-badge svg{width:13px;height:13px;color:#F59E0B;}
+.h-h1{font-size:clamp(32px,5vw,52px);font-weight:800;color:white;letter-spacing:-.6px;line-height:1.15;margin-bottom:18px;max-width:680px;}
+.h-h1 em{font-style:normal;color:#a5b4fc;}
+.h-sub{font-size:17px;color:rgba(255,255,255,.65);max-width:500px;margin-bottom:36px;line-height:1.7;}
+.h-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.h-cta{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:white;padding:13px 26px;border-radius:9px;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all .15s;box-shadow:0 4px 14px rgba(79,70,229,.4);}
+.h-cta svg{width:17px;height:17px;}
+.h-cta:hover{background:var(--primary-h);transform:translateY(-1px);}
+.h-demo{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:13px 26px;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;}
+.h-demo:hover{background:rgba(255,255,255,.16);}
+.features{background:white;padding:80px 40px;}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1100px;margin:0 auto;}
+.feat-card{padding:28px;border:1px solid var(--border);border-radius:var(--r);transition:box-shadow .15s;}
+.feat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.feat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.feat-icon svg{width:20px;height:20px;stroke-width:2;}
+.feat-title{font-size:15px;font-weight:700;color:var(--h1);margin-bottom:8px;}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.65;}
 
-/* ────────────────────────────────
-   PAGE SYSTEM
-──────────────────────────────── */
-.page { display: none; }
-.page.active { display: block; min-height: 100vh; }
-.page-portal.active { display: flex; min-height: 100vh; }
+/* ── LOGIN ── */
+.login-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-card{background:white;border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo-icon{width:48px;height:48px;background:var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:white;}
+.login-logo-icon svg{width:24px;height:24px;}
+.login-title{font-size:20px;font-weight:800;color:var(--h1);margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--h2);margin-bottom:5px;}
+.field input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--rsm);font-size:14px;color:var(--h1);background:white;outline:none;transition:border-color .12s;}
+.field input:focus{border-color:var(--primary);}
+.btn-login{width:100%;padding:11px;background:var(--h1);color:white;border:none;border-radius:var(--rsm);font-size:14px;font-weight:600;cursor:pointer;transition:background .12s;}
+.btn-login:hover{background:#374151;}
+.login-or{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.login-or-line{flex:1;height:1px;background:var(--border);}
+.login-or-text{font-size:12px;color:var(--faint);}
+.btn-demo-login{width:100%;padding:9px;background:white;color:var(--h2);border:1px solid var(--border);border-radius:var(--rsm);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .12s;}
+.btn-demo-login svg{width:15px;height:15px;}
+.btn-demo-login:hover{background:var(--border-lt);}
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.anim { animation: fadeUp .2s ease; }
+/* ── ONBOARDING ── */
+.ob-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;}
+.ob-card{background:white;border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:500px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.ob-step-lbl{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.ob-step-title{font-size:20px;font-weight:800;color:var(--h1);margin-bottom:14px;}
+.ob-prog{display:flex;gap:5px;margin-bottom:28px;}
+.ob-dot{width:28px;height:5px;border-radius:3px;background:var(--border);transition:background .2s;}
+.ob-dot.done{background:var(--primary);}
+.ob-field{margin-bottom:14px;}
+.ob-field label{display:block;font-size:12px;font-weight:600;color:var(--h2);margin-bottom:5px;}
+.ob-field input,.ob-field select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--rsm);font-size:14px;color:var(--h1);background:white;outline:none;}
+.ob-field input:focus,.ob-field select:focus{border-color:var(--primary);}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ob-opt{border:1.5px solid var(--border);border-radius:var(--r);padding:14px 12px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:10px;}
+.ob-opt.sel{border-color:var(--primary);background:var(--primary-lt);}
+.ob-opt-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ob-opt-icon svg{width:17px;height:17px;}
+.ob-opt-label{font-size:13px;font-weight:600;color:var(--h1);}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;}
+.swatch{width:36px;height:36px;border-radius:9px;cursor:pointer;border:3px solid transparent;transition:transform .15s;}
+.swatch:hover{transform:scale(1.1);}
+.swatch.sel{border-color:var(--h1);}
+.ob-footer{display:flex;justify-content:space-between;margin-top:28px;}
 
-/* ────────────────────────────────
-   SIDEBAR
-──────────────────────────────── */
-.sidebar {
-  width: var(--sw);
-  min-width: var(--sw);
-  background: #fff;
-  border-right: 1px solid var(--border);
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  overflow-y: auto;
-}
+/* ── TEMPLATE GALLERY ── */
+.tmpl-page{min-height:100vh;background:var(--bg);}
+.tmpl-topbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.tmpl-logo{display:flex;align-items:center;gap:9px;}
+.tmpl-logo-icon{width:30px;height:30px;background:var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;}
+.tmpl-logo-icon svg{width:15px;height:15px;}
+.tmpl-logo-text{font-size:14px;font-weight:700;color:var(--h1);}
+.tmpl-body{max-width:1200px;margin:0 auto;padding:48px 40px;}
+.tmpl-header{text-align:center;margin-bottom:40px;}
+.tmpl-header h1{font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:8px;}
+.tmpl-header p{font-size:15px;color:var(--muted);}
+.tmpl-filters{display:flex;gap:8px;justify-content:center;margin-bottom:36px;}
+.tmpl-filter{padding:7px 18px;border-radius:100px;font-size:13px;font-weight:500;border:1px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all .12s;}
+.tmpl-filter.active,.tmpl-filter:hover{background:var(--h1);color:white;border-color:var(--h1);}
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+.tmpl-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .15s;}
+.tmpl-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-2px);}
+.tmpl-card.featured{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-lt);}
+.tmpl-thumb{height:180px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.tmpl-thumb-badge{position:absolute;top:10px;left:10px;background:white;border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700;}
+.tmpl-thumb-popular{position:absolute;top:10px;right:10px;background:#F59E0B;color:white;border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;}
+.tmpl-thumb-mockup{width:85%;background:white;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;}
+.tmpl-thumb-mbar{height:28px;display:flex;align-items:center;padding:0 10px;gap:6px;}
+.tmpl-thumb-mbar-dot{width:7px;height:7px;border-radius:50%;}
+.tmpl-thumb-mbody{display:flex;height:90px;}
+.tmpl-thumb-mside{width:30%;padding:6px 5px;display:flex;flex-direction:column;gap:4px;}
+.tmpl-thumb-mrow{height:7px;border-radius:3px;background:rgba(0,0,0,.08);}
+.tmpl-thumb-mcontent{flex:1;padding:8px;display:flex;flex-direction:column;gap:5px;}
+.tmpl-thumb-mcard{height:18px;border-radius:4px;background:rgba(0,0,0,.05);}
+.tmpl-info{padding:20px;}
+.tmpl-cat{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.tmpl-name{font-size:16px;font-weight:700;color:var(--h1);margin-bottom:6px;}
+.tmpl-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+.tmpl-use-btn{width:100%;padding:9px;background:var(--h1);color:white;border:none;border-radius:var(--rsm);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s;}
+.tmpl-use-btn:hover{background:#374151;}
 
-/* Brand */
-.sb-brand {
-  padding: 16px 12px 14px;
-  border-bottom: 1px solid var(--border-lt);
-}
-.sb-brand-inner {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px;
-  border-radius: var(--rsm);
-  cursor: pointer;
-  transition: background .12s;
-}
-.sb-brand-inner:hover { background: var(--border-lt); }
-.sb-icon {
-  width: 30px; height: 30px;
-  background: var(--primary);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: white;
-}
-.sb-icon svg { width: 15px; height: 15px; stroke-width: 2; }
-.sb-company { font-size: 13.5px; font-weight: 700; color: var(--h1); line-height: 1.25; }
-.sb-tagline  { font-size: 10.5px; color: var(--faint); margin-top: 1px; }
+/* ── BUILDER SHELL ── */
+.page-builder.active{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.bld-topbar{height:52px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:0;flex-shrink:0;z-index:200;}
+.bld-appname{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--h1);padding:6px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.bld-appname:hover{background:var(--border-lt);}
+.bld-appname svg{width:15px;height:15px;color:var(--muted);}
+.bld-topbar-divider{width:1px;height:22px;background:var(--border);margin:0 10px;}
+.bld-tabs{display:flex;gap:2px;}
+.bld-tab{padding:6px 14px;font-size:13px;font-weight:500;color:var(--muted);border-radius:6px;cursor:pointer;border:none;background:none;display:flex;align-items:center;gap:6px;transition:all .12s;}
+.bld-tab svg{width:14px;height:14px;}
+.bld-tab:hover{color:var(--h1);background:var(--border-lt);}
+.bld-tab.active{color:var(--primary);font-weight:600;background:var(--primary-lt);}
+.bld-spacer{flex:1;}
+.bld-trial{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;white-space:nowrap;}
+.bld-trial svg{width:13px;height:13px;color:#F59E0B;}
+.bld-device-group{display:flex;background:var(--border-lt);border-radius:7px;padding:3px;gap:2px;margin:0 8px;}
+.bld-device-btn{padding:5px 8px;border-radius:5px;border:none;background:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;transition:all .12s;}
+.bld-device-btn svg{width:15px;height:15px;}
+.bld-device-btn:hover{color:var(--h1);}
+.bld-device-btn.active{background:white;color:var(--h1);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.bld-btn-preview{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h1);cursor:pointer;transition:all .12s;}
+.bld-btn-preview svg{width:14px;height:14px;}
+.bld-btn-preview:hover{background:var(--border-lt);}
+.bld-btn-publish{display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--h1);border:none;border-radius:7px;color:white;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;}
+.bld-btn-publish:hover{background:#374151;}
+.bld-publish-dot{width:7px;height:7px;border-radius:50%;background:#F59E0B;}
+.bld-body{display:flex;flex:1;overflow:hidden;}
 
-/* Nav */
-.sb-nav { padding: 10px 10px; flex: 1; }
-.nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px;
-  border-radius: var(--rsm);
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 13.5px; font-weight: 500;
-  margin-bottom: 1px;
-  transition: background .1s, color .1s;
-  user-select: none;
-}
-.nav-item svg { width: 15px; height: 15px; stroke-width: 1.75; flex-shrink: 0; color: var(--faint); transition: color .1s; }
-.nav-item:hover { background: var(--border-lt); color: var(--h1); }
-.nav-item:hover svg { color: var(--muted); }
-.nav-item.active { background: var(--border-lt); color: var(--h1); font-weight: 600; }
-.nav-item.active svg { color: var(--h2); }
-.nav-pill {
-  margin-left: auto;
-  background: #EF4444;
-  color: white;
-  font-size: 10px; font-weight: 700;
-  padding: 1px 6px; border-radius: 10px;
-}
-.nav-sep { height: 1px; background: var(--border-lt); margin: 6px 0; }
+/* ── BUILDER LEFT PANEL ── */
+.bld-left{width:220px;min-width:220px;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.bld-left-section{padding:10px 8px;}
+.bld-left-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:6px 8px 8px;}
+.bld-page-item{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:13px;color:var(--h2);cursor:pointer;transition:background .1s;border-radius:6px;margin-bottom:1px;}
+.bld-page-item svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+.bld-page-item:hover{background:var(--border-lt);}
+.bld-page-item.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.bld-page-item.active svg{color:var(--primary);}
+.bld-sep{height:1px;background:var(--border-lt);margin:6px 0;}
+.bld-add-item{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;color:var(--muted);cursor:pointer;border-radius:6px;}
+.bld-add-item svg{width:14px;height:14px;}
+.bld-add-item:hover{color:var(--primary);background:var(--primary-lt);}
+/* Data left */
+.bld-source-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--h2);cursor:pointer;transition:background .1s;margin-bottom:1px;}
+.bld-source-item.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.bld-source-item:hover:not(.active){background:var(--border-lt);}
+.bld-source-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.bld-source-icon.indigo{background:#EDE9FE;color:#6D28D9;}
 
-/* Footer user */
-.sb-footer {
-  padding: 10px;
-  border-top: 1px solid var(--border-lt);
-}
-.sb-user {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px;
-  border-radius: var(--rsm);
-  cursor: pointer;
-  transition: background .1s;
-}
-.sb-user:hover { background: var(--border-lt); }
-.sb-ava {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: white;
-  flex-shrink: 0;
-  background: linear-gradient(135deg,#6366F1,#8B5CF6);
-}
-.sb-uname { font-size: 12.5px; font-weight: 600; color: var(--h1); }
-.sb-udept  { font-size: 11px; color: var(--faint); margin-top: 1px; }
-.sb-ucaret { margin-left: auto; color: var(--faint); }
-.sb-ucaret svg { width: 13px; height: 13px; stroke-width: 2; }
+/* ── BUILDER PREVIEW AREA ── */
+.bld-main{flex:1;display:flex;overflow:hidden;}
+.bld-preview-area{flex:1;background:#EAECF0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px;}
+.bld-device-frame{background:white;border-radius:10px;box-shadow:0 4px 32px rgba(0,0,0,.12),0 1px 6px rgba(0,0,0,.08);overflow:hidden;transform-origin:top center;position:relative;flex-shrink:0;transform:scale(1);}
+.bld-device-frame .portal-wrap{display:flex;height:680px;overflow:hidden;}
+.bld-device-frame .portal-sidebar{width:var(--sw);min-width:var(--sw);background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.bld-device-frame .portal-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg);}
 
-/* ────────────────────────────────
-   PORTAL LAYOUT
-──────────────────────────────── */
-.portal-body {
-  margin-left: var(--sw);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: var(--bg);
-}
+/* ── BUILDER DATA VIEW ── */
+.bld-data-view{flex:1;display:flex;flex-direction:column;overflow:hidden;background:white;}
+.bld-data-topbar{padding:12px 20px 0;border-bottom:1px solid var(--border);}
+.bld-data-title{font-size:13px;font-weight:700;color:var(--h1);display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+.bld-data-title svg{width:14px;height:14px;color:var(--muted);}
+.data-tabs{display:flex;gap:0;}
+.data-tab{padding:8px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;}
+.data-tab:hover{color:var(--h1);}
+.data-tab.active{color:var(--h1);border-bottom-color:var(--h1);font-weight:600;}
+.data-toolbar{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--border);}
+.data-toolbar-btn{display:flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:white;font-size:12px;color:var(--h2);cursor:pointer;font-weight:500;font-family:inherit;}
+.data-toolbar-btn svg{width:13px;height:13px;}
+.data-toolbar-btn:hover{background:var(--border-lt);}
+.data-count{font-size:12px;color:var(--muted);margin-left:auto;}
+.spreadsheet{flex:1;overflow:auto;}
+.spreadsheet table{width:100%;border-collapse:collapse;font-size:13px;}
+.spreadsheet thead th{position:sticky;top:0;background:#F9FAFB;padding:8px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+.spreadsheet thead th.col-chk{width:40px;}
+.spreadsheet thead th.col-num{width:36px;text-align:center;}
+.spreadsheet tbody tr{border-bottom:1px solid var(--border-lt);transition:background .1s;}
+.spreadsheet tbody tr:hover{background:var(--border-lt);}
+.spreadsheet tbody td{padding:9px 14px;vertical-align:middle;color:var(--h2);}
+.spreadsheet td.col-chk{text-align:center;}
+.spreadsheet td.col-num{color:var(--faint);font-size:11px;text-align:center;}
+.ss-name{font-weight:500;color:var(--h1);}
+.ss-photo{width:24px;height:24px;border-radius:50%;object-fit:cover;}
+.ss-badge{display:inline-flex;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:600;}
+.ss-badge.admin{background:#EDE9FE;color:#6D28D9;}
+.ss-badge.employee{background:#D1FAE5;color:#065F46;}
+.ss-badge.manager{background:#DBEAFE;color:#1D4ED8;}
+.ss-badge.part{background:#FEF3C7;color:#92400E;}
+.ss-badge.progress{background:#DBEAFE;color:#1D4ED8;}
+.ss-badge.review{background:#FEF3C7;color:#92400E;}
+.ss-badge.done{background:#F3F4F6;color:var(--muted);}
+.ss-badge.active{background:#D1FAE5;color:#065F46;}
+.ss-skill{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500;margin-right:3px;}
+.ss-skill.s1{background:#FEE2E2;color:#991B1B;}
+.ss-skill.s2{background:#DBEAFE;color:#1E40AF;}
+.ss-skill.s3{background:#D1FAE5;color:#065F46;}
+.ss-skill.s4{background:#EDE9FE;color:#5B21B6;}
+.ss-add-row{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:13px;color:var(--muted);cursor:pointer;border-top:1px solid var(--border-lt);}
+.ss-add-row:hover{color:var(--primary);background:var(--primary-lt);}
+.ss-add-row svg{width:14px;height:14px;}
 
-/* Topbar */
-.topbar {
-  height: 56px;
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-  backdrop-filter: blur(8px);
-}
-.topbar-title { font-size: 15px; font-weight: 700; color: var(--h1); }
-.topbar-right  { display: flex; align-items: center; gap: 6px; }
-.tb-icon {
-  width: 32px; height: 32px; border-radius: var(--rsm);
-  border: 1px solid var(--border);
-  background: #fff;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--muted);
-  transition: all .12s;
-}
-.tb-icon svg { width: 15px; height: 15px; stroke-width: 1.75; }
-.tb-icon:hover { background: var(--border-lt); color: var(--h1); }
-.tb-user {
-  display: flex; align-items: center; gap: 7px;
-  padding: 4px 10px 4px 5px;
-  border: 1px solid var(--border);
-  border-radius: var(--rsm);
-  cursor: pointer; background: #fff;
-  transition: background .12s;
-}
-.tb-user:hover { background: var(--border-lt); }
-.tb-uname { font-size: 12.5px; font-weight: 600; color: var(--h1); }
-.tb-user svg { width: 12px; height: 12px; stroke-width: 2; color: var(--faint); }
+/* ── PORTAL SIDEBAR (in builder) ── */
+.sb-brand{padding:14px 12px;border-bottom:1px solid var(--border-lt);}
+.sb-brand-inner{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--rsm);cursor:pointer;}
+.sb-brand-inner:hover{background:var(--border-lt);}
+.sb-icon{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white;}
+.sb-icon svg{width:14px;height:14px;stroke-width:2;}
+.sb-company{font-size:13px;font-weight:700;color:var(--h1);}
+.sb-tagline{font-size:10px;color:var(--muted);}
+.sb-nav{padding:8px 6px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .1s;margin-bottom:1px;position:relative;}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;}
+.nav-item:hover{background:var(--border-lt);color:var(--h2);}
+.nav-item.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.nav-pill{margin-left:auto;background:#EF4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px;}
+.nav-sep{height:1px;background:var(--border-lt);margin:6px 0;}
+.sb-footer{padding:12px;border-top:1px solid var(--border-lt);margin-top:auto;}
+.sb-user{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:var(--rsm);cursor:pointer;}
+.sb-user:hover{background:var(--border-lt);}
+.sb-ava{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;background:var(--primary);flex-shrink:0;}
+.sb-uname{font-size:12px;font-weight:600;color:var(--h1);}
+.sb-udept{font-size:10px;color:var(--muted);}
+.sb-ucaret svg{width:14px;height:14px;color:var(--faint);}
 
-/* Content */
-.portal-main { padding: 36px 40px; flex: 1; }
+/* ── PORTAL CONTENT AREA ── */
+.portal-topbar{background:white;border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10;}
+.portal-topbar-title{font-size:15px;font-weight:700;color:var(--h1);}
+.topbar-right{display:flex;align-items:center;gap:6px;}
+.tb-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);position:relative;}
+.tb-icon svg{width:17px;height:17px;}
+.tb-icon:hover{background:var(--border-lt);}
+.tb-user{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:8px;cursor:pointer;}
+.tb-user:hover{background:var(--border-lt);}
+.tb-uname{font-size:13px;font-weight:500;color:var(--h2);}
+.tb-user svg{width:14px;height:14px;color:var(--faint);}
+.portal-main{padding:28px;flex:1;}
+.view{display:none;}
+.view.active{display:block;}
+.pg-title{font-size:22px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:4px;}
+.pg-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.divider{height:1px;background:var(--border-lt);margin:16px 0 20px;}
 
-/* Views */
-.view { display: none; }
-.view.active { display: block; animation: fadeUp .2s ease; }
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.stat-num{font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.5px;line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:5px;font-weight:500;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:4px;}
+.stat-sub svg{width:11px;height:11px;}
+.stat-sub.up{color:#10B981;}
 
-/* ────────────────────────────────
-   TYPOGRAPHY
-──────────────────────────────── */
-.pg-title  { font-size: 26px; font-weight: 800; color: var(--h1); letter-spacing: -.4px; }
-.pg-sub    { font-size: 13.5px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
-.sec-title { font-size: 14px; font-weight: 700; color: var(--h1); }
-.divider   { height: 1px; background: var(--border); margin: 28px 0; }
+/* Tabs */
+.tab-nav{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab-btn{padding:8px 16px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.tab-btn.is-on{color:var(--h1);border-bottom-color:var(--h1);font-weight:600;}
 
-/* ────────────────────────────────
-   TAB NAV (Softr style)
-──────────────────────────────── */
-.tab-nav {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-  gap: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.tab-nav::-webkit-scrollbar { display: none; }
-.tab-btn {
-  padding: 9px 16px;
-  font-size: 13px; font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-  border: none; background: transparent;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  white-space: nowrap;
-  transition: color .15s, border-color .15s;
-  font-family: inherit;
-}
-.tab-btn:hover { color: var(--h1); }
-.tab-btn.is-on { color: var(--h1); border-bottom-color: var(--h1); font-weight: 600; }
+/* Search */
+.search-row{display:flex;align-items:center;gap:8px;background:#F3F4F6;border-radius:var(--rsm);padding:8px 13px;margin-bottom:18px;}
+.search-row svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+.search-row input{border:none;background:none;outline:none;font-size:13px;color:var(--h1);width:100%;font-family:inherit;}
+.search-row input::placeholder{color:var(--faint);}
 
-/* ────────────────────────────────
-   SEARCH BAR (Softr style)
-──────────────────────────────── */
-.search-row {
-  display: flex; align-items: center; gap: 10px;
-  background: #F3F4F6;
-  border-radius: var(--rsm);
-  padding: 9px 13px;
-  margin-bottom: 18px;
-}
-.search-row svg { width: 14px; height: 14px; color: var(--faint); stroke-width: 2; flex-shrink: 0; }
-.search-row input {
-  border: none; outline: none; background: transparent;
-  font-size: 13.5px; color: var(--h1); width: 100%;
-  font-family: inherit;
-}
-.search-row input::placeholder { color: var(--faint); }
+/* News cards */
+.news-list{display:flex;flex-direction:column;gap:12px;}
+.news-card{background:white;border:1px solid var(--border);border-radius:var(--r);display:flex;overflow:hidden;transition:box-shadow .12s;}
+.news-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.news-thumb{width:90px;height:75px;object-fit:cover;flex-shrink:0;}
+.news-body{padding:12px 16px;flex:1;}
+.news-cat{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.news-title{font-size:13px;font-weight:600;color:var(--h1);line-height:1.45;margin-bottom:4px;}
+.news-meta{font-size:11px;color:var(--faint);}
+.news-badge{display:inline-flex;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;margin-left:6px;}
+.news-badge.new{background:#FEF3C7;color:#92400E;}
 
-/* ────────────────────────────────
-   STAT CARDS
-──────────────────────────────── */
-.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 20px;
-}
-.stat-num  { font-size: 30px; font-weight: 800; color: var(--h1); letter-spacing: -.5px; line-height: 1; }
-.stat-lbl  { font-size: 12px; color: var(--muted); margin-top: 5px; font-weight: 500; }
-.stat-sub  { font-size: 11px; color: var(--faint); margin-top: 8px; display: flex; align-items: center; gap: 3px; }
-.stat-sub svg { width: 11px; height: 11px; stroke-width: 2.5; }
-.up { color: #10B981; }
+/* Members */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.member-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;transition:box-shadow .12s;}
+.member-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.m-photo-wrap{position:relative;width:56px;height:56px;margin:0 auto 12px;}
+.m-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;}
+.m-ava{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;display:none;}
+.m-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:3px;}
+.m-dept{font-size:12px;color:var(--muted);}
+.m-role-badge{display:inline-flex;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-top:8px;}
+.m-role-badge.dept{background:var(--primary-lt);color:var(--primary);}
+.m-role-badge.mgr{background:#D1FAE5;color:#065F46;}
 
-/* ────────────────────────────────
-   NEWS ITEMS
-──────────────────────────────── */
-.news-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: box-shadow .15s;
-}
-.news-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
-.news-card-inner {
-  display: flex; align-items: center; gap: 16px;
-  padding: 14px 16px;
-}
-.news-thumb {
-  width: 60px; height: 44px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--border-lt);
-}
-.news-thumb-ph {
-  width: 60px; height: 44px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--border-lt);
-  color: var(--faint);
-}
-.news-thumb-ph svg { width: 18px; height: 18px; stroke-width: 1.5; }
-.news-info { flex: 1; min-width: 0; }
-.news-meta-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
-.nbadge {
-  font-size: 10px; font-weight: 600;
-  padding: 2px 7px; border-radius: 20px;
-}
-.nb-red    { background: #FEE2E2; color: #DC2626; }
-.nb-indigo { background: #E0E7FF; color: #4338CA; }
-.nb-green  { background: #D1FAE5; color: #059669; }
-.nb-slate  { background: var(--border-lt); color: var(--muted); }
-.news-date { font-size: 11px; color: var(--faint); font-weight: 500; }
-.news-dept { font-size: 11px; color: var(--faint); }
-.news-title-t { font-size: 13.5px; font-weight: 600; color: var(--h1); line-height: 1.45; }
-.news-excerpt { font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.5; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.news-arrow { color: var(--border); flex-shrink: 0; }
-.news-arrow svg { width: 14px; height: 14px; stroke-width: 2; }
+/* Projects */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.proj-card{background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:box-shadow .15s;cursor:pointer;}
+.proj-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);}
+.proj-thumb{height:110px;object-fit:cover;width:100%;}
+.proj-body{padding:16px;}
+.proj-status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-bottom:8px;}
+.proj-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.proj-status.progress{background:#DBEAFE;color:#1D4ED8;}
+.proj-status.active{background:#D1FAE5;color:#065F46;}
+.proj-status.review{background:#FEF3C7;color:#92400E;}
+.proj-status.done{background:#F3F4F6;color:var(--muted);}
+.proj-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:3px;}
+.proj-client{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.proj-progress-bar{height:4px;background:var(--border-lt);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.proj-progress-fill{height:100%;border-radius:2px;background:var(--primary);transition:width .3s;}
+.proj-meta{display:flex;align-items:center;justify-content:space-between;}
+.proj-pct{font-size:11px;font-weight:600;color:var(--primary);}
+.proj-avatars{display:flex;}
+.proj-avatar{width:22px;height:22px;border-radius:50%;border:2px solid white;margin-left:-6px;object-fit:cover;}
+.proj-avatar:first-child{margin-left:0;}
 
-/* ────────────────────────────────
-   CARDS (generic)
-──────────────────────────────── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.card-hd {
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--border-lt);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.card-hd-t { font-size: 13px; font-weight: 700; color: var(--h1); }
-.card-link {
-  display: flex; align-items: center; gap: 2px;
-  font-size: 12px; font-weight: 600; color: var(--primary);
-  cursor: pointer;
-}
-.card-link svg { width: 11px; height: 11px; stroke-width: 2.5; }
-.card-body { padding: 18px; }
+/* Documents */
+.doc-layout{display:flex;gap:20px;}
+.doc-sidebar{width:180px;flex-shrink:0;}
+.doc-folder{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:6px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .1s;}
+.doc-folder svg{width:14px;height:14px;flex-shrink:0;}
+.doc-folder:hover{background:var(--border-lt);color:var(--h2);}
+.doc-folder.active{background:var(--primary-lt);color:var(--primary);font-weight:600;}
+.doc-folder.active svg{color:var(--primary);}
+.doc-main{flex:1;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px;}
+.doc-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .12s;}
+.doc-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.07);border-color:var(--primary);}
+.doc-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.doc-icon svg{width:20px;height:20px;}
+.doc-name{font-size:13px;font-weight:600;color:var(--h1);margin-bottom:4px;line-height:1.4;}
+.doc-meta{font-size:11px;color:var(--faint);}
 
-/* ────────────────────────────────
-   DASHBOARD NEWS ROW (compact)
-──────────────────────────────── */
-.dash-news-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 18px;
-  border-bottom: 1px solid var(--border-lt);
-  cursor: pointer;
-  transition: background .1s;
-}
-.dash-news-row:last-child { border-bottom: none; }
-.dash-news-row:hover { background: var(--bg); }
-.dash-news-thumb {
-  width: 44px; height: 34px; border-radius: 5px;
-  object-fit: cover; flex-shrink: 0;
-  background: var(--border-lt);
-}
-.dash-news-ph {
-  width: 44px; height: 34px; border-radius: 5px;
-  background: var(--border-lt);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.dash-news-ph svg { width: 16px; height: 16px; stroke-width: 1.5; color: var(--faint); }
-.dash-news-info { flex: 1; min-width: 0; }
-.dash-news-title { font-size: 13px; font-weight: 600; color: var(--h1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dash-news-sub   { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
-.dash-news-arr svg { width: 14px; height: 14px; stroke-width: 2; color: var(--border); }
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:8px;}
+.faq-item{background:white;border:1px solid var(--border);border-radius:var(--r);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--h1);}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.faq-item.open .faq-q svg{transform:rotate(180deg);}
+.faq-a{padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.65;display:none;}
+.faq-item.open .faq-a{display:block;}
 
-/* ────────────────────────────────
-   SHORTCUT GRID
-──────────────────────────────── */
-.shortcut-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 14px 16px; }
-.shortcut-btn {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; padding: 14px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  cursor: pointer;
-  background: #fff;
-  transition: all .12s;
-}
-.shortcut-btn:hover { background: var(--border-lt); border-color: var(--muted); }
-.shortcut-btn svg { width: 18px; height: 18px; stroke-width: 1.75; }
-.shortcut-label { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+/* Links */
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.link-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .12s;}
+.link-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);border-color:var(--primary);}
+.link-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.link-icon svg{width:22px;height:22px;}
+.link-name{font-size:13px;font-weight:600;color:var(--h1);}
+.link-url{font-size:11px;color:var(--faint);}
 
-/* ────────────────────────────────
-   SCHEDULE
-──────────────────────────────── */
-.sched-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--rsm); }
-.sched-item.now { background: var(--primary-lt); }
-.sched-time { font-size: 11.5px; font-weight: 700; min-width: 40px; }
-.sched-bar  { width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0; }
-.sched-title { font-size: 13px; font-weight: 600; color: var(--h1); }
-.sched-meta  { font-size: 11.5px; color: var(--faint); margin-top: 1px; }
-
-/* ────────────────────────────────
-   MEMBER CARDS
-──────────────────────────────── */
-.member-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-.member-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 22px 16px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: box-shadow .15s, transform .15s;
-}
-.member-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); transform: translateY(-2px); }
-.m-photo {
-  width: 60px; height: 60px; border-radius: 50%;
-  object-fit: cover; margin: 0 auto 12px;
-  display: block;
-}
-.m-ava {
-  width: 60px; height: 60px; border-radius: 50%;
-  margin: 0 auto 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: 700; color: white;
-}
-.m-name  { font-size: 14px; font-weight: 700; color: var(--h1); margin-bottom: 5px; }
-.m-dept  { display: inline-block; font-size: 11px; font-weight: 500; color: var(--muted); background: var(--border-lt); border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px; margin-bottom: 3px; }
-.m-role  { font-size: 12px; color: var(--faint); }
-.m-btns  { display: flex; gap: 5px; margin-top: 13px; }
-.m-btn {
-  flex: 1; padding: 6px 4px;
-  border: 1px solid var(--border);
-  border-radius: var(--rsm);
-  font-size: 11px; font-weight: 600;
-  color: var(--muted); cursor: pointer;
-  background: #fff;
-  display: flex; align-items: center; justify-content: center; gap: 3px;
-  font-family: inherit; transition: all .12s;
-}
-.m-btn svg { width: 11px; height: 11px; stroke-width: 2; }
-.m-btn:hover { background: var(--primary-lt); border-color: var(--primary); color: var(--primary); }
-
-/* ────────────────────────────────
-   LINK CARDS
-──────────────────────────────── */
-.link-cat-label {
-  font-size: 11px; font-weight: 700; color: var(--faint);
-  text-transform: uppercase; letter-spacing: .07em;
-  margin-bottom: 10px; margin-top: 22px;
-}
-.link-cat-label:first-child { margin-top: 0; }
-.link-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-.link-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px 15px;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer;
-  transition: box-shadow .12s, transform .1s;
-}
-.link-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); transform: translateY(-1px); }
-.link-icon {
-  width: 38px; height: 38px; border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.link-icon svg { width: 17px; height: 17px; stroke-width: 1.75; }
-.link-name { font-size: 13.5px; font-weight: 600; color: var(--h1); }
-.link-desc { font-size: 12px; color: var(--faint); margin-top: 1px; }
-.link-ext  { margin-left: auto; color: var(--border); flex-shrink: 0; }
-.link-ext svg { width: 14px; height: 14px; stroke-width: 2; }
-
-/* ────────────────────────────────
-   FAQ
-──────────────────────────────── */
-.faq-item {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-.faq-q {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 16px;
-  cursor: pointer;
-  transition: background .1s;
-}
-.faq-q:hover { background: var(--border-lt); }
-.faq-q-lbl {
-  width: 22px; height: 22px; border-radius: 6px;
-  background: var(--primary-lt); color: var(--primary);
-  font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.faq-q-text { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--h1); }
-.faq-q-cat {
-  font-size: 10px; font-weight: 600;
-  padding: 2px 8px; border-radius: 20px;
-  background: var(--border-lt); color: var(--muted);
-  margin-right: 6px;
-}
-.faq-chevron { color: var(--faint); transition: transform .2s; flex-shrink: 0; }
-.faq-chevron svg { width: 14px; height: 14px; stroke-width: 2; }
-.faq-item.open .faq-chevron { transform: rotate(180deg); }
-.faq-a { display: none; padding: 0 16px 14px 52px; font-size: 13px; color: var(--muted); line-height: 1.75; }
-.faq-item.open .faq-a { display: block; }
-
-/* ────────────────────────────────
-   BUTTONS
-──────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 8px 15px;
-  font-size: 13px; font-weight: 600;
-  border-radius: var(--rsm);
-  cursor: pointer; border: none;
-  font-family: inherit; transition: all .12s; white-space: nowrap;
-}
-.btn svg { width: 13px; height: 13px; stroke-width: 2.5; }
-.btn-dark    { background: var(--h1); color: #fff; }
-.btn-dark:hover  { background: var(--h2); }
-.btn-ghost   { background: #fff; color: var(--h2); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--border-lt); }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-h); }
-
-/* ────────────────────────────────
-   TWO-COL LAYOUT
-──────────────────────────────── */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
-@media(max-width:1000px){ .two-col { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: repeat(2,1fr); } .member-grid { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:680px){ .stat-grid { grid-template-columns: repeat(2,1fr); } .link-grid { grid-template-columns: 1fr; } .shortcut-grid { grid-template-columns: repeat(3,1fr); } .member-grid { grid-template-columns: repeat(2,1fr); } }
-
-/* ────────────────────────────────
-   MOBILE
-──────────────────────────────── */
-.mobile-topbar {
-  display: none; height: 52px;
-  background: #fff; border-bottom: 1px solid var(--border);
-  padding: 0 16px; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
-.mobile-logo { font-size: 15px; font-weight: 700; color: var(--h1); }
-.bottom-tabs {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,.97);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border);
-  z-index: 200;
-  padding-bottom: env(safe-area-inset-bottom,0);
-}
-.bottom-tabs-row { display: flex; height: 58px; }
-.btab {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px; cursor: pointer;
-  color: var(--faint); font-size: 10px; font-weight: 600;
-  transition: color .12s; position: relative;
-}
-.btab svg { width: 21px; height: 21px; stroke-width: 1.75; }
-.btab.is-on { color: var(--primary); }
-.btab-dot {
-  position: absolute; top: 7px; right: calc(50% - 14px);
-  width: 5px; height: 5px; background: #EF4444;
-  border-radius: 50%; border: 1.5px solid #fff;
-}
-@media(max-width:768px){
-  .sidebar { display: none; }
-  .portal-body { margin-left: 0; }
-  .topbar { display: none; }
-  .mobile-topbar { display: flex; }
-  .bottom-tabs { display: flex; flex-direction: column; }
-  .portal-main { padding: 16px 16px 82px; }
-}
-
-/* ────────────────────────────────
-   LANDING
-──────────────────────────────── */
-.hero {
-  min-height: 100vh;
-  background: linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%);
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column;
-}
-.hero-nav {
-  position: absolute; top: 0; left: 0; right: 0;
-  padding: 18px 44px;
-  display: flex; align-items: center; justify-content: space-between;
-  z-index: 10;
-}
-.h-logo { display: flex; align-items: center; gap: 8px; }
-.h-logo-icon { width: 30px; height: 30px; background: rgba(255,255,255,.15); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-.h-logo-icon svg { width: 15px; height: 15px; color: white; stroke-width: 2; }
-.h-logo-text { font-size: 14px; font-weight: 700; color: white; }
-.h-nav-btns { display: flex; gap: 8px; }
-.h-btn-ghost { padding: 7px 16px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); color: white; font-size: 13px; font-weight: 600; border-radius: var(--rsm); cursor: pointer; font-family: inherit; transition: all .15s; }
-.h-btn-ghost:hover { background: rgba(255,255,255,.22); }
-.h-btn-white { padding: 7px 16px; background: white; color: #312e81; font-size: 13px; font-weight: 700; border: none; border-radius: var(--rsm); cursor: pointer; font-family: inherit; transition: opacity .15s; }
-.h-btn-white:hover { opacity: .92; }
-
-.hero-body {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center; padding: 100px 24px 60px;
-  position: relative; z-index: 1;
-}
-.h-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-  border-radius: 20px; padding: 5px 14px;
-  font-size: 12px; font-weight: 500; color: rgba(255,255,255,.9);
-  margin-bottom: 26px;
-}
-.h-badge svg { width: 12px; height: 12px; stroke-width: 2; }
-.h-h1 {
-  font-size: 52px; font-weight: 800; color: white;
-  line-height: 1.1; letter-spacing: -1.5px;
-  margin-bottom: 18px; max-width: 660px;
-}
-.h-h1 em { color: #a5b4fc; font-style: normal; }
-.h-sub { font-size: 16px; color: rgba(255,255,255,.72); max-width: 420px; line-height: 1.65; margin-bottom: 36px; }
-.h-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.h-cta { padding: 12px 26px; background: white; color: #312e81; font-size: 13.5px; font-weight: 700; border: none; border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 14px rgba(0,0,0,.15); display: flex; align-items: center; gap: 6px; }
-.h-cta svg { width: 14px; height: 14px; stroke-width: 2.5; }
-.h-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
-.h-demo { padding: 12px 26px; background: transparent; color: white; font-size: 13.5px; font-weight: 600; border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .15s; }
-.h-demo:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); }
-
-/* Features section */
-.features { background: white; padding: 88px 44px; }
-.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 940px; margin: 0 auto; }
-.feat-card { padding: 24px 20px; border-radius: var(--r); border: 1px solid var(--border); background: var(--bg); }
-.feat-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 13px; }
-.feat-icon svg { width: 19px; height: 19px; stroke-width: 1.75; }
-.feat-title { font-size: 14.5px; font-weight: 700; color: var(--h1); margin-bottom: 5px; }
-.feat-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
-@media(max-width:768px){ .h-h1{font-size:34px;} .hero-nav{padding:14px 20px;} .feat-grid{grid-template-columns:1fr;} .features{padding:56px 20px;} }
-
-/* ────────────────────────────────
-   LOGIN
-──────────────────────────────── */
-.login-bg { min-height: 100vh; background: linear-gradient(135deg,#eef2ff,#e0e7ff); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.login-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 380px; padding: 38px; }
-.login-logo { text-align: center; margin-bottom: 26px; }
-.login-logo-icon { width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
-.login-logo-icon svg { width: 22px; height: 22px; color: white; stroke-width: 1.75; }
-.login-title { font-size: 19px; font-weight: 800; color: var(--h1); }
-.login-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; }
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--h2); margin-bottom: 5px; }
-.field input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--rsm); font-size: 14px; color: var(--h1); outline: none; font-family: inherit; transition: border-color .15s, box-shadow .15s; background: #fff; }
-.field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
-.btn-login { width: 100%; padding: 11px; background: var(--primary); color: white; font-size: 14px; font-weight: 700; border: none; border-radius: var(--rsm); cursor: pointer; margin-top: 4px; transition: background .15s; font-family: inherit; }
-.btn-login:hover { background: var(--primary-h); }
-.login-or { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
-.login-or-line { flex: 1; height: 1px; background: var(--border); }
-.login-or-text { font-size: 12px; color: var(--faint); }
-.btn-demo { width: 100%; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--rsm); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .12s; }
-.btn-demo svg { width: 14px; height: 14px; stroke-width: 1.75; }
-.btn-demo:hover { background: var(--border-lt); }
-
-/* ────────────────────────────────
-   ONBOARDING
-──────────────────────────────── */
-.ob-bg { min-height: 100vh; background: linear-gradient(135deg,#eef2ff,#e0e7ff); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.ob-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 500px; overflow: hidden; }
-.ob-hd { background: linear-gradient(135deg,#312e81,#4f46e5); padding: 26px 30px; }
-.ob-step-lbl   { font-size: 11.5px; color: rgba(255,255,255,.6); font-weight: 500; margin-bottom: 5px; }
-.ob-step-title { font-size: 19px; font-weight: 800; color: white; margin-bottom: 14px; }
-.ob-prog { display: flex; gap: 5px; }
-.ob-dot { height: 3px; border-radius: 2px; flex: 1; background: rgba(255,255,255,.25); transition: background .3s; }
-.ob-dot.done { background: white; }
-.ob-body   { padding: 26px 30px 18px; }
-.ob-footer { padding: 14px 30px 22px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-lt); }
-.ob-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.ob-opt { border: 1.5px solid var(--border); border-radius: 9px; padding: 13px 11px; cursor: pointer; text-align: center; transition: all .15s; }
-.ob-opt:hover { border-color: var(--primary); background: var(--primary-lt); }
-.ob-opt.sel   { border-color: var(--primary); background: var(--primary-lt); }
-.ob-opt-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; margin: 0 auto 7px; }
-.ob-opt-icon svg { width: 16px; height: 16px; stroke-width: 1.75; }
-.ob-opt-label { font-size: 12.5px; font-weight: 600; color: var(--h1); }
-.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
-.swatch { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
-.swatch:hover { transform: scale(1.15); }
-.swatch.sel   { border-color: var(--h1); }
-
-/* ────────────────────────────────
-   ADMIN
-──────────────────────────────── */
-.adm-sidebar { width: 196px; min-width: 196px; background: #0f172a; position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
-.adm-brand { padding: 18px 14px 15px; border-bottom: 1px solid rgba(255,255,255,.06); }
-.adm-brand-name { font-size: 13px; font-weight: 700; color: white; }
-.adm-brand-sub  { font-size: 10px; color: rgba(255,255,255,.3); margin-top: 2px; }
-.adm-nav { padding: 10px 8px; flex: 1; }
-.adm-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 1px; transition: all .12s; }
-.adm-item svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
-.adm-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.85); }
-.adm-item.active { background: rgba(79,70,229,.25); color: #a5b4fc; }
-.adm-content { margin-left: 196px; background: var(--bg); min-height: 100vh; }
-.adm-topbar { background: #fff; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 28px; justify-content: space-between; }
-.adm-topbar-title { font-size: 15px; font-weight: 700; color: var(--h1); }
-
-/* theme swatch */
-.th-swatch { width: 28px; height: 28px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
-.th-swatch:hover { transform: scale(1.15); }
-.th-swatch.sel { border-color: var(--h1); }
-
-/* ────────────────────────────────
-   SCROLLBAR
-──────────────────────────────── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
 </head>
 <body>
@@ -743,30 +414,29 @@ img { display: block; }
     <div class="hero-body">
       <div class="h-badge"><i data-lucide="sparkles"></i> AIが3分でポータルを自動生成</div>
       <h1 class="h-h1">中小企業のための<br><em>かんたん社内ポータル</em></h1>
-      <p class="h-sub">ITが得意でなくても大丈夫。AIが手伝うから、誰でも3分で使えるポータルが作れます。</p>
+      <p class="h-sub">ITが得意でなくても大丈夫。テンプレートを選ぶだけで、プロ品質のポータルが完成します。</p>
       <div class="h-btns">
-        <button class="h-cta" onclick="showPage('login')"><i data-lucide="arrow-right"></i>無料で試してみる</button>
-        <button class="h-demo" onclick="showPage('portal')">デモを見る</button>
+        <button class="h-cta" onclick="showPage('templates')"><i data-lucide="arrow-right"></i>テンプレートを選ぶ</button>
+        <button class="h-demo" onclick="showPage('builder')"><i data-lucide="monitor"></i>デモを見る</button>
       </div>
     </div>
   </section>
-
   <section class="features">
     <div style="text-align:center;margin-bottom:48px;">
       <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">WHY CHOOSE US</div>
-      <h2 style="font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:10px;">なぜ選ばれるのか</h2>
-      <p style="font-size:15px;color:var(--muted);">サイボウズの簡単さ × Softrの美しさ × AIの速さ</p>
+      <h2 style="font-size:26px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:10px;">なぜ選ばれるのか</h2>
+      <p style="font-size:15px;color:var(--muted);">Softrの美しさ × サイボウズの使いやすさ × AIの速さ</p>
     </div>
     <div class="feat-grid">
-      <div class="feat-card"><div class="feat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="zap"></i></div><div class="feat-title">3分でセットアップ</div><div class="feat-desc">AIウィザードが質問に答えるだけで、会社にぴったりのポータルを自動生成します。</div></div>
-      <div class="feat-card"><div class="feat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="smartphone"></i></div><div class="feat-title">スマホでもきれい</div><div class="feat-desc">PCはサイドバー、スマホはボトムタブで最適表示。どこからでも使いやすい。</div></div>
-      <div class="feat-card"><div class="feat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="bot"></i></div><div class="feat-title">AIがサポート</div><div class="feat-desc">よくある質問への自動回答、お知らせの自動要約など、AIが社員をサポートします。</div></div>
-      <div class="feat-card"><div class="feat-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="shield"></i></div><div class="feat-title">安心のセキュリティ</div><div class="feat-desc">社員ごとにアクセス権限を設定。大切な情報を確実に守ります。</div></div>
-      <div class="feat-card"><div class="feat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="palette"></i></div><div class="feat-title">自由なカスタマイズ</div><div class="feat-desc">会社のカラーやロゴに合わせてデザインを簡単に変更できます。</div></div>
-      <div class="feat-card"><div class="feat-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="headphones"></i></div><div class="feat-title">充実のサポート</div><div class="feat-desc">日本語サポート対応。困ったときにすぐ相談できる体制を整えています。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="layout-template"></i></div><div class="feat-title">テンプレートから即スタート</div><div class="feat-desc">社内ポータル・プロジェクト管理・ドキュメント管理など豊富なテンプレートから選ぶだけ。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="smartphone"></i></div><div class="feat-title">PC・タブレット・スマホ対応</div><div class="feat-desc">ビルダーでPC/タブレット/モバイルのプレビューを確認しながら構築できます。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="database"></i></div><div class="feat-title">かんたんデータ管理</div><div class="feat-desc">スプレッドシート感覚でメンバー・プロジェクト・ファイルを管理。専門知識不要。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="shield"></i></div><div class="feat-title">部署・役職ごとの権限管理</div><div class="feat-desc">部署・役職ごとに閲覧・編集権限を細かく設定。大切な情報を確実に守ります。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="folder-open"></i></div><div class="feat-title">社内資料を一元管理</div><div class="feat-desc">規程・会議資料・営業資料をフォルダで整理。検索ですぐ見つかります。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="users"></i></div><div class="feat-title">プロジェクト進捗を可視化</div><div class="feat-desc">メンバーの役割・進捗・マイルストーンをリアルタイムで把握できます。</div></div>
     </div>
     <div style="text-align:center;margin-top:52px;">
-      <button class="h-cta" onclick="showPage('login')" style="background:var(--h1);margin:0 auto;">今すぐ無料で始める</button>
+      <button class="h-cta" onclick="showPage('templates')" style="margin:0 auto;">今すぐテンプレートを選ぶ</button>
       <p style="font-size:12px;color:var(--faint);margin-top:11px;">クレジットカード不要 · 14日間無料トライアル</p>
     </div>
   </section>
@@ -788,7 +458,7 @@ img { display: block; }
       <div style="text-align:right;margin-top:-6px;margin-bottom:14px;"><span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;">パスワードを忘れた方</span></div>
       <button class="btn-login" onclick="showPage('onboarding')">ログイン</button>
       <div class="login-or"><div class="login-or-line"></div><span class="login-or-text">または</span><div class="login-or-line"></div></div>
-      <button class="btn-demo" onclick="showPage('portal')"><i data-lucide="monitor"></i>デモポータルを見る</button>
+      <button class="btn-demo-login" onclick="showPage('templates')"><i data-lucide="layout-template"></i>テンプレートを選んで始める</button>
       <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--muted);">アカウントをお持ちでない方は <span style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="showPage('onboarding')">新規登録</span></div>
     </div>
   </div>
@@ -800,12 +470,12 @@ img { display: block; }
 <div id="page-onboarding" class="page">
   <div class="ob-bg">
     <div class="ob-card">
-      <div class="ob-hd" id="ob-hd">
-        <div class="ob-step-lbl">ステップ 1 / 4</div>
+      <div id="ob-hd">
+        <div class="ob-step-lbl">ステップ 1 / 3</div>
         <div class="ob-step-title">会社の情報を教えてください</div>
-        <div class="ob-prog"><div class="ob-dot done" id="od1"></div><div class="ob-dot" id="od2"></div><div class="ob-dot" id="od3"></div><div class="ob-dot" id="od4"></div></div>
+        <div class="ob-prog"><div class="ob-dot done" id="od1"></div><div class="ob-dot" id="od2"></div><div class="ob-dot" id="od3"></div></div>
       </div>
-      <div class="ob-body" id="ob-body"></div>
+      <div id="ob-body"></div>
       <div class="ob-footer">
         <button class="btn btn-ghost" id="ob-back" onclick="obBack()"><i data-lucide="arrow-left"></i>戻る</button>
         <button class="btn btn-primary" id="ob-next" onclick="obNext()">次へ<i data-lucide="arrow-right"></i></button>
@@ -815,554 +485,912 @@ img { display: block; }
 </div>
 
 <!-- ══════════════════════════════════════
-     PORTAL
+     TEMPLATES
 ══════════════════════════════════════ -->
-<div id="page-portal" class="page page-portal">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="sb-brand-inner">
-        <div class="sb-icon"><i data-lucide="building-2"></i></div>
-        <div><div class="sb-company">Eチーム株式会社</div><div class="sb-tagline">社内ポータル</div></div>
+<div id="page-templates" class="page">
+  <div class="tmpl-page">
+    <div class="tmpl-topbar">
+      <div class="tmpl-logo">
+        <div class="tmpl-logo-icon"><i data-lucide="building-2"></i></div>
+        <span class="tmpl-logo-text">AI社内ポータル Builder</span>
       </div>
+      <button onclick="showPage('login')" style="padding:6px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h2);cursor:pointer;display:flex;align-items:center;gap:6px;"><i data-lucide="log-out" style="width:14px;height:14px;"></i>ログアウト</button>
     </div>
-    <nav class="sb-nav">
-      <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard"><i data-lucide="home"></i>ホーム</div>
-      <div class="nav-item" onclick="showView('news')" id="nav-news"><i data-lucide="bell"></i>お知らせ<span class="nav-pill">3</span></div>
-      <div class="nav-item" onclick="showView('links')" id="nav-links"><i data-lucide="link-2"></i>よく使うリンク</div>
-      <div class="nav-item" onclick="showView('members')" id="nav-members"><i data-lucide="users"></i>メンバー</div>
-      <div class="nav-item" onclick="showView('faq')" id="nav-faq"><i data-lucide="help-circle"></i>FAQ</div>
-      <div class="nav-sep"></div>
-      <div class="nav-item" onclick="showPage('admin')"><i data-lucide="settings"></i>管理画面</div>
-    </nav>
-    <div class="sb-footer">
-      <div class="sb-user">
-        <div class="sb-ava">山</div>
-        <div><div class="sb-uname">山田 太郎</div><div class="sb-udept">営業部</div></div>
-        <div class="sb-ucaret"><i data-lucide="chevron-down"></i></div>
+    <div class="tmpl-body">
+      <div class="tmpl-header">
+        <h1>テンプレートを選択してください</h1>
+        <p>あなたの会社に合ったテンプレートから始めましょう</p>
       </div>
-    </div>
-  </aside>
-
-  <!-- Mobile topbar -->
-  <div class="mobile-topbar">
-    <span class="mobile-logo">社内ポータル</span>
-    <div class="tb-icon"><i data-lucide="bell"></i></div>
-  </div>
-
-  <!-- Main -->
-  <div class="portal-body">
-    <header class="topbar">
-      <span class="topbar-title" id="topbar-title">ホーム</span>
-      <div class="topbar-right">
-        <div class="tb-icon"><i data-lucide="search"></i></div>
-        <div class="tb-icon" style="position:relative;">
-          <i data-lucide="bell"></i>
-          <span style="position:absolute;top:6px;right:6px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span>
-        </div>
-        <div class="tb-user">
-          <div class="sb-ava" style="width:22px;height:22px;font-size:9px;">山</div>
-          <span class="tb-uname">山田 太郎</span>
-          <i data-lucide="chevron-down"></i>
-        </div>
+      <div class="tmpl-filters">
+        <button class="tmpl-filter active">すべて</button>
+        <button class="tmpl-filter">社内向け</button>
+        <button class="tmpl-filter">顧客向け</button>
+        <button class="tmpl-filter">プロジェクト管理</button>
       </div>
-    </header>
+      <div class="tmpl-grid">
 
-    <main class="portal-main">
-
-      <!-- ── DASHBOARD ── -->
-      <div class="view active" id="view-dashboard">
-        <div style="margin-bottom:4px;">
-          <div class="pg-title">おはようございます、山田さん</div>
-          <div class="pg-sub">今日も一日よろしくお願いします — 2025年4月1日（火）</div>
-        </div>
-        <div class="divider"></div>
-
-        <!-- Stats -->
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-num">3</div>
-            <div class="stat-lbl">未読のお知らせ</div>
-            <div class="stat-sub up"><i data-lucide="trending-up"></i>今日2件追加</div>
+        <!-- 社内ポータル -->
+        <div class="tmpl-card featured" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#EEF2FF,#C7D2FE);">
+            <span class="tmpl-thumb-badge" style="color:var(--primary);">社内向け</span>
+            <span class="tmpl-thumb-popular">人気 No.1</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#4F46E5;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div><div class="tmpl-thumb-mrow" style="width:65%"></div><div class="tmpl-thumb-mrow" style="width:50%"></div></div>
+                <div class="tmpl-thumb-mcontent"><div class="tmpl-thumb-mcard"></div><div class="tmpl-thumb-mcard"></div><div class="tmpl-thumb-mcard" style="height:10px;width:60%;"></div></div>
+              </div>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-num">24</div>
-            <div class="stat-lbl">メンバー数</div>
-            <div class="stat-sub up"><i data-lucide="user-plus"></i>今月4名追加</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">2</div>
-            <div class="stat-lbl">今週のイベント</div>
-            <div class="stat-sub" style="color:var(--faint);">直近: 4月15日</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">5</div>
-            <div class="stat-lbl">未対応タスク</div>
-            <div class="stat-sub" style="color:var(--faint);">期限: 今週</div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat">社内ポータル</div>
+            <div class="tmpl-name">社内ポータル スタンダード</div>
+            <div class="tmpl-desc">お知らせ・メンバー名簿・FAQ・よく使うリンクを備えた基本セット。中小企業に最適。</div>
+            <button class="tmpl-use-btn">このテンプレートを使う</button>
           </div>
         </div>
 
-        <div class="two-col">
-          <!-- Latest news -->
-          <div class="card">
-            <div class="card-hd">
-              <span class="card-hd-t">最新のお知らせ</span>
-              <span class="card-link" onclick="showView('news')">すべて見る<i data-lucide="chevron-right"></i></span>
-            </div>
-            <div class="dash-news-row" onclick="showView('news')">
-              <img class="dash-news-thumb" src="https://picsum.photos/seed/medical/88/68" alt="" onerror="this.style.display='none'">
-              <div class="dash-news-info">
-                <div class="dash-news-title">2025年度 健康診断のご案内</div>
-                <div class="dash-news-sub"><span class="nbadge nb-red" style="font-size:9px;padding:1px 6px;">重要</span> 4月1日 · 人事部</div>
+        <!-- プロジェクト管理 -->
+        <div class="tmpl-card" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#F5F3FF,#DDD6FE);">
+            <span class="tmpl-thumb-badge" style="color:#7C3AED;">プロジェクト管理</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#7C3AED;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div><div class="tmpl-thumb-mrow" style="width:65%"></div></div>
+                <div class="tmpl-thumb-mcontent"><div class="tmpl-thumb-mcard" style="background:#DDD6FE;"></div><div class="tmpl-thumb-mcard"></div><div class="tmpl-thumb-mcard" style="height:10px;width:60%;"></div></div>
               </div>
-              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
-            </div>
-            <div class="dash-news-row" onclick="showView('news')">
-              <img class="dash-news-thumb" src="https://picsum.photos/seed/meeting/88/68" alt="" onerror="this.style.display='none'">
-              <div class="dash-news-info">
-                <div class="dash-news-title">4月の全社会議について</div>
-                <div class="dash-news-sub"><span class="nbadge nb-indigo" style="font-size:9px;padding:1px 6px;">イベント</span> 3月28日 · 経営企画部</div>
-              </div>
-              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
-            </div>
-            <div class="dash-news-row" onclick="showView('news')">
-              <div class="dash-news-ph"><i data-lucide="megaphone"></i></div>
-              <div class="dash-news-info">
-                <div class="dash-news-title">オフィスの清掃日程変更</div>
-                <div class="dash-news-sub"><span class="nbadge nb-slate" style="font-size:9px;padding:1px 6px;">一般</span> 3月25日 · 総務部</div>
-              </div>
-              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
             </div>
           </div>
-
-          <!-- Quick access + Schedule -->
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <div class="card">
-              <div class="card-hd"><span class="card-hd-t">よく使うリンク</span><span class="card-link" onclick="showView('links')">すべて見る<i data-lucide="chevron-right"></i></span></div>
-              <div class="shortcut-grid">
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="mail" style="color:#EA4335;"></i><span class="shortcut-label">メール</span></div>
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="calendar" style="color:#4285F4;"></i><span class="shortcut-label">カレンダー</span></div>
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="folder" style="color:#FBBC04;"></i><span class="shortcut-label">ドライブ</span></div>
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="message-square" style="color:#4A154B;"></i><span class="shortcut-label">Slack</span></div>
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="file-text" style="color:#374151;"></i><span class="shortcut-label">Notion</span></div>
-                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="book-open" style="color:#8B5CF6;"></i><span class="shortcut-label">研修</span></div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-hd"><span class="card-hd-t">本日のスケジュール</span></div>
-              <div style="padding:10px 12px;display:flex;flex-direction:column;gap:4px;">
-                <div class="sched-item now">
-                  <div class="sched-time" style="color:var(--primary);">09:30</div>
-                  <div class="sched-bar" style="background:var(--primary);"></div>
-                  <div><div class="sched-title">朝礼・チームミーティング</div><div class="sched-meta">会議室A · 30分</div></div>
-                </div>
-                <div class="sched-item">
-                  <div class="sched-time" style="color:var(--faint);">14:00</div>
-                  <div class="sched-bar" style="background:var(--border);"></div>
-                  <div><div class="sched-title">新規顧客プレゼン</div><div class="sched-meta">オンライン · 1時間</div></div>
-                </div>
-                <div class="sched-item">
-                  <div class="sched-time" style="color:var(--faint);">16:30</div>
-                  <div class="sched-bar" style="background:var(--border);"></div>
-                  <div><div class="sched-title">週次レポート提出</div><div class="sched-meta">締め切り</div></div>
-                </div>
-              </div>
-            </div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat" style="color:#7C3AED;">プロジェクト管理</div>
+            <div class="tmpl-name">プロジェクト管理ポータル</div>
+            <div class="tmpl-desc">プロジェクト・タスク・マイルストーン・進捗を一元管理。チームの生産性を向上。</div>
+            <button class="tmpl-use-btn" style="background:#7C3AED;">このテンプレートを使う</button>
           </div>
         </div>
+
+        <!-- クライアントポータル -->
+        <div class="tmpl-card" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#ECFDF5,#A7F3D0);">
+            <span class="tmpl-thumb-badge" style="color:#059669;">顧客向け</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#059669;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div><div class="tmpl-thumb-mrow" style="width:65%"></div></div>
+                <div class="tmpl-thumb-mcontent"><div class="tmpl-thumb-mcard" style="background:#A7F3D0;"></div><div class="tmpl-thumb-mcard"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat" style="color:#059669;">顧客向け</div>
+            <div class="tmpl-name">クライアントポータル</div>
+            <div class="tmpl-desc">顧客向けにプロジェクト進捗・請求書・ファイルを安全に共有できるポータル。</div>
+            <button class="tmpl-use-btn" style="background:#059669;">このテンプレートを使う</button>
+          </div>
+        </div>
+
+        <!-- 社員ディレクトリ -->
+        <div class="tmpl-card" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFF7ED,#FED7AA);">
+            <span class="tmpl-thumb-badge" style="color:#D97706;">社内向け</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#D97706;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div></div>
+                <div class="tmpl-thumb-mcontent" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;"><div class="tmpl-thumb-mcard" style="background:#FED7AA;height:32px;border-radius:6px;"></div><div class="tmpl-thumb-mcard" style="background:#FED7AA;height:32px;border-radius:6px;"></div><div class="tmpl-thumb-mcard" style="background:#FED7AA;height:32px;border-radius:6px;"></div><div class="tmpl-thumb-mcard" style="background:#FED7AA;height:32px;border-radius:6px;"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat" style="color:#D97706;">社内向け</div>
+            <div class="tmpl-name">社員ディレクトリ</div>
+            <div class="tmpl-desc">部署・役職・スキルで検索できる社員名簿。組織図表示にも対応。</div>
+            <button class="tmpl-use-btn" style="background:#D97706;">このテンプレートを使う</button>
+          </div>
+        </div>
+
+        <!-- ドキュメント管理 -->
+        <div class="tmpl-card" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFF1F2,#FECDD3);">
+            <span class="tmpl-thumb-badge" style="color:#DC2626;">社内向け</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#DC2626;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div><div class="tmpl-thumb-mrow" style="width:65%"></div><div class="tmpl-thumb-mrow" style="width:50%"></div></div>
+                <div class="tmpl-thumb-mcontent"><div class="tmpl-thumb-mcard" style="background:#FECDD3;"></div><div class="tmpl-thumb-mcard"></div><div class="tmpl-thumb-mcard" style="height:10px;width:60%;"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat" style="color:#DC2626;">ドキュメント</div>
+            <div class="tmpl-name">ドキュメントライブラリ</div>
+            <div class="tmpl-desc">規程・マニュアル・会議資料をフォルダで整理。全文検索で即座に見つかる。</div>
+            <button class="tmpl-use-btn" style="background:#DC2626;">このテンプレートを使う</button>
+          </div>
+        </div>
+
+        <!-- タスク管理 -->
+        <div class="tmpl-card" onclick="showPage('builder')">
+          <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFFBEB,#FDE68A);">
+            <span class="tmpl-thumb-badge" style="color:#92400E;">プロジェクト管理</span>
+            <div class="tmpl-thumb-mockup">
+              <div class="tmpl-thumb-mbar" style="background:#D97706;"><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div><div class="tmpl-thumb-mbar-dot" style="background:rgba(255,255,255,.4)"></div></div>
+              <div class="tmpl-thumb-mbody">
+                <div class="tmpl-thumb-mside" style="background:#F9FAFB;border-right:1px solid #E5E7EB;"><div class="tmpl-thumb-mrow" style="width:70%"></div><div class="tmpl-thumb-mrow" style="width:55%"></div></div>
+                <div class="tmpl-thumb-mcontent"><div class="tmpl-thumb-mcard" style="background:#FDE68A;"></div><div class="tmpl-thumb-mcard"></div><div class="tmpl-thumb-mcard"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-cat" style="color:#92400E;">タスク管理</div>
+            <div class="tmpl-name">タスク管理ボード</div>
+            <div class="tmpl-desc">ToDo・進行中・完了のカンバン形式でタスクを管理。担当者・期限・優先度設定可能。</div>
+            <button class="tmpl-use-btn" style="background:#D97706;">このテンプレートを使う</button>
+          </div>
+        </div>
+
       </div>
-
-      <!-- ── NEWS ── -->
-      <div class="view" id="view-news">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
-          <div><div class="pg-title">お知らせ</div><div class="pg-sub">社内のお知らせ・連絡をここで確認できます</div></div>
-          <button class="btn btn-dark"><i data-lucide="plus"></i>投稿する</button>
-        </div>
-        <div class="tab-nav">
-          <button class="tab-btn is-on" onclick="filterNews(this,'all')">すべて</button>
-          <button class="tab-btn" onclick="filterNews(this,'重要')">重要</button>
-          <button class="tab-btn" onclick="filterNews(this,'イベント')">イベント</button>
-          <button class="tab-btn" onclick="filterNews(this,'人事')">人事</button>
-          <button class="tab-btn" onclick="filterNews(this,'一般')">一般</button>
-        </div>
-        <div class="search-row"><i data-lucide="search"></i><input placeholder="お知らせを検索..."></div>
-        <div id="news-list">
-          <div class="news-card" data-cat="重要">
-            <div class="news-card-inner">
-              <img class="news-thumb" src="https://picsum.photos/seed/medical2/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
-              <div class="news-info">
-                <div class="news-meta-row"><span class="nbadge nb-red">重要</span><span class="news-date">2025年4月1日</span><span class="news-dept">· 人事部</span></div>
-                <div class="news-title-t">2025年度 健康診断のご案内</div>
-                <div class="news-excerpt">今年度の健康診断を下記の日程で実施します。対象者は必ずご参加ください。</div>
-              </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
-            </div>
-          </div>
-          <div class="news-card" data-cat="イベント">
-            <div class="news-card-inner">
-              <img class="news-thumb" src="https://picsum.photos/seed/conference/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
-              <div class="news-info">
-                <div class="news-meta-row"><span class="nbadge nb-indigo">イベント</span><span class="news-date">2025年3月28日</span><span class="news-dept">· 経営企画部</span></div>
-                <div class="news-title-t">4月の全社会議について</div>
-                <div class="news-excerpt">4月15日（火）15:00より、全社会議を開催します。全員参加をお願いします。</div>
-              </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
-            </div>
-          </div>
-          <div class="news-card" data-cat="人事">
-            <div class="news-card-inner">
-              <img class="news-thumb" src="https://picsum.photos/seed/team/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
-              <div class="news-info">
-                <div class="news-meta-row"><span class="nbadge nb-green">人事</span><span class="news-date">2025年3月25日</span><span class="news-dept">· 人事部</span></div>
-                <div class="news-title-t">2025年度 新入社員のご紹介</div>
-                <div class="news-excerpt">この度、4名の新しい仲間が加わりました。温かくお迎えください。</div>
-              </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
-            </div>
-          </div>
-          <div class="news-card" data-cat="一般">
-            <div class="news-card-inner">
-              <div class="news-thumb-ph"><i data-lucide="megaphone"></i></div>
-              <div class="news-info">
-                <div class="news-meta-row"><span class="nbadge nb-slate">一般</span><span class="news-date">2025年3月20日</span><span class="news-dept">· 総務部</span></div>
-                <div class="news-title-t">オフィスの清掃日程変更のお知らせ</div>
-                <div class="news-excerpt">4月より毎週火曜日の清掃を水曜日に変更します。ご協力をお願いします。</div>
-              </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
-            </div>
-          </div>
-          <div class="news-card" data-cat="一般">
-            <div class="news-card-inner">
-              <div class="news-thumb-ph"><i data-lucide="wifi"></i></div>
-              <div class="news-info">
-                <div class="news-meta-row"><span class="nbadge nb-slate">一般</span><span class="news-date">2025年3月15日</span><span class="news-dept">· IT部</span></div>
-                <div class="news-title-t">社内WiFiパスワード変更について</div>
-                <div class="news-excerpt">セキュリティ強化のため、社内WiFiのパスワードを変更します。</div>
-              </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── LINKS ── -->
-      <div class="view" id="view-links">
-        <div class="pg-title" style="margin-bottom:6px;">よく使うリンク</div>
-        <div class="pg-sub" style="margin-bottom:20px;">業務でよく使うサービスへのリンク集</div>
-        <div class="search-row" style="max-width:380px;"><i data-lucide="search"></i><input placeholder="リンクを検索..."></div>
-
-        <div class="link-cat-label">コミュニケーション</div>
-        <div class="link-grid">
-          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#EA4335;"><i data-lucide="mail"></i></div><div><div class="link-name">Gmail（社用）</div><div class="link-desc">google.com/mail</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="message-square"></i></div><div><div class="link-name">Slack</div><div class="link-desc">チャット・連絡</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#DBEAFE;color:#2563EB;"><i data-lucide="calendar"></i></div><div><div class="link-name">Googleカレンダー</div><div class="link-desc">スケジュール管理</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="video"></i></div><div><div class="link-name">Google Meet</div><div class="link-desc">ビデオ会議</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-        </div>
-
-        <div class="link-cat-label">ドキュメント・ファイル</div>
-        <div class="link-grid">
-          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="folder"></i></div><div><div class="link-name">Google Drive</div><div class="link-desc">ファイル共有</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="file-text"></i></div><div><div class="link-name">Notion（社内Wiki）</div><div class="link-desc">マニュアル・議事録</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-        </div>
-
-        <div class="link-cat-label">人事・総務</div>
-        <div class="link-grid">
-          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="credit-card"></i></div><div><div class="link-name">給与明細確認</div><div class="link-desc">給与・源泉徴収</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="receipt"></i></div><div><div class="link-name">経費申請</div><div class="link-desc">経費・精算</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="umbrella"></i></div><div><div class="link-name">有給・休暇申請</div><div class="link-desc">各種申請フォーム</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="book-open"></i></div><div><div class="link-name">社内研修システム</div><div class="link-desc">学習・スキルアップ</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
-        </div>
-      </div>
-
-      <!-- ── MEMBERS ── -->
-      <div class="view" id="view-members">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
-          <div><div class="pg-title">メンバー</div><div class="pg-sub">社員の連絡先・プロフィール一覧</div></div>
-          <button class="btn btn-dark"><i data-lucide="user-plus"></i>メンバー追加</button>
-        </div>
-        <div class="tab-nav">
-          <button class="tab-btn is-on">すべて</button>
-          <button class="tab-btn">営業部</button>
-          <button class="tab-btn">開発部</button>
-          <button class="tab-btn">総務部</button>
-          <button class="tab-btn">人事部</button>
-          <button class="tab-btn">経営企画部</button>
-        </div>
-        <div class="search-row"><i data-lucide="search"></i><input placeholder="名前・部署で検索..."></div>
-        <div class="member-grid" id="member-grid"></div>
-      </div>
-
-      <!-- ── FAQ ── -->
-      <div class="view" id="view-faq">
-        <div class="pg-title" style="margin-bottom:6px;">FAQ</div>
-        <div class="pg-sub" style="margin-bottom:20px;">困ったときはまずここで確認してください</div>
-        <div class="tab-nav">
-          <button class="tab-btn is-on">すべて</button>
-          <button class="tab-btn">IT・システム</button>
-          <button class="tab-btn">人事・総務</button>
-          <button class="tab-btn">経費・給与</button>
-        </div>
-        <div class="search-row"><i data-lucide="search"></i><input placeholder="質問を検索..."></div>
-        <div id="faq-list"></div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- Bottom tabs -->
-  <div class="bottom-tabs">
-    <div class="bottom-tabs-row">
-      <div class="btab is-on" onclick="showView('dashboard')" id="tab-dashboard"><i data-lucide="home"></i>ホーム</div>
-      <div class="btab" onclick="showView('news')" id="tab-news" style="position:relative;"><i data-lucide="bell"></i><span class="btab-dot"></span>お知らせ</div>
-      <div class="btab" onclick="showView('links')" id="tab-links"><i data-lucide="link-2"></i>リンク</div>
-      <div class="btab" onclick="showView('members')" id="tab-members"><i data-lucide="users"></i>メンバー</div>
-      <div class="btab" onclick="showView('faq')" id="tab-faq"><i data-lucide="help-circle"></i>FAQ</div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════
-     ADMIN
+     BUILDER
 ══════════════════════════════════════ -->
-<div id="page-admin" class="page">
-  <div style="display:flex;min-height:100vh;">
-    <aside class="adm-sidebar">
-      <div class="adm-brand"><div class="adm-brand-name">管理画面</div><div class="adm-brand-sub">Eチーム株式会社</div></div>
-      <nav class="adm-nav">
-        <div class="adm-item active"><i data-lucide="layout-dashboard"></i>ダッシュボード</div>
-        <div class="adm-item"><i data-lucide="bell"></i>お知らせ管理</div>
-        <div class="adm-item"><i data-lucide="users"></i>メンバー管理</div>
-        <div class="adm-item"><i data-lucide="link-2"></i>リンク管理</div>
-        <div class="adm-item"><i data-lucide="help-circle"></i>FAQ管理</div>
-        <div class="adm-item"><i data-lucide="palette"></i>デザイン設定</div>
-        <div class="adm-item"><i data-lucide="shield"></i>セキュリティ</div>
-      </nav>
-      <div style="padding:10px;border-top:1px solid rgba(255,255,255,.06);">
-        <div onclick="showPage('portal')" class="adm-item"><i data-lucide="arrow-left"></i>ポータルへ戻る</div>
+<div id="page-builder" class="page">
+  <!-- Builder Top Bar -->
+  <div class="bld-topbar">
+    <div class="bld-appname"><i data-lucide="building-2"></i>Eチーム株式会社<i data-lucide="chevron-down"></i></div>
+    <div class="bld-topbar-divider"></div>
+    <div class="bld-tabs">
+      <button class="bld-tab active" onclick="bldTab('interface',this)"><i data-lucide="layout-dashboard"></i>Interface</button>
+      <button class="bld-tab" onclick="bldTab('data',this)"><i data-lucide="database"></i>Data</button>
+      <button class="bld-tab" onclick="bldTab('users',this)"><i data-lucide="users"></i>Users</button>
+      <button class="bld-tab" onclick="bldTab('workflows',this)"><i data-lucide="git-branch"></i>Workflows</button>
+    </div>
+    <div class="bld-spacer"></div>
+    <div class="bld-trial"><i data-lucide="clock"></i>残り 6 日間トライアル</div>
+    <div class="bld-device-group">
+      <button class="bld-device-btn active" id="dev-pc" onclick="setDevice('pc',this)" title="PC"><i data-lucide="monitor"></i></button>
+      <button class="bld-device-btn" id="dev-tablet" onclick="setDevice('tablet',this)" title="タブレット"><i data-lucide="tablet"></i></button>
+      <button class="bld-device-btn" id="dev-mobile" onclick="setDevice('mobile',this)" title="モバイル"><i data-lucide="smartphone"></i></button>
+    </div>
+    <button class="bld-btn-preview"><i data-lucide="eye"></i>プレビュー</button>
+    <button class="bld-btn-publish"><i data-lucide="globe"></i>公開する<div class="bld-publish-dot"></div></button>
+  </div>
+
+  <!-- Builder Body -->
+  <div class="bld-body">
+
+    <!-- Left Panel: Interface -->
+    <div class="bld-left" id="bld-left-interface">
+      <div class="bld-left-section">
+        <div class="bld-left-label">ページ</div>
+        <div class="bld-page-item active" id="bldnav-dashboard" onclick="bldNav('dashboard',this)"><i data-lucide="home"></i>ダッシュボード</div>
+        <div class="bld-page-item" id="bldnav-projects" onclick="bldNav('projects',this)"><i data-lucide="layers"></i>プロジェクト</div>
+        <div class="bld-page-item" id="bldnav-documents" onclick="bldNav('documents',this)"><i data-lucide="folder"></i>ドキュメント</div>
+        <div class="bld-page-item" id="bldnav-members" onclick="bldNav('members',this)"><i data-lucide="users"></i>メンバー</div>
+        <div class="bld-page-item" id="bldnav-news" onclick="bldNav('news',this)"><i data-lucide="bell"></i>お知らせ</div>
+        <div class="bld-page-item" id="bldnav-faq" onclick="bldNav('faq',this)"><i data-lucide="help-circle"></i>FAQ</div>
       </div>
-    </aside>
-    <div class="adm-content">
-      <div class="adm-topbar"><span class="adm-topbar-title">管理ダッシュボード</span><span style="font-size:12px;color:var(--faint);">最終更新: 2025年4月1日</span></div>
-      <div style="padding:32px;">
-        <div class="stat-grid" style="margin-bottom:22px;">
-          <div class="stat-card"><div class="stat-num">24</div><div class="stat-lbl">総メンバー数</div><div class="stat-sub up"><i data-lucide="trending-up"></i>今月4名追加</div></div>
-          <div class="stat-card"><div class="stat-num">312</div><div class="stat-lbl">月間ページビュー</div><div class="stat-sub up"><i data-lucide="trending-up"></i>先月比 +18%</div></div>
-          <div class="stat-card"><div class="stat-num">18</div><div class="stat-lbl">公開中のお知らせ</div><div class="stat-sub" style="color:var(--faint);">今月3件投稿</div></div>
-          <div class="stat-card"><div class="stat-num">12</div><div class="stat-lbl">FAQ件数</div><div class="stat-sub" style="color:var(--faint);">先週1件追加</div></div>
+      <div class="bld-sep"></div>
+      <div class="bld-left-section">
+        <div class="bld-left-label">ブロック</div>
+        <div class="bld-page-item"><i data-lucide="layout-grid"></i>カードリスト</div>
+        <div class="bld-page-item"><i data-lucide="table-2"></i>テーブル</div>
+        <div class="bld-page-item"><i data-lucide="bar-chart-2"></i>チャート</div>
+        <div class="bld-page-item"><i data-lucide="form-input"></i>フォーム</div>
+      </div>
+      <div class="bld-sep"></div>
+      <div class="bld-add-item"><i data-lucide="plus"></i>ページを追加</div>
+    </div>
+
+    <!-- Left Panel: Data -->
+    <div class="bld-left" id="bld-left-data" style="display:none;">
+      <div class="bld-left-section">
+        <div class="bld-left-label">このアプリで使用中</div>
+        <div class="bld-source-item active">
+          <div class="bld-source-icon indigo">DB</div>
+          社内ポータルDB
         </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-hd"><span class="card-hd-t">最近の活動</span></div>
-            <div style="padding:16px;display:flex;flex-direction:column;gap:11px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:#10B981;border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">山田さんがお知らせを投稿しました</span><span style="font-size:11px;color:var(--faint);">1時間前</span></div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:var(--primary);border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">新しいメンバーが4名追加されました</span><span style="font-size:11px;color:var(--faint);">3時間前</span></div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:#F59E0B;border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">FAQが更新されました</span><span style="font-size:11px;color:var(--faint);">昨日</span></div>
+      </div>
+      <div class="bld-sep"></div>
+      <div class="bld-left-section">
+        <div class="bld-left-label">利用可能</div>
+        <div class="bld-source-item">
+          <div class="bld-source-icon" style="background:#FEF3C7;color:#92400E;">G</div>
+          Googleスプレッドシート
+        </div>
+        <div class="bld-source-item">
+          <div class="bld-source-icon" style="background:#D1FAE5;color:#065F46;">S</div>
+          Supabase
+        </div>
+      </div>
+      <div class="bld-sep"></div>
+      <div class="bld-add-item"><i data-lucide="plus"></i>データソースを追加</div>
+    </div>
+
+    <!-- Left Panel: Users -->
+    <div class="bld-left" id="bld-left-users" style="display:none;">
+      <div class="bld-left-section">
+        <div class="bld-left-label">権限グループ</div>
+        <div class="bld-page-item active"><i data-lucide="shield"></i>管理者</div>
+        <div class="bld-page-item"><i data-lucide="briefcase"></i>部長・マネージャー</div>
+        <div class="bld-page-item"><i data-lucide="user"></i>一般社員</div>
+        <div class="bld-page-item"><i data-lucide="user-minus"></i>パート・アルバイト</div>
+      </div>
+      <div class="bld-sep"></div>
+      <div class="bld-add-item"><i data-lucide="plus"></i>グループを追加</div>
+    </div>
+
+    <!-- Left Panel: Workflows -->
+    <div class="bld-left" id="bld-left-workflows" style="display:none;">
+      <div class="bld-left-section">
+        <div class="bld-left-label">ワークフロー</div>
+        <div class="bld-page-item"><i data-lucide="mail"></i>新規登録通知</div>
+        <div class="bld-page-item"><i data-lucide="bell-ring"></i>お知らせ自動送信</div>
+      </div>
+      <div class="bld-sep"></div>
+      <div class="bld-add-item"><i data-lucide="plus"></i>ワークフローを追加</div>
+    </div>
+
+    <!-- Main: Interface Preview -->
+    <div class="bld-main" id="bld-main-interface">
+      <div class="bld-preview-area">
+        <div class="bld-device-frame" id="bld-frame">
+          <div class="portal-wrap">
+
+            <!-- Portal Sidebar -->
+            <div class="portal-sidebar">
+              <div class="sb-brand">
+                <div class="sb-brand-inner">
+                  <div class="sb-icon"><i data-lucide="building-2"></i></div>
+                  <div><div class="sb-company">Eチーム株式会社</div><div class="sb-tagline">社内ポータル</div></div>
+                </div>
+              </div>
+              <nav class="sb-nav">
+                <div class="nav-item active" id="pnav-dashboard" onclick="portalNav('dashboard',this)"><i data-lucide="home"></i>ホーム</div>
+                <div class="nav-item" id="pnav-projects" onclick="portalNav('projects',this)"><i data-lucide="layers"></i>プロジェクト</div>
+                <div class="nav-item" id="pnav-documents" onclick="portalNav('documents',this)"><i data-lucide="folder"></i>ドキュメント</div>
+                <div class="nav-item" id="pnav-members" onclick="portalNav('members',this)"><i data-lucide="users"></i>メンバー</div>
+                <div class="nav-item" id="pnav-news" onclick="portalNav('news',this)"><i data-lucide="bell"></i>お知らせ<span class="nav-pill">3</span></div>
+                <div class="nav-item" id="pnav-links" onclick="portalNav('links',this)"><i data-lucide="link-2"></i>よく使うリンク</div>
+                <div class="nav-item" id="pnav-faq" onclick="portalNav('faq',this)"><i data-lucide="help-circle"></i>FAQ</div>
+                <div class="nav-sep"></div>
+                <div class="nav-item" onclick="bldTab('data',document.querySelector('.bld-tab:nth-child(2)'))"><i data-lucide="settings"></i>管理・設定</div>
+              </nav>
+              <div class="sb-footer">
+                <div class="sb-user">
+                  <div class="sb-ava">山</div>
+                  <div><div class="sb-uname">山田 太郎</div><div class="sb-udept">営業部</div></div>
+                  <div class="sb-ucaret"><i data-lucide="chevron-down"></i></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Portal Content -->
+            <div class="portal-content">
+              <div class="portal-topbar">
+                <span class="portal-topbar-title" id="portal-title">ホーム</span>
+                <div class="topbar-right">
+                  <div class="tb-icon"><i data-lucide="search"></i></div>
+                  <div class="tb-icon" style="position:relative;"><i data-lucide="bell"></i><span style="position:absolute;top:7px;right:7px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span></div>
+                  <div class="tb-user">
+                    <div class="sb-ava" style="width:26px;height:26px;font-size:10px;">山</div>
+                    <span class="tb-uname">山田 太郎</span>
+                    <i data-lucide="chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="portal-main">
+
+                <!-- DASHBOARD -->
+                <div class="view active" id="view-dashboard">
+                  <div class="pg-title">おはようございます、山田さん</div>
+                  <div class="pg-sub">2026年4月1日（水） — 今日も一日よろしくお願いします</div>
+                  <div class="divider"></div>
+                  <div class="stat-grid">
+                    <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">未読のお知らせ</div><div class="stat-sub up"><i data-lucide="trending-up"></i>今日2件追加</div></div>
+                    <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">進行中プロジェクト</div><div class="stat-sub" style="color:var(--faint);">今週2件更新</div></div>
+                    <div class="stat-card"><div class="stat-num">24</div><div class="stat-lbl">メンバー数</div><div class="stat-sub up"><i data-lucide="user-plus"></i>今月4名追加</div></div>
+                    <div class="stat-card"><div class="stat-num">86</div><div class="stat-lbl">社内資料数</div><div class="stat-sub" style="color:var(--faint);">今週5件追加</div></div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div>
+                      <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">最新のお知らせ</div>
+                      <div class="news-list">
+                        <div class="news-card"><img class="news-thumb" src="https://picsum.photos/seed/n1/180/150"><div class="news-body"><div class="news-cat">重要</div><div class="news-title">2026年度 夏季休暇のご案内</div><div class="news-meta">2026/4/1 · 総務部</div></div></div>
+                        <div class="news-card"><img class="news-thumb" src="https://picsum.photos/seed/n2/180/150"><div class="news-body"><div class="news-cat">お知らせ</div><div class="news-title">社内システムメンテナンスのお知らせ</div><div class="news-meta">2026/3/28 · IT部</div></div></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">進行中プロジェクト</div>
+                      <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+                          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:var(--h1);">社内ポータルリニューアル</span><span class="proj-status progress"><span class="proj-status-dot"></span>進行中</span></div>
+                          <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:68%"></div></div>
+                          <div style="font-size:11px;color:var(--primary);font-weight:600;">68%</div>
+                        </div>
+                        <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+                          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:var(--h1);">ECサイト構築</span><span class="proj-status active"><span class="proj-status-dot"></span>開始</span></div>
+                          <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:32%"></div></div>
+                          <div style="font-size:11px;color:var(--primary);font-weight:600;">32%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PROJECTS -->
+                <div class="view" id="view-projects">
+                  <div class="pg-title">プロジェクト</div>
+                  <div class="pg-sub">進行中・完了したプロジェクトを管理</div>
+                  <div class="divider"></div>
+                  <div class="tab-nav">
+                    <button class="tab-btn is-on">すべて (4)</button>
+                    <button class="tab-btn">進行中 (3)</button>
+                    <button class="tab-btn">レビュー中 (1)</button>
+                    <button class="tab-btn">完了 (1)</button>
+                  </div>
+                  <div class="proj-grid" id="proj-grid"></div>
+                </div>
+
+                <!-- DOCUMENTS -->
+                <div class="view" id="view-documents">
+                  <div class="pg-title">ドキュメント</div>
+                  <div class="pg-sub">社内資料を検索・閲覧できます</div>
+                  <div class="divider"></div>
+                  <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="ファイル名・キーワードで検索..."></div>
+                  <div class="doc-layout">
+                    <div class="doc-sidebar">
+                      <div class="bld-left-label" style="padding:4px 8px 10px;">フォルダ</div>
+                      <div class="doc-folder active"><i data-lucide="folder-open"></i>すべて (86)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>経営資料 (12)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>規程・規則 (8)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>営業資料 (24)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>人事資料 (15)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>会議資料 (18)</div>
+                      <div class="doc-folder"><i data-lucide="folder"></i>総務資料 (9)</div>
+                    </div>
+                    <div class="doc-main">
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-size:13px;color:var(--muted);">86件のファイル</div>
+                        <button class="btn btn-dark" style="padding:7px 14px;font-size:12px;"><i data-lucide="upload"></i>アップロード</button>
+                      </div>
+                      <div class="doc-grid" id="doc-grid"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MEMBERS -->
+                <div class="view" id="view-members">
+                  <div class="pg-title">メンバー</div>
+                  <div class="pg-sub">部署・役職で検索できます</div>
+                  <div class="divider"></div>
+                  <div class="tab-nav">
+                    <button class="tab-btn is-on">全員 (24)</button>
+                    <button class="tab-btn">営業部</button>
+                    <button class="tab-btn">開発部</button>
+                    <button class="tab-btn">マーケティング</button>
+                    <button class="tab-btn">総務・人事</button>
+                  </div>
+                  <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="名前・部署で検索..."></div>
+                  <div class="member-grid" id="member-grid"></div>
+                </div>
+
+                <!-- NEWS -->
+                <div class="view" id="view-news">
+                  <div class="pg-title">お知らせ</div>
+                  <div class="pg-sub">社内からの最新情報</div>
+                  <div class="divider"></div>
+                  <div class="tab-nav">
+                    <button class="tab-btn is-on">すべて</button>
+                    <button class="tab-btn">重要</button>
+                    <button class="tab-btn">一般</button>
+                    <button class="tab-btn">イベント</button>
+                  </div>
+                  <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="お知らせを検索..."></div>
+                  <div class="news-list" id="news-list"></div>
+                </div>
+
+                <!-- LINKS -->
+                <div class="view" id="view-links">
+                  <div class="pg-title">よく使うリンク</div>
+                  <div class="pg-sub">業務でよく使うツール・サービス</div>
+                  <div class="divider"></div>
+                  <div class="link-grid">
+                    <div class="link-card"><div class="link-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="mail"></i></div><div class="link-name">社内メール</div><div class="link-url">mail.eteam.co.jp</div></div>
+                    <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="calendar"></i></div><div class="link-name">Googleカレンダー</div><div class="link-url">calendar.google.com</div></div>
+                    <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="file-text"></i></div><div class="link-name">経費精算</div><div class="link-url">expense.eteam.co.jp</div></div>
+                    <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="video"></i></div><div class="link-name">Zoom</div><div class="link-url">zoom.us</div></div>
+                    <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="message-square"></i></div><div class="link-name">Slack</div><div class="link-url">eteam.slack.com</div></div>
+                    <div class="link-card"><div class="link-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="git-branch"></i></div><div class="link-name">GitHub</div><div class="link-url">github.com</div></div>
+                  </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="view" id="view-faq">
+                  <div class="pg-title">よくある質問</div>
+                  <div class="pg-sub">AIが自動回答します</div>
+                  <div class="divider"></div>
+                  <div class="search-row"><i data-lucide="search"></i><input type="text" placeholder="質問を検索..."></div>
+                  <div class="faq-list" id="faq-list"></div>
+                </div>
+
+              </div><!-- portal-main -->
+            </div><!-- portal-content -->
+          </div><!-- portal-wrap -->
+        </div><!-- bld-device-frame -->
+      </div><!-- bld-preview-area -->
+    </div><!-- bld-main-interface -->
+
+    <!-- Main: Data View -->
+    <div class="bld-main" id="bld-main-data" style="display:none;">
+      <div class="bld-data-view">
+        <div class="bld-data-topbar">
+          <div class="bld-data-title"><i data-lucide="database"></i>社内ポータルDB</div>
+          <div class="data-tabs">
+            <div class="data-tab active" onclick="dataTab('users',this)">ユーザー</div>
+            <div class="data-tab" onclick="dataTab('projects',this)">プロジェクト</div>
+            <div class="data-tab" onclick="dataTab('files',this)">ファイル</div>
+            <div class="data-tab" onclick="dataTab('tasks',this)">タスク</div>
+            <div class="data-tab" onclick="dataTab('news',this)">お知らせ</div>
+            <div class="data-tab" style="color:var(--faint);font-size:18px;padding:4px 10px;">+</div>
+          </div>
+        </div>
+        <div class="data-toolbar">
+          <button class="data-toolbar-btn"><i data-lucide="list-filter"></i>フィルター</button>
+          <button class="data-toolbar-btn"><i data-lucide="arrow-up-down"></i>並び替え</button>
+          <button class="data-toolbar-btn"><i data-lucide="eye"></i>表示項目</button>
+          <span class="data-count" id="data-count">7件</span>
+          <button class="data-toolbar-btn" style="margin-left:8px;background:var(--h1);color:white;border-color:var(--h1);"><i data-lucide="plus"></i>レコード追加</button>
+        </div>
+        <div class="spreadsheet" id="spreadsheet-area"></div>
+      </div>
+    </div>
+
+    <!-- Main: Users (権限管理) -->
+    <div class="bld-main" id="bld-main-users" style="display:none;">
+      <div style="flex:1;padding:32px;overflow-y:auto;">
+        <div class="pg-title">ユーザー・権限管理</div>
+        <div class="pg-sub">部署・役職ごとにアクセス権限を設定できます</div>
+        <div class="divider"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#EDE9FE;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="shield" style="width:18px;height:18px;color:#6D28D9;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">管理者</div><div style="font-size:12px;color:var(--muted);">3名</div></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー管理</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>全ドキュメント</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>権限設定</span><span style="color:#10B981;font-weight:600;">フルアクセス</span></div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-hd"><span class="card-hd-t">テーマカラー</span></div>
-            <div style="padding:18px;">
-              <p style="font-size:12px;color:var(--muted);margin-bottom:13px;">メインカラーをリアルタイムで変更できます</p>
-              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">
-                <div class="th-swatch sel" style="background:#4F46E5;" onclick="setTheme('#4F46E5','#4338CA','#EEF2FF',this)"></div>
-                <div class="th-swatch" style="background:#10B981;" onclick="setTheme('#10B981','#059669','#D1FAE5',this)"></div>
-                <div class="th-swatch" style="background:#8B5CF6;" onclick="setTheme('#8B5CF6','#7C3AED','#EDE9FE',this)"></div>
-                <div class="th-swatch" style="background:#F59E0B;" onclick="setTheme('#F59E0B','#D97706','#FEF3C7',this)"></div>
-                <div class="th-swatch" style="background:#EF4444;" onclick="setTheme('#EF4444','#DC2626','#FEE2E2',this)"></div>
-                <div class="th-swatch" style="background:#0EA5E9;" onclick="setTheme('#0EA5E9','#0284C7','#E0F2FE',this)"></div>
-              </div>
-              <div style="padding:11px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:10px;">
-                <div style="width:26px;height:26px;border-radius:7px;background:var(--primary);"></div>
-                <span style="font-size:13px;color:var(--muted);">現在のカラー</span>
-                <button class="btn btn-primary" style="margin-left:auto;padding:5px 13px;font-size:12px;">ボタン</button>
-              </div>
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#DBEAFE;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="briefcase" style="width:18px;height:18px;color:#1D4ED8;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">部長・マネージャー</div><div style="font-size:12px;color:var(--muted);">5名</div></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">閲覧・編集</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー管理</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>部署ドキュメント</span><span style="color:#10B981;font-weight:600;">閲覧・編集</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>権限設定</span><span style="color:#DC2626;font-weight:600;">アクセス不可</span></div>
+            </div>
+          </div>
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:36px;height:36px;background:#D1FAE5;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i data-lucide="user" style="width:18px;height:18px;color:#059669;"></i></div><div><div style="font-size:14px;font-weight:700;color:var(--h1);">一般社員</div><div style="font-size:12px;color:var(--muted);">16名</div></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>ダッシュボード</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>メンバー名簿</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>一般ドキュメント</span><span style="color:#10B981;font-weight:600;">閲覧のみ</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span>機密資料</span><span style="color:#DC2626;font-weight:600;">アクセス不可</span></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Main: Workflows -->
+    <div class="bld-main" id="bld-main-workflows" style="display:none;">
+      <div style="flex:1;padding:32px;overflow-y:auto;">
+        <div class="pg-title">ワークフロー</div>
+        <div class="pg-sub">自動化・通知の設定</div>
+        <div class="divider"></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;align-items:center;gap:14px;">
+            <div style="width:40px;height:40px;background:#EEF2FF;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="mail" style="width:20px;height:20px;color:var(--primary);"></i></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--h1);margin-bottom:3px;">新規メンバー登録通知</div><div style="font-size:12px;color:var(--muted);">新しいメンバーが追加されたとき → 管理者にメール通知</div></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#10B981;"><div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>有効</div>
+          </div>
+          <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;align-items:center;gap:14px;">
+            <div style="width:40px;height:40px;background:#FEF3C7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bell-ring" style="width:20px;height:20px;color:#D97706;"></i></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--h1);margin-bottom:3px;">お知らせ自動プッシュ</div><div style="font-size:12px;color:var(--muted);">「重要」カテゴリのお知らせ投稿時 → 全メンバーに通知</div></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#10B981;"><div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>有効</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- bld-body -->
 </div>
 
 <script>
-// ── DATA ──
-const MEMBERS = [
+/* ── PAGE NAV ── */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg){ pg.classList.add('active'); }
+  lucide.createIcons();
+  if(id==='builder') initBuilder();
+  if(id==='onboarding') initOB();
+}
+
+/* ── BUILDER TABS ── */
+function bldTab(tab, btn){
+  // Tab buttons
+  document.querySelectorAll('.bld-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Left panels
+  ['interface','data','users','workflows'].forEach(t=>{
+    const el=document.getElementById('bld-left-'+t);
+    if(el) el.style.display = t===tab ? 'flex' : 'none';
+  });
+  // Main areas
+  ['interface','data','users','workflows'].forEach(t=>{
+    const el=document.getElementById('bld-main-'+t);
+    if(el) el.style.display = t===tab ? 'flex' : 'none';
+  });
+  lucide.createIcons();
+}
+
+/* ── DEVICE PREVIEW ── */
+function setDevice(dev, btn){
+  document.querySelectorAll('.bld-device-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const frame = document.getElementById('bld-frame');
+  if(!frame) return;
+  const area = frame.parentElement;
+  const areaW = area.offsetWidth - 48;
+  const widths = {pc:1100, tablet:768, mobile:390};
+  const targetW = widths[dev] || 1100;
+  frame.style.width = targetW + 'px';
+  const scale = Math.min(1, areaW / targetW);
+  frame.style.transform = 'scale('+scale+')';
+  frame.style.marginBottom = -(680*(1-scale))+'px';
+}
+
+/* ── PORTAL NAV (inside builder) ── */
+function portalNav(view, el){
+  document.querySelectorAll('[id^="pnav-"]').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('[id^="bldnav-"]').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const bldEl = document.getElementById('bldnav-'+view);
+  if(bldEl) bldEl.classList.add('active');
+  const vEl = document.getElementById('view-'+view);
+  if(vEl) vEl.classList.add('active');
+  const titles = {dashboard:'ホーム',projects:'プロジェクト',documents:'ドキュメント',members:'メンバー',news:'お知らせ',links:'よく使うリンク',faq:'FAQ'};
+  const t = document.getElementById('portal-title');
+  if(t) t.textContent = titles[view]||view;
+  lucide.createIcons();
+}
+
+/* ── BUILDER LEFT NAV ── */
+function bldNav(view, el){
+  document.querySelectorAll('[id^="bldnav-"]').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  portalNav(view, document.getElementById('pnav-'+view));
+}
+
+/* ── DATA TAB ── */
+function dataTab(tab, el){
+  document.querySelectorAll('.data-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderSpreadsheet(tab);
+}
+
+/* ── BUILDER INIT ── */
+function initBuilder(){
+  renderProjects();
+  renderDocuments();
+  renderMembers();
+  renderNews();
+  renderFAQ();
+  renderSpreadsheet('users');
+  setTimeout(()=>setDevice('pc',document.getElementById('dev-pc')),100);
+}
+
+/* ── DATA ── */
+const MEMBERS=[
   {name:'山田 太郎',dept:'営業部',role:'部長',init:'山',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)',photo:'https://i.pravatar.cc/64?img=33'},
-  {name:'佐藤 花子',dept:'人事部',role:'マネージャー',init:'佐',grad:'linear-gradient(135deg,#EC4899,#F43F5E)',photo:'https://i.pravatar.cc/64?img=49'},
-  {name:'田中 一郎',dept:'開発部',role:'エンジニア',init:'田',grad:'linear-gradient(135deg,#3B82F6,#06B6D4)',photo:'https://i.pravatar.cc/64?img=12'},
-  {name:'鈴木 美咲',dept:'総務部',role:'主任',init:'鈴',grad:'linear-gradient(135deg,#10B981,#34D399)',photo:'https://i.pravatar.cc/64?img=47'},
-  {name:'高橋 健太',dept:'開発部',role:'シニアエンジニア',init:'高',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',photo:'https://i.pravatar.cc/64?img=7'},
-  {name:'伊藤 さくら',dept:'営業部',role:'担当',init:'伊',grad:'linear-gradient(135deg,#EF4444,#F87171)',photo:'https://i.pravatar.cc/64?img=44'},
-  {name:'渡辺 隆',dept:'経営企画部',role:'課長',init:'渡',grad:'linear-gradient(135deg,#8B5CF6,#A78BFA)',photo:'https://i.pravatar.cc/64?img=15'},
-  {name:'小林 由美',dept:'人事部',role:'担当',init:'小',grad:'linear-gradient(135deg,#14B8A6,#06B6D4)',photo:'https://i.pravatar.cc/64?img=48'},
-  {name:'加藤 誠',dept:'開発部',role:'リードエンジニア',init:'加',grad:'linear-gradient(135deg,#F97316,#FB923C)',photo:'https://i.pravatar.cc/64?img=11'},
-  {name:'松田 奈緒',dept:'総務部',role:'担当',init:'松',grad:'linear-gradient(135deg,#D946EF,#EC4899)',photo:'https://i.pravatar.cc/64?img=45'},
-  {name:'中村 博',dept:'営業部',role:'担当',init:'中',grad:'linear-gradient(135deg,#0EA5E9,#38BDF8)',photo:'https://i.pravatar.cc/64?img=18'},
-  {name:'木村 葵',dept:'経営企画部',role:'担当',init:'木',grad:'linear-gradient(135deg,#84CC16,#A3E635)',photo:'https://i.pravatar.cc/64?img=46'},
-];
-const FAQS = [
-  {cat:'IT',q:'WiFiに接続できません',a:'端末のWiFi設定を確認してください。SSID「eteam-office」を選択し、パスワードはIT部のドキュメントをご確認ください。解決しない場合はIT部（内線: 200）にご連絡ください。'},
-  {cat:'IT',q:'社内メールの設定方法を教えてください',a:'Gmailアプリを開き、設定→アカウント追加→会社のメールアドレスを入力してください。詳細な手順はNotionの「IT設定マニュアル」をご確認ください。'},
-  {cat:'IT',q:'パスワードを忘れてしまいました',a:'ログイン画面の「パスワードを忘れた方」からリセットリンクを送信できます。緊急の場合はIT部（内線: 200）まで。'},
-  {cat:'人事・総務',q:'有給休暇の申請方法は？',a:'有給申請はポータルの「よく使うリンク」→「有給・休暇申請」から行ってください。申請は5営業日前までに行い、上長の承認が必要です。'},
-  {cat:'人事・総務',q:'入社時の書類は何が必要ですか？',a:'①雇用保険被保険者証 ②年金手帳 ③源泉徴収票（前職がある場合）④マイナンバー ⑤銀行口座情報が必要です。'},
-  {cat:'経費・給与',q:'経費精算の締め日はいつですか？',a:'毎月20日が締め日です。21日以降の申請は翌月分となります。「よく使うリンク」→「経費申請」から申請してください。'},
-  {cat:'経費・給与',q:'給与明細はどこで確認できますか？',a:'「よく使うリンク」→「給与明細確認」からオンラインで確認できます。毎月25日に更新されます。'},
+  {name:'鈴木 花子',dept:'マーケティング',role:'マネージャー',init:'鈴',grad:'linear-gradient(135deg,#10B981,#34D399)',photo:'https://i.pravatar.cc/64?img=44'},
+  {name:'田中 健一',dept:'開発部',role:'エンジニア',init:'田',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',photo:'https://i.pravatar.cc/64?img=52'},
+  {name:'佐藤 恵美',dept:'デザイン',role:'デザイナー',init:'佐',grad:'linear-gradient(135deg,#EF4444,#F87171)',photo:'https://i.pravatar.cc/64?img=40'},
+  {name:'伊藤 大輔',dept:'営業部',role:'リーダー',init:'伊',grad:'linear-gradient(135deg,#06B6D4,#22D3EE)',photo:'https://i.pravatar.cc/64?img=12'},
+  {name:'渡辺 さくら',dept:'総務・人事',role:'人事担当',init:'渡',grad:'linear-gradient(135deg,#8B5CF6,#A78BFA)',photo:'https://i.pravatar.cc/64?img=68'},
+  {name:'中村 浩二',dept:'開発部',role:'エンジニア',init:'中',grad:'linear-gradient(135deg,#F59E0B,#FCD34D)',photo:'https://i.pravatar.cc/64?img=55'},
+  {name:'小林 美咲',dept:'マーケティング',role:'担当',init:'小',grad:'linear-gradient(135deg,#EC4899,#F472B6)',photo:'https://i.pravatar.cc/64?img=71'},
 ];
 
-// ── PAGE NAV ──
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  if (id === 'portal') { renderMembers(); renderFAQ(); }
-  if (id === 'onboarding') initOB();
-  window.scrollTo(0,0);
-  ri();
+const PROJECTS=[
+  {name:'社内ポータルリニューアル',client:'社内',status:'progress',pct:68,imgs:[33,40,52,12],end:'2026/6/30',img:'proj1'},
+  {name:'ECサイト構築',client:'株式会社サンプル',status:'active',pct:32,imgs:[55,68,71],end:'2026/9/30',img:'proj2'},
+  {name:'営業管理ツール',client:'営業部',status:'review',pct:90,imgs:[22,45,33],end:'2026/4/30',img:'proj3'},
+  {name:'マーケティングLP',client:'株式会社ABC',status:'done',pct:100,imgs:[40,71],end:'2026/3/15',img:'proj4'},
+];
+
+const DOCS=[
+  {name:'2026年度事業計画書.pdf',type:'pdf',folder:'経営資料',size:'2.4MB',updated:'4/1'},
+  {name:'就業規則_改訂版.pdf',type:'pdf',folder:'規程・規則',size:'1.1MB',updated:'3/28'},
+  {name:'営業報告書_3月.xlsx',type:'xlsx',folder:'営業資料',size:'845KB',updated:'4/1'},
+  {name:'採用面接シート.docx',type:'docx',folder:'人事資料',size:'324KB',updated:'3/25'},
+  {name:'プロジェクト提案書.pptx',type:'pptx',folder:'営業資料',size:'5.2MB',updated:'3/20'},
+  {name:'会議議事録_4月定例.docx',type:'docx',folder:'会議資料',size:'156KB',updated:'4/1'},
+  {name:'経費精算フォーム.xlsx',type:'xlsx',folder:'総務資料',size:'189KB',updated:'3/15'},
+  {name:'ブランドガイドライン.pdf',type:'pdf',folder:'マーケティング',size:'8.3MB',updated:'2/28'},
+];
+
+const NEWS_DATA=[
+  {cat:'重要',title:'2026年度 夏季休暇のご案内',date:'2026/4/1',author:'総務部',img:'n1'},
+  {cat:'お知らせ',title:'社内システムメンテナンスのお知らせ（4/10 深夜）',date:'2026/3/28',author:'IT部',img:'n2'},
+  {cat:'イベント',title:'4月度 全社ミーティング開催のご案内',date:'2026/3/25',author:'人事部',img:'n3'},
+  {cat:'お知らせ',title:'新入社員研修スケジュールのご連絡',date:'2026/3/20',author:'人事部',img:'n4'},
+];
+
+const FAQ_DATA=[
+  {q:'有給休暇の申請方法を教えてください',a:'社内ポータルの「申請」→「休暇申請」から申請できます。申請後、上長に承認依頼が自動送信されます。'},
+  {q:'経費精算はどこから行えますか？',a:'「よく使うリンク」→「経費精算」からアクセスできます。領収書は申請日より30日以内にアップロードしてください。'},
+  {q:'テレワーク申請の手続きを教えてください',a:'毎週月曜日18時までに翌週分をまとめて申請してください。突発的な場合は上長に直接連絡の上、申請してください。'},
+  {q:'社内Wi-Fiのパスワードを確認したい',a:'「ドキュメント」→「総務資料」→「オフィス設備ガイド」に記載されています。社外秘情報のため取り扱いにご注意ください。'},
+  {q:'新しいメンバーを招待するには？',a:'「管理・設定」→「メンバー管理」→「招待」からメールアドレスを入力して招待できます。管理者権限が必要です。'},
+];
+
+const STATUS_LABELS={progress:'進行中',active:'開始',review:'レビュー中',done:'完了'};
+
+function typeColors(t){
+  if(t==='pdf') return {bg:'#FEE2E2',color:'#DC2626',icon:'file-text'};
+  if(t==='xlsx') return {bg:'#D1FAE5',color:'#059669',icon:'table'};
+  if(t==='docx') return {bg:'#DBEAFE',color:'#1D4ED8',icon:'file-text'};
+  if(t==='pptx') return {bg:'#FEF3C7',color:'#D97706',icon:'presentation'};
+  return {bg:'#F3F4F6',color:'#6B7280',icon:'file'};
 }
 
-// ── VIEW NAV ──
-const VT = {dashboard:'ホーム',news:'お知らせ',links:'よく使うリンク',members:'メンバー',faq:'FAQ'};
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const v = document.getElementById('view-' + id); if (v) v.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const ni = document.getElementById('nav-' + id); if (ni) ni.classList.add('active');
-  document.querySelectorAll('.btab').forEach(t => t.classList.remove('is-on'));
-  const ti = document.getElementById('tab-' + id); if (ti) ti.classList.add('is-on');
-  const tt = document.getElementById('topbar-title'); if (tt && VT[id]) tt.textContent = VT[id];
-  window.scrollTo(0,0); ri();
-}
-
-// ── MEMBERS ──
-function renderMembers() {
-  const g = document.getElementById('member-grid');
-  if (!g || g.children.length) return;
-  g.innerHTML = MEMBERS.map(m => `
-    <div class="member-card">
-      <img class="m-photo" src="${m.photo}" alt="${m.name}"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="m-ava" style="background:${m.grad};display:none;">${m.init}</div>
-      <div class="m-name">${m.name}</div>
-      <div><span class="m-dept">${m.dept}</span></div>
-      <div class="m-role">${m.role}</div>
-      <div class="m-btns">
-        <button class="m-btn"><i data-lucide="mail"></i>メール</button>
-        <button class="m-btn"><i data-lucide="message-square"></i>チャット</button>
+function renderProjects(){
+  const g=document.getElementById('proj-grid');
+  if(!g) return;
+  g.innerHTML=PROJECTS.map(p=>`
+    <div class="proj-card">
+      <img class="proj-thumb" src="https://picsum.photos/seed/${p.img}/400/200">
+      <div class="proj-body">
+        <span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]}</span>
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-client">${p.client}</div>
+        <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:${p.pct}%"></div></div>
+        <div class="proj-meta">
+          <span class="proj-pct">${p.pct}%</span>
+          <div class="proj-avatars">${p.imgs.map(i=>`<img class="proj-avatar" src="https://i.pravatar.cc/32?img=${i}">`).join('')}</div>
+        </div>
       </div>
     </div>`).join('');
-  ri();
 }
 
-// ── FAQ ──
-function renderFAQ() {
-  const l = document.getElementById('faq-list');
-  if (!l || l.children.length) return;
-  l.innerHTML = FAQS.map((f,i) => `
-    <div class="faq-item" id="faq${i}">
-      <div class="faq-q" onclick="toggleFaq(${i})">
-        <div class="faq-q-lbl">Q</div>
-        <div class="faq-q-text">${f.q}</div>
-        <span class="faq-q-cat">${f.cat}</span>
-        <div class="faq-chevron"><i data-lucide="chevron-down"></i></div>
+function renderDocuments(){
+  const g=document.getElementById('doc-grid');
+  if(!g) return;
+  g.innerHTML=DOCS.map(d=>{
+    const c=typeColors(d.type);
+    return `<div class="doc-card">
+      <div class="doc-icon" style="background:${c.bg};color:${c.color};"><i data-lucide="${c.icon}"></i></div>
+      <div class="doc-name">${d.name}</div>
+      <div class="doc-meta">${d.folder} · ${d.updated} · ${d.size}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMembers(){
+  const g=document.getElementById('member-grid');
+  if(!g) return;
+  g.innerHTML=MEMBERS.map(m=>`
+    <div class="member-card">
+      <div class="m-photo-wrap">
+        <img class="m-photo" src="${m.photo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="m-ava" style="background:${m.grad};">${m.init}</div>
+      </div>
+      <div class="m-name">${m.name}</div>
+      <div class="m-dept">${m.dept}</div>
+      <span class="m-role-badge dept">${m.role}</span>
+    </div>`).join('');
+}
+
+function renderNews(){
+  const g=document.getElementById('news-list');
+  if(!g) return;
+  g.innerHTML=NEWS_DATA.map(n=>`
+    <div class="news-card">
+      <img class="news-thumb" src="https://picsum.photos/seed/${n.img}/180/150">
+      <div class="news-body">
+        <div class="news-cat">${n.cat}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">${n.date} · ${n.author}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderFAQ(){
+  const g=document.getElementById('faq-list');
+  if(!g) return;
+  g.innerHTML=FAQ_DATA.map((f,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFAQ(${i})">
+        ${f.q}<i data-lucide="chevron-down"></i>
       </div>
       <div class="faq-a">${f.a}</div>
     </div>`).join('');
-  ri();
-}
-function toggleFaq(i) { document.getElementById('faq'+i).classList.toggle('open'); }
-
-// ── NEWS FILTER ──
-function filterNews(btn, cat) {
-  document.querySelectorAll('.tab-nav .tab-btn').forEach(b => b.classList.remove('is-on'));
-  btn.classList.add('is-on');
-  document.querySelectorAll('#news-list .news-card').forEach(c => {
-    c.style.display = (cat==='all' || c.dataset.cat===cat) ? '' : 'none';
-  });
 }
 
-// ── THEME ──
-function setTheme(c, ch, cl, el) {
-  document.documentElement.style.setProperty('--primary', c);
-  document.documentElement.style.setProperty('--primary-h', ch);
-  document.documentElement.style.setProperty('--primary-lt', cl);
-  document.querySelectorAll('.th-swatch').forEach(s => s.classList.remove('sel'));
-  el.classList.add('sel');
+function toggleFAQ(i){
+  document.getElementById('faq-'+i).classList.toggle('open');
+  lucide.createIcons();
 }
 
-// ── ONBOARDING ──
-let obStep = 1;
-const OB = [
-  {lbl:'ステップ 1 / 4', title:'会社の情報を教えてください', html:`
-    <div class="field"><label>会社名</label><input value="Eチーム株式会社"></div>
-    <div class="field"><label>業種</label><select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13.5px;font-family:inherit;color:var(--h1);outline:none;background:#fff;"><option>IT・システム</option><option>製造業</option><option>小売・流通</option><option>医療・福祉</option><option>その他</option></select></div>
-    <div class="field"><label>従業員数</label><select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13.5px;font-family:inherit;color:var(--h1);outline:none;background:#fff;"><option>〜10名</option><option selected>10〜50名</option><option>50〜100名</option><option>100名以上</option></select></div>`},
-  {lbl:'ステップ 2 / 4', title:'使いたい機能を選んでください', html:`
-    <p style="font-size:13px;color:var(--muted);margin-bottom:13px;">必要な機能を選んでください（複数選択可）</p>
+/* ── SPREADSHEET ── */
+function renderSpreadsheet(tab){
+  const area=document.getElementById('spreadsheet-area');
+  const cnt=document.getElementById('data-count');
+  if(!area) return;
+  if(tab==='users'){
+    if(cnt) cnt.textContent=MEMBERS.length+'件';
+    area.innerHTML=`<table>
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox"></th>
+        <th class="col-num">#</th>
+        <th>名前</th><th>メール</th><th>部署</th><th>役職</th><th>写真</th><th>スキル</th>
+      </tr></thead>
+      <tbody>${MEMBERS.map((m,i)=>`<tr>
+        <td class="col-chk"><input type="checkbox"></td>
+        <td class="col-num">${i+1}</td>
+        <td class="ss-name">${m.name}</td>
+        <td style="color:var(--muted);">${m.name.toLowerCase().replace(' ','.')}@eteam.co.jp</td>
+        <td>${m.dept}</td>
+        <td><span class="ss-badge employee">${m.role}</span></td>
+        <td><img class="ss-photo" src="${m.photo}"></td>
+        <td><span class="ss-skill s1">営業</span><span class="ss-skill s2">マーケ</span></td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+  } else if(tab==='projects'){
+    if(cnt) cnt.textContent=PROJECTS.length+'件';
+    area.innerHTML=`<table>
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox"></th>
+        <th class="col-num">#</th>
+        <th>プロジェクト名</th><th>クライアント</th><th>ステータス</th><th>進捗</th><th>期限</th>
+      </tr></thead>
+      <tbody>${PROJECTS.map((p,i)=>`<tr>
+        <td class="col-chk"><input type="checkbox"></td>
+        <td class="col-num">${i+1}</td>
+        <td class="ss-name">${p.name}</td>
+        <td style="color:var(--muted);">${p.client}</td>
+        <td><span class="ss-badge ${p.status}">${STATUS_LABELS[p.status]}</span></td>
+        <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:5px;background:var(--border-lt);border-radius:2px;overflow:hidden;"><div style="width:${p.pct}%;height:100%;background:var(--primary);border-radius:2px;"></div></div><span style="font-size:11px;font-weight:600;color:var(--primary);">${p.pct}%</span></div></td>
+        <td style="color:var(--muted);">${p.end}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+  } else if(tab==='files'){
+    if(cnt) cnt.textContent=DOCS.length+'件';
+    area.innerHTML=`<table>
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox"></th>
+        <th class="col-num">#</th>
+        <th>ファイル名</th><th>種類</th><th>フォルダ</th><th>サイズ</th><th>更新日</th>
+      </tr></thead>
+      <tbody>${DOCS.map((d,i)=>{const c=typeColors(d.type);return`<tr>
+        <td class="col-chk"><input type="checkbox"></td>
+        <td class="col-num">${i+1}</td>
+        <td class="ss-name">${d.name}</td>
+        <td><span style="display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${c.bg};color:${c.color};">${d.type.toUpperCase()}</span></td>
+        <td style="color:var(--muted);">${d.folder}</td>
+        <td style="color:var(--muted);">${d.size}</td>
+        <td style="color:var(--muted);">2026/${d.updated}</td>
+      </tr>`}).join('')}</tbody>
+    </table>
+    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+  } else if(tab==='tasks'){
+    if(cnt) cnt.textContent='8件';
+    const tasks=[
+      {name:'トップページデザイン',proj:'社内ポータルリニューアル',user:'佐藤 恵美',due:'4/10',status:'progress'},
+      {name:'API設計',proj:'ECサイト構築',user:'田中 健一',due:'4/15',status:'active'},
+      {name:'要件定義書レビュー',proj:'営業管理ツール',user:'山田 太郎',due:'4/5',status:'review'},
+      {name:'テスト実施',proj:'マーケティングLP',user:'中村 浩二',due:'3/15',status:'done'},
+    ];
+    area.innerHTML=`<table>
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox"></th>
+        <th class="col-num">#</th>
+        <th>タスク名</th><th>プロジェクト</th><th>担当者</th><th>期限</th><th>ステータス</th>
+      </tr></thead>
+      <tbody>${tasks.map((t,i)=>`<tr>
+        <td class="col-chk"><input type="checkbox"></td>
+        <td class="col-num">${i+1}</td>
+        <td class="ss-name">${t.name}</td>
+        <td style="color:var(--muted);">${t.proj}</td>
+        <td style="color:var(--muted);">${t.user}</td>
+        <td style="color:var(--muted);">2026/${t.due}</td>
+        <td><span class="ss-badge ${t.status}">${STATUS_LABELS[t.status]}</span></td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+  } else if(tab==='news'){
+    if(cnt) cnt.textContent=NEWS_DATA.length+'件';
+    area.innerHTML=`<table>
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox"></th>
+        <th class="col-num">#</th>
+        <th>タイトル</th><th>カテゴリ</th><th>投稿者</th><th>公開日</th>
+      </tr></thead>
+      <tbody>${NEWS_DATA.map((n,i)=>`<tr>
+        <td class="col-chk"><input type="checkbox"></td>
+        <td class="col-num">${i+1}</td>
+        <td class="ss-name">${n.title}</td>
+        <td><span class="ss-badge ${n.cat==='重要'?'admin':'employee'}">${n.cat}</span></td>
+        <td style="color:var(--muted);">${n.author}</td>
+        <td style="color:var(--muted);">${n.date}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="ss-add-row"><i data-lucide="plus"></i>レコードを追加</div>`;
+  }
+  lucide.createIcons();
+}
+
+/* ── ONBOARDING ── */
+let obStep=1;
+const OB=[
+  {lbl:'ステップ 1 / 3',title:'会社の情報を教えてください',html:`
+    <div class="ob-field"><label>会社名</label><input type="text" placeholder="例：株式会社Eチーム" value="Eチーム株式会社"></div>
+    <div class="ob-field"><label>業種</label><select><option>IT・ソフトウェア</option><option>製造業</option><option>小売・流通</option><option>サービス業</option></select></div>
+    <div class="ob-field"><label>従業員数</label><select><option>1〜10名</option><option>11〜50名</option><option selected>51〜200名</option><option>201名以上</option></select></div>`},
+  {lbl:'ステップ 2 / 3',title:'使いたい機能を選んでください',html:`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">必要な機能を選んでください（複数選択可）</p>
     <div class="ob-grid">
       <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="bell"></i></div><div class="ob-opt-label">お知らせ</div></div>
       <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="users"></i></div><div class="ob-opt-label">社員名簿</div></div>
-      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="link-2"></i></div><div class="ob-opt-label">リンク集</div></div>
-      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="help-circle"></i></div><div class="ob-opt-label">FAQ</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="layers"></i></div><div class="ob-opt-label">プロジェクト</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="folder"></i></div><div class="ob-opt-label">ドキュメント</div></div>
       <div class="ob-opt" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="calendar"></i></div><div class="ob-opt-label">カレンダー</div></div>
       <div class="ob-opt" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="bot"></i></div><div class="ob-opt-label">AIチャット</div></div>
     </div>`},
-  {lbl:'ステップ 3 / 4', title:'テーマカラーを選んでください', html:`
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">会社のイメージカラーに合わせてください</p>
-    <div class="swatches" style="margin-bottom:18px;">
-      <div class="swatch sel" style="background:#4F46E5;" onclick="obColor(this,'#4F46E5','#4338CA','#EEF2FF')"></div>
-      <div class="swatch" style="background:#10B981;" onclick="obColor(this,'#10B981','#059669','#D1FAE5')"></div>
-      <div class="swatch" style="background:#8B5CF6;" onclick="obColor(this,'#8B5CF6','#7C3AED','#EDE9FE')"></div>
-      <div class="swatch" style="background:#F59E0B;" onclick="obColor(this,'#F59E0B','#D97706','#FEF3C7')"></div>
-      <div class="swatch" style="background:#EF4444;" onclick="obColor(this,'#EF4444','#DC2626','#FEE2E2')"></div>
-      <div class="swatch" style="background:#0EA5E9;" onclick="obColor(this,'#0EA5E9','#0284C7','#E0F2FE')"></div>
-    </div>
-    <div style="padding:12px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:10px;">
-      <div style="width:26px;height:26px;border-radius:7px;background:var(--primary);"></div>
-      <span style="font-size:13px;color:var(--muted);">選択中のカラー</span>
-      <button class="btn btn-primary" style="margin-left:auto;padding:5px 12px;font-size:12px;">プレビュー</button>
-    </div>`},
-  {lbl:'ステップ 4 / 4', title:'準備完了！', html:`
+  {lbl:'ステップ 3 / 3',title:'完成！ビルダーで編集しましょう',html:`
     <div style="text-align:center;padding:10px 0;">
       <div style="width:52px;height:52px;background:var(--primary-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
         <i data-lucide="check" style="width:26px;height:26px;color:var(--primary);stroke-width:2.5;"></i>
       </div>
-      <div style="font-size:17px;font-weight:800;color:var(--h1);margin-bottom:5px;">ポータルが完成しました</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:18px;">AIが設定を最適化しました。<br>さっそくポータルを使い始めましょう。</div>
+      <div style="font-size:17px;font-weight:800;color:var(--h1);margin-bottom:6px;">ポータルが完成しました</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:18px;">ビルダーでデザイン・データを自由に編集できます。</div>
       <div style="display:flex;flex-direction:column;gap:6px;text-align:left;">
-        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">お知らせページ 設定完了</span></div>
-        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">メンバー名簿 設定完了</span></div>
-        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">FAQ AIが10件を自動生成</span></div>
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;flex-shrink:0;"></i><span style="font-size:13px;">ダッシュボード 設定完了</span></div>
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;flex-shrink:0;"></i><span style="font-size:13px;">プロジェクト管理 設定完了</span></div>
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;flex-shrink:0;"></i><span style="font-size:13px;">ドキュメント管理 設定完了</span></div>
       </div>
     </div>`},
 ];
-function initOB() { obStep = 1; renderOB(); }
-function renderOB() {
-  const s = OB[obStep-1];
-  document.querySelector('#ob-hd .ob-step-lbl').textContent = s.lbl;
-  document.querySelector('#ob-hd .ob-step-title').textContent = s.title;
-  for(let i=1;i<=4;i++) document.getElementById('od'+i).className='ob-dot'+(i<=obStep?' done':'');
-  document.getElementById('ob-body').innerHTML = s.html;
-  document.getElementById('ob-back').style.visibility = obStep===1 ? 'hidden' : 'visible';
-  document.getElementById('ob-next').innerHTML = obStep===4
-    ? '<i data-lucide="arrow-right"></i>ポータルへ'
+
+function initOB(){obStep=1;renderOB();}
+function renderOB(){
+  const s=OB[obStep-1];
+  document.querySelector('#ob-hd .ob-step-lbl').textContent=s.lbl;
+  document.querySelector('#ob-hd .ob-step-title').textContent=s.title;
+  for(let i=1;i<=3;i++) document.getElementById('od'+i).className='ob-dot'+(i<=obStep?' done':'');
+  document.getElementById('ob-body').innerHTML=s.html;
+  document.getElementById('ob-back').style.visibility=obStep===1?'hidden':'visible';
+  document.getElementById('ob-next').innerHTML=obStep===3
+    ? '<i data-lucide="layout-dashboard"></i>ビルダーへ'
     : '次へ<i data-lucide="arrow-right"></i>';
-  ri();
+  lucide.createIcons();
 }
-function obNext() { if(obStep===4){showPage('portal');return;} obStep++; renderOB(); }
-function obBack() { if(obStep>1){obStep--; renderOB();} }
-function obColor(el,c,ch,cl) {
-  document.querySelectorAll('#ob-body .swatch').forEach(s=>s.classList.remove('sel'));
-  el.classList.add('sel');
-  document.documentElement.style.setProperty('--primary',c);
-  document.documentElement.style.setProperty('--primary-h',ch);
-  document.documentElement.style.setProperty('--primary-lt',cl);
-}
+function obNext(){if(obStep<3){obStep++;renderOB();}else{showPage('builder');}}
+function obBack(){if(obStep>1){obStep--;renderOB();}}
 
-// ── LUCIDE ──
-function ri() { if(window.lucide) lucide.createIcons(); }
-
-document.addEventListener('DOMContentLoaded', () => { ri(); renderMembers(); renderFAQ(); });
+/* ── INIT ── */
+lucide.createIcons();
 </script>
 </body>
 </html>
