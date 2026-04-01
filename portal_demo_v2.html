@@ -1069,7 +1069,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
   </div>
   <!-- Builder Top Bar -->
   <div class="bld-topbar">
-    <div class="bld-appname"><i data-lucide="building-2"></i>Eチーム株式会社<i data-lucide="chevron-down"></i></div>
+    <div class="bld-appname"><i data-lucide="building-2"></i><span id="bld-company-name">会社名</span><i data-lucide="chevron-down"></i></div>
     <div class="bld-topbar-divider"></div>
     <div class="bld-tabs">
       <button class="bld-tab active" onclick="bldTab('interface',this)"><i data-lucide="layout-dashboard"></i>Interface</button>
@@ -1183,7 +1183,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
               <div class="sb-brand">
                 <div class="sb-brand-inner">
                   <div class="sb-icon"><i data-lucide="building-2"></i></div>
-                  <div><div class="sb-company">Eチーム株式会社</div><div class="sb-tagline">社内ポータル</div></div>
+                  <div><div class="sb-company" id="portal-company-name">会社名</div><div class="sb-tagline">社内ポータル</div></div>
                 </div>
               </div>
               <nav class="sb-nav">
@@ -1224,39 +1224,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 
                 <!-- DASHBOARD -->
                 <div class="view active" id="view-dashboard">
-                  <div class="pg-title">おはようございます、山田さん</div>
-                  <div class="pg-sub">2026年4月1日（水） — 今日も一日よろしくお願いします</div>
-                  <div class="divider"></div>
-                  <div class="stat-grid">
-                    <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">未読のお知らせ</div><div class="stat-sub up"><i data-lucide="trending-up"></i>今日2件追加</div></div>
-                    <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">進行中プロジェクト</div><div class="stat-sub" style="color:var(--faint);">今週2件更新</div></div>
-                    <div class="stat-card"><div class="stat-num">24</div><div class="stat-lbl">メンバー数</div><div class="stat-sub up"><i data-lucide="user-plus"></i>今月4名追加</div></div>
-                    <div class="stat-card"><div class="stat-num">86</div><div class="stat-lbl">社内資料数</div><div class="stat-sub" style="color:var(--faint);">今週5件追加</div></div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                    <div>
-                      <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">最新のお知らせ</div>
-                      <div class="news-list">
-                        <div class="news-card"><img class="news-thumb" src="https://picsum.photos/seed/n1/180/150"><div class="news-body"><div class="news-cat">重要</div><div class="news-title">2026年度 夏季休暇のご案内</div><div class="news-meta">2026/4/1 · 総務部</div></div></div>
-                        <div class="news-card"><img class="news-thumb" src="https://picsum.photos/seed/n2/180/150"><div class="news-body"><div class="news-cat">お知らせ</div><div class="news-title">社内システムメンテナンスのお知らせ</div><div class="news-meta">2026/3/28 · IT部</div></div></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">進行中プロジェクト</div>
-                      <div style="display:flex;flex-direction:column;gap:10px;">
-                        <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
-                          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:var(--h1);">社内ポータルリニューアル</span><span class="proj-status progress"><span class="proj-status-dot"></span>進行中</span></div>
-                          <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:68%"></div></div>
-                          <div style="font-size:11px;color:var(--primary);font-weight:600;">68%</div>
-                        </div>
-                        <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
-                          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:var(--h1);">ECサイト構築</span><span class="proj-status active"><span class="proj-status-dot"></span>開始</span></div>
-                          <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:32%"></div></div>
-                          <div style="font-size:11px;color:var(--primary);font-weight:600;">32%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <div id="dashboard-content"></div>
                 </div>
 
                 <!-- PROJECTS -->
@@ -1720,8 +1688,75 @@ function dataTab(tab, el){
 }
 
 /* ── BUILDER INIT ── */
+let _companyName = '';
+
+function _applyCompanyName(name){
+  _companyName = name || '';
+  const els = ['bld-company-name','portal-company-name'];
+  els.forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=name; });
+}
+
+function renderDashboard(){
+  const now = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）`;
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'おはようございます' : hour < 18 ? 'こんにちは' : 'お疲れ様です';
+  const userName = (_currentUser?.user_metadata?.full_name || _currentUser?.email || '').split('@')[0];
+
+  const activeProjs = PROJECTS.filter(p=>p.status==='progress'||p.status==='active');
+  const kpiNews = NEWS_DATA.length;
+  const kpiProj = activeProjs.length;
+  const kpiMember = MEMBERS.length;
+  const kpiDocs = DOCS.length;
+
+  const newsHtml = NEWS_DATA.slice(0,2).map(n=>`
+    <div class="news-card">
+      <img class="news-thumb" src="https://picsum.photos/seed/${n.img||'n1'}/180/150">
+      <div class="news-body"><div class="news-cat">${n.cat||'お知らせ'}</div><div class="news-title">${n.title}</div><div class="news-meta">${n.date} · ${n.author}</div></div>
+    </div>`).join('');
+
+  const projHtml = activeProjs.slice(0,2).map(p=>`
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:600;color:var(--h1);">${p.name}</span>
+        <span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]||p.status}</span>
+      </div>
+      <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:${p.pct}%"></div></div>
+      <div style="font-size:11px;color:var(--primary);font-weight:600;">${p.pct}%</div>
+    </div>`).join('');
+
+  const el = document.getElementById('dashboard-content');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="pg-title">${greet}${userName ? '、'+userName+'さん' : ''}</div>
+    <div class="pg-sub">${dateStr} — 今日も一日よろしくお願いします</div>
+    <div class="divider"></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">${kpiNews}</div><div class="stat-lbl">お知らせ件数</div></div>
+      <div class="stat-card"><div class="stat-num">${kpiProj}</div><div class="stat-lbl">進行中プロジェクト</div></div>
+      <div class="stat-card"><div class="stat-num">${kpiMember}</div><div class="stat-lbl">メンバー数</div></div>
+      <div class="stat-card"><div class="stat-num">${kpiDocs}</div><div class="stat-lbl">社内資料数</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">最新のお知らせ</div>
+        <div class="news-list">${newsHtml||'<div style="color:var(--faint);font-size:13px;">お知らせはありません</div>'}</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--h1);margin-bottom:12px;">進行中プロジェクト</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">${projHtml||'<div style="color:var(--faint);font-size:13px;">進行中のプロジェクトはありません</div>'}</div>
+      </div>
+    </div>`;
+  lucide.createIcons();
+}
+
 function initBuilder(){
-  loadSupabaseData().then(()=>{
+  loadSupabaseData().then(async()=>{
+    // 会社名をonboarding入力から取得（セッションのmetadataまたはSupabase settings）
+    const savedName = localStorage.getItem('ic_company_name');
+    if(savedName) _applyCompanyName(savedName);
+    renderDashboard();
     renderProjects();
     renderDocuments();
     renderMembers();
@@ -1729,7 +1764,7 @@ function initBuilder(){
     renderFAQ();
     renderSpreadsheet('users');
   }).catch(()=>{
-    // fallback to local data if Supabase fails
+    renderDashboard();
     renderProjects();
     renderDocuments();
     renderMembers();
@@ -2320,8 +2355,12 @@ async function obNext(){
     _currentUser=data.user;_userRole='member';
     obStep++;renderOB();
   } else if(obStep<3){
+    const company=(document.getElementById('ob-company')||{}).value||'';
+    if(company){ localStorage.setItem('ic_company_name',company); _applyCompanyName(company); }
     obStep++;renderOB();
   } else {
+    const company=(document.getElementById('ob-company')||{}).value||'';
+    if(company){ localStorage.setItem('ic_company_name',company); _applyCompanyName(company); }
     showPage('builder');
   }
 }
