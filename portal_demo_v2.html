@@ -1582,7 +1582,7 @@ async function doGoogleLogin(){
   if(btn){btn.disabled=true;btn.style.opacity='0.7';}
   const {error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo: window.location.href}
+    options:{redirectTo: window.location.origin+'/app'}
   });
   if(error){
     if(btn){btn.disabled=false;btn.style.opacity='1';}
