@@ -5,46 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI社内ポータル Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
+/* ────────────────────────────────
+   DESIGN TOKENS
+──────────────────────────────── */
 :root {
   --primary: #4F46E5;
-  --primary-hover: #4338CA;
-  --primary-light: #EEF2FF;
-  --sidebar-w: 256px;
-  --t9: #111827;
-  --t7: #374151;
-  --t5: #6B7280;
-  --t4: #9CA3AF;
+  --primary-h: #4338CA;
+  --primary-lt: #EEF2FF;
+  --sw: 252px;
+  --h1: #111827;
+  --h2: #374151;
+  --muted: #6B7280;
+  --faint: #9CA3AF;
   --border: #E5E7EB;
-  --border-light: #F3F4F6;
-  --bg: #FFFFFF;
-  --bg-sub: #F9FAFB;
+  --border-lt: #F3F4F6;
+  --bg: #F9FAFB;
+  --card: #FFFFFF;
   --r: 10px;
-  --r-sm: 7px;
-  --r-lg: 14px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 8px -2px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Meiryo', sans-serif;
-  background: #fff;
-  color: var(--t7);
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
+  --rsm: 7px;
 }
 
-/* ── PAGES ── */
+/* ────────────────────────────────
+   BASE
+──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont,
+    'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', sans-serif;
+  background: var(--bg);
+  color: var(--h2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+}
+a { text-decoration: none; }
+button { font-family: inherit; }
+img { display: block; }
+
+/* ────────────────────────────────
+   PAGE SYSTEM
+──────────────────────────────── */
 .page { display: none; }
 .page.active { display: block; min-height: 100vh; }
 .page-portal.active { display: flex; min-height: 100vh; }
 
-/* ── SIDEBAR ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: fadeUp .2s ease; }
+
+/* ────────────────────────────────
+   SIDEBAR
+──────────────────────────────── */
 .sidebar {
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
+  width: var(--sw);
+  min-width: var(--sw);
   background: #fff;
   border-right: 1px solid var(--border);
   position: fixed;
@@ -54,412 +76,480 @@ body {
   z-index: 100;
   overflow-y: auto;
 }
-.sidebar-brand {
-  padding: 18px 16px 14px;
-  border-bottom: 1px solid var(--border-light);
+
+/* Brand */
+.sb-brand {
+  padding: 16px 12px 14px;
+  border-bottom: 1px solid var(--border-lt);
 }
-.brand-row {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.sb-brand-inner {
+  display: flex; align-items: center; gap: 9px;
   padding: 8px 10px;
-  border-radius: var(--r-sm);
+  border-radius: var(--rsm);
   cursor: pointer;
   transition: background .12s;
 }
-.brand-row:hover { background: var(--bg-sub); }
-.brand-icon {
-  width: 32px; height: 32px;
+.sb-brand-inner:hover { background: var(--border-lt); }
+.sb-icon {
+  width: 30px; height: 30px;
   background: var(--primary);
-  border-radius: 8px;
+  border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  color: white;
+  flex-shrink: 0; color: white;
 }
-.brand-icon svg { width: 17px; height: 17px; stroke-width: 2; }
-.brand-name { font-size: 14px; font-weight: 700; color: var(--t9); }
-.brand-sub  { font-size: 11px; color: var(--t4); margin-top: 1px; }
+.sb-icon svg { width: 15px; height: 15px; stroke-width: 2; }
+.sb-company { font-size: 13.5px; font-weight: 700; color: var(--h1); line-height: 1.25; }
+.sb-tagline  { font-size: 10.5px; color: var(--faint); margin-top: 1px; }
 
-.sidebar-nav { padding: 10px 10px; flex: 1; }
-.nav-section {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--t4);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  padding: 10px 8px 4px;
-}
+/* Nav */
+.sb-nav { padding: 10px 10px; flex: 1; }
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  display: flex; align-items: center; gap: 9px;
   padding: 8px 10px;
-  border-radius: var(--r-sm);
+  border-radius: var(--rsm);
   cursor: pointer;
-  color: var(--t5);
-  font-size: 13.5px;
-  font-weight: 500;
+  color: var(--muted);
+  font-size: 13.5px; font-weight: 500;
   margin-bottom: 1px;
   transition: background .1s, color .1s;
-  position: relative;
   user-select: none;
 }
-.nav-item svg { width: 16px; height: 16px; stroke-width: 1.75; flex-shrink: 0; }
-.nav-item:hover { background: var(--bg-sub); color: var(--t9); }
-.nav-item.active { background: var(--border-light); color: var(--t9); font-weight: 600; }
-.nav-badge {
+.nav-item svg { width: 15px; height: 15px; stroke-width: 1.75; flex-shrink: 0; color: var(--faint); transition: color .1s; }
+.nav-item:hover { background: var(--border-lt); color: var(--h1); }
+.nav-item:hover svg { color: var(--muted); }
+.nav-item.active { background: var(--border-lt); color: var(--h1); font-weight: 600; }
+.nav-item.active svg { color: var(--h2); }
+.nav-pill {
   margin-left: auto;
   background: #EF4444;
   color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 20px;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
 }
-.nav-divider { height: 1px; background: var(--border-light); margin: 8px 0; }
+.nav-sep { height: 1px; background: var(--border-lt); margin: 6px 0; }
 
-.sidebar-footer {
+/* Footer user */
+.sb-footer {
   padding: 10px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-lt);
 }
-.sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.sb-user {
+  display: flex; align-items: center; gap: 9px;
   padding: 8px 10px;
-  border-radius: var(--r-sm);
+  border-radius: var(--rsm);
   cursor: pointer;
   transition: background .1s;
 }
-.sidebar-user:hover { background: var(--bg-sub); }
-.s-avatar {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+.sb-user:hover { background: var(--border-lt); }
+.sb-ava {
+  width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 12px; font-weight: 700;
+  font-size: 11px; font-weight: 700; color: white;
   flex-shrink: 0;
+  background: linear-gradient(135deg,#6366F1,#8B5CF6);
 }
-.s-name  { font-size: 13px; font-weight: 600; color: var(--t9); }
-.s-dept  { font-size: 11px; color: var(--t4); margin-top: 1px; }
-.s-chevron { margin-left: auto; color: var(--t4); }
-.s-chevron svg { width: 14px; height: 14px; stroke-width: 2; }
+.sb-uname { font-size: 12.5px; font-weight: 600; color: var(--h1); }
+.sb-udept  { font-size: 11px; color: var(--faint); margin-top: 1px; }
+.sb-ucaret { margin-left: auto; color: var(--faint); }
+.sb-ucaret svg { width: 13px; height: 13px; stroke-width: 2; }
 
-/* ── PORTAL CONTENT ── */
-.portal-content {
-  margin-left: var(--sidebar-w);
+/* ────────────────────────────────
+   PORTAL LAYOUT
+──────────────────────────────── */
+.portal-body {
+  margin-left: var(--sw);
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: #fff;
+  background: var(--bg);
 }
+
+/* Topbar */
 .topbar {
-  height: 57px;
+  height: 56px;
+  background: #fff;
   border-bottom: 1px solid var(--border);
   padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
-  background: rgba(255,255,255,.96);
   backdrop-filter: blur(8px);
 }
-.topbar-title { font-size: 16px; font-weight: 700; color: var(--t9); }
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-.tb-btn {
-  width: 34px; height: 34px;
-  border-radius: var(--r-sm);
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--h1); }
+.topbar-right  { display: flex; align-items: center; gap: 6px; }
+.tb-icon {
+  width: 32px; height: 32px; border-radius: var(--rsm);
   border: 1px solid var(--border);
   background: #fff;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  color: var(--t5);
+  cursor: pointer; color: var(--muted);
   transition: all .12s;
 }
-.tb-btn svg { width: 16px; height: 16px; stroke-width: 1.75; }
-.tb-btn:hover { background: var(--bg-sub); color: var(--t9); }
+.tb-icon svg { width: 15px; height: 15px; stroke-width: 1.75; }
+.tb-icon:hover { background: var(--border-lt); color: var(--h1); }
 .tb-user {
   display: flex; align-items: center; gap: 7px;
-  padding: 5px 10px 5px 6px;
+  padding: 4px 10px 4px 5px;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  background: #fff;
+  border-radius: var(--rsm);
+  cursor: pointer; background: #fff;
   transition: background .12s;
 }
-.tb-user:hover { background: var(--bg-sub); }
-.tb-user .s-avatar { width: 24px; height: 24px; font-size: 10px; }
-.tb-user-name { font-size: 13px; font-weight: 600; color: var(--t9); }
+.tb-user:hover { background: var(--border-lt); }
+.tb-uname { font-size: 12.5px; font-weight: 600; color: var(--h1); }
+.tb-user svg { width: 12px; height: 12px; stroke-width: 2; color: var(--faint); }
 
-.portal-main { padding: 40px 40px; flex: 1; max-width: 1200px; }
+/* Content */
+.portal-main { padding: 36px 40px; flex: 1; }
 
-/* ── VIEWS ── */
+/* Views */
 .view { display: none; }
 .view.active { display: block; animation: fadeUp .2s ease; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
-/* ── TYPOGRAPHY ── */
-.page-title  { font-size: 24px; font-weight: 800; color: var(--t9); letter-spacing: -.4px; }
-.page-sub    { font-size: 14px; color: var(--t5); margin-top: 5px; }
-.section-title { font-size: 16px; font-weight: 700; color: var(--t9); }
-.divider { height: 1px; background: var(--border); margin: 28px 0; }
+/* ────────────────────────────────
+   TYPOGRAPHY
+──────────────────────────────── */
+.pg-title  { font-size: 26px; font-weight: 800; color: var(--h1); letter-spacing: -.4px; }
+.pg-sub    { font-size: 13.5px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+.sec-title { font-size: 14px; font-weight: 700; color: var(--h1); }
+.divider   { height: 1px; background: var(--border); margin: 28px 0; }
 
-/* ── CARDS ── */
-.card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  transition: box-shadow .15s, transform .15s;
+/* ────────────────────────────────
+   TAB NAV (Softr style)
+──────────────────────────────── */
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
-.card:hover { box-shadow: var(--shadow-md); }
-.card-inner { padding: 20px; }
-.card-hd {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-light);
-  display: flex; align-items: center; justify-content: space-between;
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 9px 16px;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border: none; background: transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+  font-family: inherit;
 }
-.card-hd-title { font-size: 13px; font-weight: 700; color: var(--t9); }
-.card-hd-link {
-  font-size: 12px; font-weight: 600; color: var(--primary);
-  cursor: pointer; display: flex; align-items: center; gap: 2px;
-}
-.card-hd-link svg { width: 12px; height: 12px; stroke-width: 2.5; }
+.tab-btn:hover { color: var(--h1); }
+.tab-btn.is-on { color: var(--h1); border-bottom-color: var(--h1); font-weight: 600; }
 
-/* ── STAT CARDS ── */
+/* ────────────────────────────────
+   SEARCH BAR (Softr style)
+──────────────────────────────── */
+.search-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #F3F4F6;
+  border-radius: var(--rsm);
+  padding: 9px 13px;
+  margin-bottom: 18px;
+}
+.search-row svg { width: 14px; height: 14px; color: var(--faint); stroke-width: 2; flex-shrink: 0; }
+.search-row input {
+  border: none; outline: none; background: transparent;
+  font-size: 13.5px; color: var(--h1); width: 100%;
+  font-family: inherit;
+}
+.search-row input::placeholder { color: var(--faint); }
+
+/* ────────────────────────────────
+   STAT CARDS
+──────────────────────────────── */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
 .stat-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 20px;
 }
-.stat-icon {
-  width: 38px; height: 38px;
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 14px;
-}
-.stat-icon svg { width: 18px; height: 18px; stroke-width: 1.75; }
-.stat-val   { font-size: 26px; font-weight: 800; color: var(--t9); letter-spacing: -.5px; line-height: 1; }
-.stat-lbl   { font-size: 12px; color: var(--t5); margin-top: 4px; font-weight: 500; }
-.stat-trend { font-size: 11px; color: var(--t4); margin-top: 10px; font-weight: 500; display: flex; align-items: center; gap: 3px; }
-.stat-trend svg { width: 11px; height: 11px; stroke-width: 2.5; }
-.trend-up   { color: #10B981; }
+.stat-num  { font-size: 30px; font-weight: 800; color: var(--h1); letter-spacing: -.5px; line-height: 1; }
+.stat-lbl  { font-size: 12px; color: var(--muted); margin-top: 5px; font-weight: 500; }
+.stat-sub  { font-size: 11px; color: var(--faint); margin-top: 8px; display: flex; align-items: center; gap: 3px; }
+.stat-sub svg { width: 11px; height: 11px; stroke-width: 2.5; }
+.up { color: #10B981; }
 
-/* ── NEWS ── */
-.news-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-light);
+/* ────────────────────────────────
+   NEWS ITEMS
+──────────────────────────────── */
+.news-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: box-shadow .15s;
+}
+.news-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.news-card-inner {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 16px;
+}
+.news-thumb {
+  width: 60px; height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--border-lt);
+}
+.news-thumb-ph {
+  width: 60px; height: 44px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--border-lt);
+  color: var(--faint);
+}
+.news-thumb-ph svg { width: 18px; height: 18px; stroke-width: 1.5; }
+.news-info { flex: 1; min-width: 0; }
+.news-meta-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.nbadge {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 20px;
+}
+.nb-red    { background: #FEE2E2; color: #DC2626; }
+.nb-indigo { background: #E0E7FF; color: #4338CA; }
+.nb-green  { background: #D1FAE5; color: #059669; }
+.nb-slate  { background: var(--border-lt); color: var(--muted); }
+.news-date { font-size: 11px; color: var(--faint); font-weight: 500; }
+.news-dept { font-size: 11px; color: var(--faint); }
+.news-title-t { font-size: 13.5px; font-weight: 600; color: var(--h1); line-height: 1.45; }
+.news-excerpt { font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.5; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.news-arrow { color: var(--border); flex-shrink: 0; }
+.news-arrow svg { width: 14px; height: 14px; stroke-width: 2; }
+
+/* ────────────────────────────────
+   CARDS (generic)
+──────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.card-hd {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-hd-t { font-size: 13px; font-weight: 700; color: var(--h1); }
+.card-link {
+  display: flex; align-items: center; gap: 2px;
+  font-size: 12px; font-weight: 600; color: var(--primary);
+  cursor: pointer;
+}
+.card-link svg { width: 11px; height: 11px; stroke-width: 2.5; }
+.card-body { padding: 18px; }
+
+/* ────────────────────────────────
+   DASHBOARD NEWS ROW (compact)
+──────────────────────────────── */
+.dash-news-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border-lt);
   cursor: pointer;
   transition: background .1s;
 }
-.news-item:last-child { border-bottom: none; }
-.news-item:hover { background: var(--bg-sub); }
-.news-date-col { min-width: 56px; flex-shrink: 0; }
-.news-day   { font-size: 20px; font-weight: 800; color: var(--t9); line-height: 1; }
-.news-month { font-size: 11px; font-weight: 600; color: var(--t4); text-transform: uppercase; }
-.news-body  { flex: 1; min-width: 0; }
-.news-badge {
-  display: inline-block;
-  font-size: 10px; font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
-  margin-bottom: 4px;
+.dash-news-row:last-child { border-bottom: none; }
+.dash-news-row:hover { background: var(--bg); }
+.dash-news-thumb {
+  width: 44px; height: 34px; border-radius: 5px;
+  object-fit: cover; flex-shrink: 0;
+  background: var(--border-lt);
 }
-.b-red    { background: #FEE2E2; color: #DC2626; }
-.b-indigo { background: #E0E7FF; color: #4338CA; }
-.b-green  { background: #D1FAE5; color: #059669; }
-.b-gray   { background: var(--border-light); color: var(--t5); }
-.news-title-t { font-size: 13.5px; font-weight: 600; color: var(--t9); line-height: 1.4; }
-.news-excerpt { font-size: 12px; color: var(--t5); margin-top: 2px; line-height: 1.5; }
-.news-arrow { color: var(--border); flex-shrink: 0; margin-top: 4px; }
-.news-arrow svg { width: 14px; height: 14px; stroke-width: 2; }
+.dash-news-ph {
+  width: 44px; height: 34px; border-radius: 5px;
+  background: var(--border-lt);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.dash-news-ph svg { width: 16px; height: 16px; stroke-width: 1.5; color: var(--faint); }
+.dash-news-info { flex: 1; min-width: 0; }
+.dash-news-title { font-size: 13px; font-weight: 600; color: var(--h1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-news-sub   { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.dash-news-arr svg { width: 14px; height: 14px; stroke-width: 2; color: var(--border); }
 
-/* ── MEMBER CARDS ── */
-.member-card {
-  background: #fff;
+/* ────────────────────────────────
+   SHORTCUT GRID
+──────────────────────────────── */
+.shortcut-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 14px 16px; }
+.shortcut-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 14px 8px;
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 24px 18px 18px;
+  cursor: pointer;
+  background: #fff;
+  transition: all .12s;
+}
+.shortcut-btn:hover { background: var(--border-lt); border-color: var(--muted); }
+.shortcut-btn svg { width: 18px; height: 18px; stroke-width: 1.75; }
+.shortcut-label { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+
+/* ────────────────────────────────
+   SCHEDULE
+──────────────────────────────── */
+.sched-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--rsm); }
+.sched-item.now { background: var(--primary-lt); }
+.sched-time { font-size: 11.5px; font-weight: 700; min-width: 40px; }
+.sched-bar  { width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0; }
+.sched-title { font-size: 13px; font-weight: 600; color: var(--h1); }
+.sched-meta  { font-size: 11.5px; color: var(--faint); margin-top: 1px; }
+
+/* ────────────────────────────────
+   MEMBER CARDS
+──────────────────────────────── */
+.member-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.member-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 22px 16px 16px;
   text-align: center;
   cursor: pointer;
   transition: box-shadow .15s, transform .15s;
 }
-.member-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.m-avatar {
-  width: 60px; height: 60px;
-  border-radius: 50%;
+.member-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); transform: translateY(-2px); }
+.m-photo {
+  width: 60px; height: 60px; border-radius: 50%;
+  object-fit: cover; margin: 0 auto 12px;
+  display: block;
+}
+.m-ava {
+  width: 60px; height: 60px; border-radius: 50%;
+  margin: 0 auto 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: 700;
-  color: white; margin: 0 auto 12px;
+  font-size: 20px; font-weight: 700; color: white;
 }
-.m-name  { font-size: 14px; font-weight: 700; color: var(--t9); margin-bottom: 5px; }
-.m-dept  {
-  display: inline-block;
-  font-size: 11px; font-weight: 500;
-  color: var(--t5);
-  background: var(--bg-sub);
-  border: 1px solid var(--border);
-  padding: 2px 9px;
-  border-radius: 20px;
-  margin-bottom: 3px;
-}
-.m-title { font-size: 12px; color: var(--t4); }
-.m-actions { display: flex; gap: 6px; margin-top: 14px; }
+.m-name  { font-size: 14px; font-weight: 700; color: var(--h1); margin-bottom: 5px; }
+.m-dept  { display: inline-block; font-size: 11px; font-weight: 500; color: var(--muted); background: var(--border-lt); border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px; margin-bottom: 3px; }
+.m-role  { font-size: 12px; color: var(--faint); }
+.m-btns  { display: flex; gap: 5px; margin-top: 13px; }
 .m-btn {
-  flex: 1;
-  padding: 7px 4px;
+  flex: 1; padding: 6px 4px;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+  border-radius: var(--rsm);
   font-size: 11px; font-weight: 600;
-  color: var(--t5); cursor: pointer;
+  color: var(--muted); cursor: pointer;
   background: #fff;
-  display: flex; align-items: center; justify-content: center; gap: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 3px;
   font-family: inherit; transition: all .12s;
 }
-.m-btn svg { width: 12px; height: 12px; stroke-width: 2; }
-.m-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.m-btn svg { width: 11px; height: 11px; stroke-width: 2; }
+.m-btn:hover { background: var(--primary-lt); border-color: var(--primary); color: var(--primary); }
 
-/* ── LINK CARDS ── */
+/* ────────────────────────────────
+   LINK CARDS
+──────────────────────────────── */
+.link-cat-label {
+  font-size: 11px; font-weight: 700; color: var(--faint);
+  text-transform: uppercase; letter-spacing: .07em;
+  margin-bottom: 10px; margin-top: 22px;
+}
+.link-cat-label:first-child { margin-top: 0; }
+.link-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
 .link-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 15px 16px;
-  display: flex; align-items: center; gap: 13px;
+  padding: 14px 15px;
+  display: flex; align-items: center; gap: 12px;
   cursor: pointer;
-  transition: box-shadow .15s, transform .12s;
+  transition: box-shadow .12s, transform .1s;
 }
-.link-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.link-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); transform: translateY(-1px); }
 .link-icon {
-  width: 40px; height: 40px;
-  border-radius: 9px;
+  width: 38px; height: 38px; border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.link-icon svg { width: 18px; height: 18px; stroke-width: 1.75; }
-.link-title { font-size: 13.5px; font-weight: 600; color: var(--t9); margin-bottom: 2px; }
-.link-desc  { font-size: 12px; color: var(--t4); }
-.link-arrow { margin-left: auto; color: var(--border); flex-shrink: 0; }
-.link-arrow svg { width: 15px; height: 15px; stroke-width: 2; }
+.link-icon svg { width: 17px; height: 17px; stroke-width: 1.75; }
+.link-name { font-size: 13.5px; font-weight: 600; color: var(--h1); }
+.link-desc { font-size: 12px; color: var(--faint); margin-top: 1px; }
+.link-ext  { margin-left: auto; color: var(--border); flex-shrink: 0; }
+.link-ext svg { width: 14px; height: 14px; stroke-width: 2; }
 
-/* ── FAQ ── */
+/* ────────────────────────────────
+   FAQ
+──────────────────────────────── */
 .faq-item {
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
   margin-bottom: 6px;
-  background: #fff;
 }
 .faq-q {
   display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px;
+  padding: 13px 16px;
   cursor: pointer;
   transition: background .1s;
 }
-.faq-q:hover { background: var(--bg-sub); }
-.faq-q-label {
+.faq-q:hover { background: var(--border-lt); }
+.faq-q-lbl {
   width: 22px; height: 22px; border-radius: 6px;
-  background: var(--primary-light); color: var(--primary);
+  background: var(--primary-lt); color: var(--primary);
   font-size: 11px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.faq-q-text { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--t9); }
-.faq-chevron { color: var(--t4); transition: transform .2s; flex-shrink: 0; }
-.faq-chevron svg { width: 15px; height: 15px; stroke-width: 2; }
+.faq-q-text { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--h1); }
+.faq-q-cat {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  background: var(--border-lt); color: var(--muted);
+  margin-right: 6px;
+}
+.faq-chevron { color: var(--faint); transition: transform .2s; flex-shrink: 0; }
+.faq-chevron svg { width: 14px; height: 14px; stroke-width: 2; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); }
-.faq-a { display: none; padding: 0 16px 14px 52px; font-size: 13px; color: var(--t5); line-height: 1.7; }
+.faq-a { display: none; padding: 0 16px 14px 52px; font-size: 13px; color: var(--muted); line-height: 1.75; }
 .faq-item.open .faq-a { display: block; }
 
-/* ── SHORTCUT ── */
-.shortcut-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 18px 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: box-shadow .15s, transform .12s;
-}
-.shortcut-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.shortcut-icon { margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
-.shortcut-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
-.shortcut-label { font-size: 12px; font-weight: 600; color: var(--t5); }
-
-/* ── SEARCH ── */
-.search-bar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 13px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  max-width: 300px;
-  transition: border-color .15s, box-shadow .15s;
-}
-.search-bar:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
-.search-bar svg { width: 14px; height: 14px; color: var(--t4); stroke-width: 2; flex-shrink: 0; }
-.search-bar input { border: none; outline: none; background: transparent; font-size: 13px; color: var(--t9); width: 100%; font-family: inherit; }
-.search-bar input::placeholder { color: var(--t4); }
-
-/* ── FILTER TABS ── */
-.filter-tabs { display: flex; gap: 5px; flex-wrap: wrap; }
-.filter-tab {
-  padding: 5px 13px;
-  border-radius: 20px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1px solid var(--border);
-  background: #fff; color: var(--t5);
-  transition: all .12s; font-family: inherit;
-}
-.filter-tab:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.filter-tab.is-active { background: var(--t9); color: white; border-color: var(--t9); }
-
-/* ── BUTTONS ── */
+/* ────────────────────────────────
+   BUTTONS
+──────────────────────────────── */
 .btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 15px;
   font-size: 13px; font-weight: 600;
-  border-radius: var(--r-sm);
+  border-radius: var(--rsm);
   cursor: pointer; border: none;
-  font-family: inherit; transition: all .15s;
+  font-family: inherit; transition: all .12s; white-space: nowrap;
 }
-.btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-secondary { background: #fff; color: var(--t7); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--bg-sub); }
+.btn svg { width: 13px; height: 13px; stroke-width: 2.5; }
+.btn-dark    { background: var(--h1); color: #fff; }
+.btn-dark:hover  { background: var(--h2); }
+.btn-ghost   { background: #fff; color: var(--h2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--border-lt); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-h); }
 
-/* ── GRIDS ── */
-.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
-.g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-.g2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
-.g6 { display: grid; grid-template-columns: repeat(6,1fr); gap: 12px; }
-@media(max-width:1100px){ .g4{grid-template-columns:repeat(2,1fr);} .g6{grid-template-columns:repeat(3,1fr);} }
-@media(max-width:900px){ .g3{grid-template-columns:repeat(2,1fr);} }
-@media(max-width:768px){ .g4,.g3,.g6{grid-template-columns:repeat(2,1fr);} .g2{grid-template-columns:1fr;} }
+/* ────────────────────────────────
+   TWO-COL LAYOUT
+──────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+@media(max-width:1000px){ .two-col { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: repeat(2,1fr); } .member-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:680px){ .stat-grid { grid-template-columns: repeat(2,1fr); } .link-grid { grid-template-columns: 1fr; } .shortcut-grid { grid-template-columns: repeat(3,1fr); } .member-grid { grid-template-columns: repeat(2,1fr); } }
 
-/* ── SCHEDULE ── */
-.schedule-row { display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: var(--r-sm); }
-.schedule-row.now { background: var(--primary-light); }
-.sched-time { font-size: 12px; font-weight: 700; min-width: 44px; }
-.sched-bar  { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
-.sched-title { font-size: 13.5px; font-weight: 600; color: var(--t9); }
-.sched-meta  { font-size: 12px; color: var(--t4); margin-top: 1px; }
-
-/* ── MOBILE ── */
+/* ────────────────────────────────
+   MOBILE
+──────────────────────────────── */
 .mobile-topbar {
   display: none; height: 52px;
   background: #fff; border-bottom: 1px solid var(--border);
   padding: 0 16px; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
 }
-.mobile-logo { font-size: 15px; font-weight: 700; color: var(--t9); }
+.mobile-logo { font-size: 15px; font-weight: 700; color: var(--h1); }
 .bottom-tabs {
   display: none;
   position: fixed; bottom: 0; left: 0; right: 0;
@@ -470,46 +560,37 @@ body {
   padding-bottom: env(safe-area-inset-bottom,0);
 }
 .bottom-tabs-row { display: flex; height: 58px; }
-.tab-btn {
+.btab {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 3px; cursor: pointer;
-  color: var(--t4); font-size: 10px; font-weight: 600;
+  gap: 2px; cursor: pointer;
+  color: var(--faint); font-size: 10px; font-weight: 600;
   transition: color .12s; position: relative;
 }
-.tab-btn svg { width: 22px; height: 22px; stroke-width: 1.75; }
-.tab-btn.is-active { color: var(--primary); }
-.tab-dot {
-  position: absolute; top: 7px; right: calc(50% - 16px);
+.btab svg { width: 21px; height: 21px; stroke-width: 1.75; }
+.btab.is-on { color: var(--primary); }
+.btab-dot {
+  position: absolute; top: 7px; right: calc(50% - 14px);
   width: 5px; height: 5px; background: #EF4444;
   border-radius: 50%; border: 1.5px solid #fff;
 }
 @media(max-width:768px){
   .sidebar { display: none; }
-  .portal-content { margin-left: 0; }
+  .portal-body { margin-left: 0; }
   .topbar { display: none; }
   .mobile-topbar { display: flex; }
   .bottom-tabs { display: flex; flex-direction: column; }
-  .portal-main { padding: 16px 16px 80px; }
+  .portal-main { padding: 16px 16px 82px; }
 }
 
-/* ── LANDING ── */
+/* ────────────────────────────────
+   LANDING
+──────────────────────────────── */
 .hero {
   min-height: 100vh;
-  background: linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4f46e5 100%);
-  display: flex; flex-direction: column; position: relative; overflow: hidden;
-}
-.hero::before {
-  content: ''; position: absolute;
-  width: 600px; height: 600px; border-radius: 50%;
-  background: rgba(255,255,255,.03);
-  top: -200px; right: -200px;
-}
-.hero::after {
-  content: ''; position: absolute;
-  width: 400px; height: 400px; border-radius: 50%;
-  background: rgba(255,255,255,.03);
-  bottom: -100px; left: -100px;
+  background: linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
 }
 .hero-nav {
   position: absolute; top: 0; left: 0; right: 0;
@@ -517,212 +598,183 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   z-index: 10;
 }
-.hero-logo { display: flex; align-items: center; gap: 9px; }
-.hero-logo-icon { width: 32px; height: 32px; background: rgba(255,255,255,.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.hero-logo-icon svg { width: 16px; height: 16px; color: white; stroke-width: 2; }
-.hero-logo-text { font-size: 15px; font-weight: 700; color: white; }
-.hero-nav-btns { display: flex; gap: 8px; }
-.btn-ghost { padding: 8px 18px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: white; font-size: 13px; font-weight: 600; border-radius: var(--r-sm); cursor: pointer; font-family: inherit; transition: all .15s; }
-.btn-ghost:hover { background: rgba(255,255,255,.2); }
-.btn-white { padding: 8px 18px; background: white; color: #312e81; font-size: 13px; font-weight: 700; border: none; border-radius: var(--r-sm); cursor: pointer; font-family: inherit; transition: all .15s; }
-.btn-white:hover { opacity: .92; }
+.h-logo { display: flex; align-items: center; gap: 8px; }
+.h-logo-icon { width: 30px; height: 30px; background: rgba(255,255,255,.15); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.h-logo-icon svg { width: 15px; height: 15px; color: white; stroke-width: 2; }
+.h-logo-text { font-size: 14px; font-weight: 700; color: white; }
+.h-nav-btns { display: flex; gap: 8px; }
+.h-btn-ghost { padding: 7px 16px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); color: white; font-size: 13px; font-weight: 600; border-radius: var(--rsm); cursor: pointer; font-family: inherit; transition: all .15s; }
+.h-btn-ghost:hover { background: rgba(255,255,255,.22); }
+.h-btn-white { padding: 7px 16px; background: white; color: #312e81; font-size: 13px; font-weight: 700; border: none; border-radius: var(--rsm); cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.h-btn-white:hover { opacity: .92; }
+
 .hero-body {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center; padding: 100px 24px 60px;
   position: relative; z-index: 1;
 }
-.hero-badge {
+.h-badge {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-  border-radius: 20px; padding: 5px 13px;
+  border-radius: 20px; padding: 5px 14px;
   font-size: 12px; font-weight: 500; color: rgba(255,255,255,.9);
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
-.hero-badge svg { width: 12px; height: 12px; stroke-width: 2; }
-.hero-h1 {
+.h-badge svg { width: 12px; height: 12px; stroke-width: 2; }
+.h-h1 {
   font-size: 52px; font-weight: 800; color: white;
   line-height: 1.1; letter-spacing: -1.5px;
-  margin-bottom: 18px; max-width: 680px;
+  margin-bottom: 18px; max-width: 660px;
 }
-.hero-h1 em { color: #a5b4fc; font-style: normal; }
-.hero-sub { font-size: 17px; color: rgba(255,255,255,.72); max-width: 440px; line-height: 1.65; margin-bottom: 38px; }
-.hero-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.btn-hero-w { padding: 13px 28px; background: white; color: #312e81; font-size: 14px; font-weight: 700; border: none; border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 14px rgba(0,0,0,.15); display: flex; align-items: center; gap: 7px; }
-.btn-hero-w svg { width: 15px; height: 15px; stroke-width: 2.5; }
-.btn-hero-w:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
-.btn-hero-o { padding: 13px 28px; background: transparent; color: white; font-size: 14px; font-weight: 600; border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .15s; }
-.btn-hero-o:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); }
+.h-h1 em { color: #a5b4fc; font-style: normal; }
+.h-sub { font-size: 16px; color: rgba(255,255,255,.72); max-width: 420px; line-height: 1.65; margin-bottom: 36px; }
+.h-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.h-cta { padding: 12px 26px; background: white; color: #312e81; font-size: 13.5px; font-weight: 700; border: none; border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 14px rgba(0,0,0,.15); display: flex; align-items: center; gap: 6px; }
+.h-cta svg { width: 14px; height: 14px; stroke-width: 2.5; }
+.h-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.h-demo { padding: 12px 26px; background: transparent; color: white; font-size: 13.5px; font-weight: 600; border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--r); cursor: pointer; font-family: inherit; transition: all .15s; }
+.h-demo:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.6); }
+
+/* Features section */
 .features { background: white; padding: 88px 44px; }
-.features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; max-width: 960px; margin: 0 auto; }
-.feat-card { padding: 26px 22px; border-radius: var(--r-lg); border: 1px solid var(--border); background: var(--bg-sub); }
-.feat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
-.feat-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
-.feat-title { font-size: 15px; font-weight: 700; color: var(--t9); margin-bottom: 6px; }
-.feat-desc  { font-size: 13px; color: var(--t5); line-height: 1.6; }
-.features-cta { text-align: center; margin-top: 56px; }
-@media(max-width:768px){ .hero-h1{font-size:34px;} .hero-nav{padding:14px 20px;} .features-grid{grid-template-columns:1fr;} .features{padding:56px 20px;} }
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 940px; margin: 0 auto; }
+.feat-card { padding: 24px 20px; border-radius: var(--r); border: 1px solid var(--border); background: var(--bg); }
+.feat-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 13px; }
+.feat-icon svg { width: 19px; height: 19px; stroke-width: 1.75; }
+.feat-title { font-size: 14.5px; font-weight: 700; color: var(--h1); margin-bottom: 5px; }
+.feat-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+@media(max-width:768px){ .h-h1{font-size:34px;} .hero-nav{padding:14px 20px;} .feat-grid{grid-template-columns:1fr;} .features{padding:56px 20px;} }
 
-/* ── LOGIN ── */
+/* ────────────────────────────────
+   LOGIN
+──────────────────────────────── */
 .login-bg { min-height: 100vh; background: linear-gradient(135deg,#eef2ff,#e0e7ff); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.login-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 390px; padding: 40px; }
-.login-logo { text-align: center; margin-bottom: 28px; }
-.login-logo-icon { width: 50px; height: 50px; background: var(--primary); border-radius: 13px; display: flex; align-items: center; justify-content: center; margin: 0 auto 13px; }
-.login-logo-icon svg { width: 24px; height: 24px; color: white; stroke-width: 1.75; }
-.login-title { font-size: 20px; font-weight: 800; color: var(--t9); }
-.login-sub   { font-size: 13px; color: var(--t5); margin-top: 4px; }
-.field { margin-bottom: 15px; }
-.field label { display: block; font-size: 13px; font-weight: 600; color: var(--t7); margin-bottom: 5px; }
-.field input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 14px; color: var(--t9); outline: none; font-family: inherit; transition: border-color .15s, box-shadow .15s; }
+.login-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 380px; padding: 38px; }
+.login-logo { text-align: center; margin-bottom: 26px; }
+.login-logo-icon { width: 48px; height: 48px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.login-logo-icon svg { width: 22px; height: 22px; color: white; stroke-width: 1.75; }
+.login-title { font-size: 19px; font-weight: 800; color: var(--h1); }
+.login-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--h2); margin-bottom: 5px; }
+.field input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--rsm); font-size: 14px; color: var(--h1); outline: none; font-family: inherit; transition: border-color .15s, box-shadow .15s; background: #fff; }
 .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
-.btn-login { width: 100%; padding: 11px; background: var(--primary); color: white; font-size: 14px; font-weight: 700; border: none; border-radius: var(--r-sm); cursor: pointer; font-family: inherit; margin-top: 4px; transition: background .15s; }
-.btn-login:hover { background: var(--primary-hover); }
-.login-or { display: flex; align-items: center; gap: 12px; margin: 18px 0; }
+.btn-login { width: 100%; padding: 11px; background: var(--primary); color: white; font-size: 14px; font-weight: 700; border: none; border-radius: var(--rsm); cursor: pointer; margin-top: 4px; transition: background .15s; font-family: inherit; }
+.btn-login:hover { background: var(--primary-h); }
+.login-or { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
 .login-or-line { flex: 1; height: 1px; background: var(--border); }
-.login-or-text { font-size: 12px; color: var(--t4); }
+.login-or-text { font-size: 12px; color: var(--faint); }
+.btn-demo { width: 100%; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--rsm); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .12s; }
+.btn-demo svg { width: 14px; height: 14px; stroke-width: 1.75; }
+.btn-demo:hover { background: var(--border-lt); }
 
-/* ── ONBOARDING ── */
+/* ────────────────────────────────
+   ONBOARDING
+──────────────────────────────── */
 .ob-bg { min-height: 100vh; background: linear-gradient(135deg,#eef2ff,#e0e7ff); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.ob-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 520px; overflow: hidden; }
-.ob-header { background: linear-gradient(135deg,#312e81,#4f46e5); padding: 28px 32px; }
-.ob-step-lbl   { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 500; margin-bottom: 5px; }
-.ob-step-title { font-size: 20px; font-weight: 800; color: white; margin-bottom: 16px; }
+.ob-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 20px 48px rgba(0,0,0,.07); width: 100%; max-width: 500px; overflow: hidden; }
+.ob-hd { background: linear-gradient(135deg,#312e81,#4f46e5); padding: 26px 30px; }
+.ob-step-lbl   { font-size: 11.5px; color: rgba(255,255,255,.6); font-weight: 500; margin-bottom: 5px; }
+.ob-step-title { font-size: 19px; font-weight: 800; color: white; margin-bottom: 14px; }
 .ob-prog { display: flex; gap: 5px; }
 .ob-dot { height: 3px; border-radius: 2px; flex: 1; background: rgba(255,255,255,.25); transition: background .3s; }
 .ob-dot.done { background: white; }
-.ob-body   { padding: 28px 32px 20px; }
-.ob-footer { padding: 14px 32px 24px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); }
-.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.ob-option {
-  border: 1.5px solid var(--border); border-radius: 10px;
-  padding: 14px 12px; cursor: pointer; text-align: center; transition: all .15s;
-}
-.ob-option:hover { border-color: var(--primary); background: var(--primary-light); }
-.ob-option.sel  { border-color: var(--primary); background: var(--primary-light); }
-.ob-opt-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
-.ob-opt-icon svg { width: 17px; height: 17px; stroke-width: 1.75; }
-.ob-opt-label { font-size: 13px; font-weight: 600; color: var(--t9); }
-.swatches { display: flex; gap: 9px; flex-wrap: wrap; }
-.swatch { width: 34px; height: 34px; border-radius: 8px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
+.ob-body   { padding: 26px 30px 18px; }
+.ob-footer { padding: 14px 30px 22px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-lt); }
+.ob-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.ob-opt { border: 1.5px solid var(--border); border-radius: 9px; padding: 13px 11px; cursor: pointer; text-align: center; transition: all .15s; }
+.ob-opt:hover { border-color: var(--primary); background: var(--primary-lt); }
+.ob-opt.sel   { border-color: var(--primary); background: var(--primary-lt); }
+.ob-opt-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; margin: 0 auto 7px; }
+.ob-opt-icon svg { width: 16px; height: 16px; stroke-width: 1.75; }
+.ob-opt-label { font-size: 12.5px; font-weight: 600; color: var(--h1); }
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatch { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
 .swatch:hover { transform: scale(1.15); }
-.swatch.sel { border-color: var(--t9); }
+.swatch.sel   { border-color: var(--h1); }
 
-/* ── ADMIN ── */
-.admin-sidebar {
-  width: 196px; min-width: 196px;
-  background: #0f172a;
-  position: fixed; top: 0; left: 0; bottom: 0;
-  display: flex; flex-direction: column;
-  z-index: 100;
-}
+/* ────────────────────────────────
+   ADMIN
+──────────────────────────────── */
+.adm-sidebar { width: 196px; min-width: 196px; background: #0f172a; position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
 .adm-brand { padding: 18px 14px 15px; border-bottom: 1px solid rgba(255,255,255,.06); }
 .adm-brand-name { font-size: 13px; font-weight: 700; color: white; }
 .adm-brand-sub  { font-size: 10px; color: rgba(255,255,255,.3); margin-top: 2px; }
 .adm-nav { padding: 10px 8px; flex: 1; }
-.adm-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: 6px;
-  color: rgba(255,255,255,.5); font-size: 13px; font-weight: 500;
-  cursor: pointer; margin-bottom: 1px; transition: all .12s;
-}
+.adm-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 1px; transition: all .12s; }
 .adm-item svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
 .adm-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.85); }
 .adm-item.active { background: rgba(79,70,229,.25); color: #a5b4fc; }
-.adm-content { margin-left: 196px; }
-.adm-topbar { background: #fff; border-bottom: 1px solid var(--border); height: 57px; display: flex; align-items: center; padding: 0 28px; justify-content: space-between; }
-.adm-topbar-title { font-size: 16px; font-weight: 700; color: var(--t9); }
+.adm-content { margin-left: 196px; background: var(--bg); min-height: 100vh; }
+.adm-topbar { background: #fff; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 28px; justify-content: space-between; }
+.adm-topbar-title { font-size: 15px; font-weight: 700; color: var(--h1); }
 
-/* ── COLOR SWATCHES ── */
-.theme-swatch { width: 30px; height: 30px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
-.theme-swatch:hover { transform: scale(1.15); }
-.theme-swatch.sel { border-color: var(--t9); }
+/* theme swatch */
+.th-swatch { width: 28px; height: 28px; border-radius: 7px; cursor: pointer; border: 2.5px solid transparent; transition: transform .15s; }
+.th-swatch:hover { transform: scale(1.15); }
+.th-swatch.sel { border-color: var(--h1); }
 
-/* ── SCROLLBAR ── */
+/* ────────────────────────────────
+   SCROLLBAR
+──────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--t4); }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════
      LANDING
-═══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="page-landing" class="page active">
-
-  <!-- Hero -->
   <section class="hero">
     <nav class="hero-nav">
-      <div class="hero-logo">
-        <div class="hero-logo-icon"><i data-lucide="building-2"></i></div>
-        <span class="hero-logo-text">AI社内ポータル Builder</span>
+      <div class="h-logo">
+        <div class="h-logo-icon"><i data-lucide="building-2"></i></div>
+        <span class="h-logo-text">AI社内ポータル Builder</span>
       </div>
-      <div class="hero-nav-btns">
-        <button class="btn-ghost" onclick="showPage('login')">ログイン</button>
-        <button class="btn-white" onclick="showPage('login')">無料で始める</button>
+      <div class="h-nav-btns">
+        <button class="h-btn-ghost" onclick="showPage('login')">ログイン</button>
+        <button class="h-btn-white" onclick="showPage('login')">無料で始める</button>
       </div>
     </nav>
     <div class="hero-body">
-      <div class="hero-badge"><i data-lucide="sparkles"></i> AIが3分でポータルを生成</div>
-      <h1 class="hero-h1">中小企業のための<br><em>かんたん社内ポータル</em></h1>
-      <p class="hero-sub">ITが得意でなくても大丈夫。AIが手伝うから、誰でもすぐに使えるポータルサイトが作れます。</p>
-      <div class="hero-btns">
-        <button class="btn-hero-w" onclick="showPage('login')"><i data-lucide="arrow-right"></i>無料で試してみる</button>
-        <button class="btn-hero-o" onclick="showPage('portal')">デモを見る</button>
+      <div class="h-badge"><i data-lucide="sparkles"></i> AIが3分でポータルを自動生成</div>
+      <h1 class="h-h1">中小企業のための<br><em>かんたん社内ポータル</em></h1>
+      <p class="h-sub">ITが得意でなくても大丈夫。AIが手伝うから、誰でも3分で使えるポータルが作れます。</p>
+      <div class="h-btns">
+        <button class="h-cta" onclick="showPage('login')"><i data-lucide="arrow-right"></i>無料で試してみる</button>
+        <button class="h-demo" onclick="showPage('portal')">デモを見る</button>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
   <section class="features">
     <div style="text-align:center;margin-bottom:48px;">
       <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">WHY CHOOSE US</div>
-      <h2 style="font-size:30px;font-weight:800;color:var(--t9);letter-spacing:-.5px;margin-bottom:10px;">なぜ選ばれるのか</h2>
-      <p style="font-size:15px;color:var(--t5);">サイボウズの簡単さ × Softrの美しさ × AIの速さ</p>
+      <h2 style="font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:10px;">なぜ選ばれるのか</h2>
+      <p style="font-size:15px;color:var(--muted);">サイボウズの簡単さ × Softrの美しさ × AIの速さ</p>
     </div>
-    <div class="features-grid">
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="zap"></i></div>
-        <div class="feat-title">3分でセットアップ</div>
-        <div class="feat-desc">AIウィザードが質問に答えるだけで、会社にぴったりのポータルを自動生成します。</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="smartphone"></i></div>
-        <div class="feat-title">スマホでもきれい</div>
-        <div class="feat-desc">PCはサイドバー、スマホはボトムタブで最適表示。どこからでも使いやすい。</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="bot"></i></div>
-        <div class="feat-title">AIがサポート</div>
-        <div class="feat-desc">よくある質問への自動回答、お知らせの自動要約など、AIが社員をサポートします。</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="shield"></i></div>
-        <div class="feat-title">安心のセキュリティ</div>
-        <div class="feat-desc">社員ごとにアクセス権限を設定。大切な情報を確実に守ります。</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="palette"></i></div>
-        <div class="feat-title">自由なカスタマイズ</div>
-        <div class="feat-desc">会社のカラーやロゴに合わせてデザインを簡単に変更できます。</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="headphones"></i></div>
-        <div class="feat-title">充実のサポート</div>
-        <div class="feat-desc">日本語サポート対応。困ったときにすぐ相談できる体制を整えています。</div>
-      </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="zap"></i></div><div class="feat-title">3分でセットアップ</div><div class="feat-desc">AIウィザードが質問に答えるだけで、会社にぴったりのポータルを自動生成します。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="smartphone"></i></div><div class="feat-title">スマホでもきれい</div><div class="feat-desc">PCはサイドバー、スマホはボトムタブで最適表示。どこからでも使いやすい。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="bot"></i></div><div class="feat-title">AIがサポート</div><div class="feat-desc">よくある質問への自動回答、お知らせの自動要約など、AIが社員をサポートします。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="shield"></i></div><div class="feat-title">安心のセキュリティ</div><div class="feat-desc">社員ごとにアクセス権限を設定。大切な情報を確実に守ります。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="palette"></i></div><div class="feat-title">自由なカスタマイズ</div><div class="feat-desc">会社のカラーやロゴに合わせてデザインを簡単に変更できます。</div></div>
+      <div class="feat-card"><div class="feat-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="headphones"></i></div><div class="feat-title">充実のサポート</div><div class="feat-desc">日本語サポート対応。困ったときにすぐ相談できる体制を整えています。</div></div>
     </div>
-    <div class="features-cta">
-      <button class="btn-hero-w" onclick="showPage('login')" style="background:var(--primary);color:white;box-shadow:none;margin:0 auto;">今すぐ無料で始める</button>
-      <p style="font-size:12px;color:var(--t4);margin-top:12px;">クレジットカード不要 · 14日間無料トライアル</p>
+    <div style="text-align:center;margin-top:52px;">
+      <button class="h-cta" onclick="showPage('login')" style="background:var(--h1);margin:0 auto;">今すぐ無料で始める</button>
+      <p style="font-size:12px;color:var(--faint);margin-top:11px;">クレジットカード不要 · 14日間無料トライアル</p>
     </div>
   </section>
 </div>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════
      LOGIN
-═══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="page-login" class="page">
   <div class="login-bg">
     <div class="login-card">
@@ -731,107 +783,64 @@ body {
         <div class="login-title">おかえりなさい</div>
         <div class="login-sub">AI社内ポータル Builder にログイン</div>
       </div>
-      <div class="field">
-        <label>メールアドレス</label>
-        <input type="email" placeholder="example@company.co.jp" value="yamada@eteam.co.jp">
-      </div>
-      <div class="field">
-        <label>パスワード</label>
-        <input type="password" placeholder="パスワードを入力" value="password123">
-      </div>
-      <div style="text-align:right;margin-top:-8px;margin-bottom:14px;">
-        <span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;">パスワードを忘れた方</span>
-      </div>
+      <div class="field"><label>メールアドレス</label><input type="email" value="yamada@eteam.co.jp"></div>
+      <div class="field"><label>パスワード</label><input type="password" value="password123"></div>
+      <div style="text-align:right;margin-top:-6px;margin-bottom:14px;"><span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;">パスワードを忘れた方</span></div>
       <button class="btn-login" onclick="showPage('onboarding')">ログイン</button>
-      <div class="login-or">
-        <div class="login-or-line"></div>
-        <span class="login-or-text">または</span>
-        <div class="login-or-line"></div>
-      </div>
-      <button onclick="showPage('portal')" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--t5);cursor:pointer;background:#fff;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;">
-        <i data-lucide="eye" style="width:14px;height:14px;"></i> デモポータルを見る
-      </button>
-      <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--t5);">
-        アカウントをお持ちでない方は
-        <span style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="showPage('onboarding')">新規登録</span>
-      </div>
+      <div class="login-or"><div class="login-or-line"></div><span class="login-or-text">または</span><div class="login-or-line"></div></div>
+      <button class="btn-demo" onclick="showPage('portal')"><i data-lucide="monitor"></i>デモポータルを見る</button>
+      <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--muted);">アカウントをお持ちでない方は <span style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="showPage('onboarding')">新規登録</span></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════
      ONBOARDING
-═══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="page-onboarding" class="page">
   <div class="ob-bg">
     <div class="ob-card">
-      <div class="ob-header" id="ob-hd">
+      <div class="ob-hd" id="ob-hd">
         <div class="ob-step-lbl">ステップ 1 / 4</div>
         <div class="ob-step-title">会社の情報を教えてください</div>
-        <div class="ob-prog">
-          <div class="ob-dot done" id="od1"></div>
-          <div class="ob-dot" id="od2"></div>
-          <div class="ob-dot" id="od3"></div>
-          <div class="ob-dot" id="od4"></div>
-        </div>
+        <div class="ob-prog"><div class="ob-dot done" id="od1"></div><div class="ob-dot" id="od2"></div><div class="ob-dot" id="od3"></div><div class="ob-dot" id="od4"></div></div>
       </div>
       <div class="ob-body" id="ob-body"></div>
       <div class="ob-footer">
-        <button class="btn btn-secondary" id="ob-back" onclick="obBack()"><i data-lucide="arrow-left"></i>戻る</button>
+        <button class="btn btn-ghost" id="ob-back" onclick="obBack()"><i data-lucide="arrow-left"></i>戻る</button>
         <button class="btn btn-primary" id="ob-next" onclick="obNext()">次へ<i data-lucide="arrow-right"></i></button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════
      PORTAL
-═══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="page-portal" class="page page-portal">
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-row">
-        <div class="brand-icon"><i data-lucide="building-2"></i></div>
-        <div>
-          <div class="brand-name">Eチーム株式会社</div>
-          <div class="brand-sub">社内ポータル</div>
-        </div>
+    <div class="sb-brand">
+      <div class="sb-brand-inner">
+        <div class="sb-icon"><i data-lucide="building-2"></i></div>
+        <div><div class="sb-company">Eチーム株式会社</div><div class="sb-tagline">社内ポータル</div></div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">メニュー</div>
-      <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard">
-        <i data-lucide="home"></i> ホーム
-      </div>
-      <div class="nav-item" onclick="showView('news')" id="nav-news">
-        <i data-lucide="bell"></i> お知らせ
-        <span class="nav-badge">3</span>
-      </div>
-      <div class="nav-item" onclick="showView('links')" id="nav-links">
-        <i data-lucide="link-2"></i> よく使うリンク
-      </div>
-      <div class="nav-item" onclick="showView('members')" id="nav-members">
-        <i data-lucide="users"></i> メンバー
-      </div>
-      <div class="nav-item" onclick="showView('faq')" id="nav-faq">
-        <i data-lucide="help-circle"></i> FAQ
-      </div>
-      <div class="nav-divider"></div>
-      <div class="nav-section">管理</div>
-      <div class="nav-item" onclick="showPage('admin')">
-        <i data-lucide="settings"></i> 管理画面
-      </div>
+    <nav class="sb-nav">
+      <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard"><i data-lucide="home"></i>ホーム</div>
+      <div class="nav-item" onclick="showView('news')" id="nav-news"><i data-lucide="bell"></i>お知らせ<span class="nav-pill">3</span></div>
+      <div class="nav-item" onclick="showView('links')" id="nav-links"><i data-lucide="link-2"></i>よく使うリンク</div>
+      <div class="nav-item" onclick="showView('members')" id="nav-members"><i data-lucide="users"></i>メンバー</div>
+      <div class="nav-item" onclick="showView('faq')" id="nav-faq"><i data-lucide="help-circle"></i>FAQ</div>
+      <div class="nav-sep"></div>
+      <div class="nav-item" onclick="showPage('admin')"><i data-lucide="settings"></i>管理画面</div>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="s-avatar">山</div>
-        <div class="s-info">
-          <div class="s-name">山田 太郎</div>
-          <div class="s-dept">営業部</div>
-        </div>
-        <div class="s-chevron"><i data-lucide="chevron-down"></i></div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-ava">山</div>
+        <div><div class="sb-uname">山田 太郎</div><div class="sb-udept">営業部</div></div>
+        <div class="sb-ucaret"><i data-lucide="chevron-down"></i></div>
       </div>
     </div>
   </aside>
@@ -839,348 +848,287 @@ body {
   <!-- Mobile topbar -->
   <div class="mobile-topbar">
     <span class="mobile-logo">社内ポータル</span>
-    <div class="tb-btn"><i data-lucide="bell"></i></div>
+    <div class="tb-icon"><i data-lucide="bell"></i></div>
   </div>
 
-  <!-- Content -->
-  <div class="portal-content">
+  <!-- Main -->
+  <div class="portal-body">
     <header class="topbar">
       <span class="topbar-title" id="topbar-title">ホーム</span>
       <div class="topbar-right">
-        <div class="tb-btn"><i data-lucide="search"></i></div>
-        <div class="tb-btn" style="position:relative;">
+        <div class="tb-icon"><i data-lucide="search"></i></div>
+        <div class="tb-icon" style="position:relative;">
           <i data-lucide="bell"></i>
-          <span style="position:absolute;top:6px;right:6px;width:6px;height:6px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span>
+          <span style="position:absolute;top:6px;right:6px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span>
         </div>
         <div class="tb-user">
-          <div class="s-avatar" style="width:24px;height:24px;font-size:10px;">山</div>
-          <span class="tb-user-name">山田 太郎</span>
-          <i data-lucide="chevron-down" style="width:13px;height:13px;color:var(--t4);stroke-width:2;"></i>
+          <div class="sb-ava" style="width:22px;height:22px;font-size:9px;">山</div>
+          <span class="tb-uname">山田 太郎</span>
+          <i data-lucide="chevron-down"></i>
         </div>
       </div>
     </header>
 
     <main class="portal-main">
 
-      <!-- VIEW: DASHBOARD -->
+      <!-- ── DASHBOARD ── -->
       <div class="view active" id="view-dashboard">
-        <div style="margin-bottom:6px;">
-          <div class="page-title">おはようございます、山田さん</div>
-          <div class="page-sub">今日も一日よろしくお願いします</div>
+        <div style="margin-bottom:4px;">
+          <div class="pg-title">おはようございます、山田さん</div>
+          <div class="pg-sub">今日も一日よろしくお願いします — 2025年4月1日（火）</div>
         </div>
         <div class="divider"></div>
 
-        <!-- Stats row -->
-        <div class="g4" style="margin-bottom:28px;">
+        <!-- Stats -->
+        <div class="stat-grid">
           <div class="stat-card">
-            <div class="stat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="bell"></i></div>
-            <div class="stat-val">3</div>
+            <div class="stat-num">3</div>
             <div class="stat-lbl">未読のお知らせ</div>
-            <div class="stat-trend"><i data-lucide="trending-up"></i><span class="trend-up">今日2件</span></div>
+            <div class="stat-sub up"><i data-lucide="trending-up"></i>今日2件追加</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="users"></i></div>
-            <div class="stat-val">24</div>
+            <div class="stat-num">24</div>
             <div class="stat-lbl">メンバー数</div>
-            <div class="stat-trend"><i data-lucide="user-plus" style="width:11px;height:11px;stroke-width:2.5;"></i><span class="trend-up">今月4名追加</span></div>
+            <div class="stat-sub up"><i data-lucide="user-plus"></i>今月4名追加</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="calendar"></i></div>
-            <div class="stat-val">2</div>
+            <div class="stat-num">2</div>
             <div class="stat-lbl">今週のイベント</div>
-            <div class="stat-trend" style="color:var(--t4);">直近: 4月15日</div>
+            <div class="stat-sub" style="color:var(--faint);">直近: 4月15日</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="check-square"></i></div>
-            <div class="stat-val">5</div>
+            <div class="stat-num">5</div>
             <div class="stat-lbl">未対応タスク</div>
-            <div class="stat-trend" style="color:var(--t4);">期限: 今週</div>
+            <div class="stat-sub" style="color:var(--faint);">期限: 今週</div>
           </div>
         </div>
 
-        <!-- Two column -->
-        <div class="g2" style="margin-bottom:28px;align-items:start;">
+        <div class="two-col">
           <!-- Latest news -->
-          <div class="card" style="overflow:hidden;">
+          <div class="card">
             <div class="card-hd">
-              <span class="card-hd-title">最新のお知らせ</span>
-              <span class="card-hd-link" onclick="showView('news')">すべて見る<i data-lucide="chevron-right"></i></span>
+              <span class="card-hd-t">最新のお知らせ</span>
+              <span class="card-link" onclick="showView('news')">すべて見る<i data-lucide="chevron-right"></i></span>
             </div>
-            <div class="news-item" onclick="showView('news')">
-              <div class="news-date-col"><div class="news-day">1</div><div class="news-month">APR</div></div>
-              <div class="news-body">
-                <span class="news-badge b-red">重要</span>
-                <div class="news-title-t">2025年度 健康診断のご案内</div>
+            <div class="dash-news-row" onclick="showView('news')">
+              <img class="dash-news-thumb" src="https://picsum.photos/seed/medical/88/68" alt="" onerror="this.style.display='none'">
+              <div class="dash-news-info">
+                <div class="dash-news-title">2025年度 健康診断のご案内</div>
+                <div class="dash-news-sub"><span class="nbadge nb-red" style="font-size:9px;padding:1px 6px;">重要</span> 4月1日 · 人事部</div>
               </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
+              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-item" onclick="showView('news')">
-              <div class="news-date-col"><div class="news-day">28</div><div class="news-month">MAR</div></div>
-              <div class="news-body">
-                <span class="news-badge b-indigo">イベント</span>
-                <div class="news-title-t">4月の全社会議について</div>
+            <div class="dash-news-row" onclick="showView('news')">
+              <img class="dash-news-thumb" src="https://picsum.photos/seed/meeting/88/68" alt="" onerror="this.style.display='none'">
+              <div class="dash-news-info">
+                <div class="dash-news-title">4月の全社会議について</div>
+                <div class="dash-news-sub"><span class="nbadge nb-indigo" style="font-size:9px;padding:1px 6px;">イベント</span> 3月28日 · 経営企画部</div>
               </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
+              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-item" onclick="showView('news')">
-              <div class="news-date-col"><div class="news-day">25</div><div class="news-month">MAR</div></div>
-              <div class="news-body">
-                <span class="news-badge b-gray">一般</span>
-                <div class="news-title-t">オフィスの清掃日程変更</div>
+            <div class="dash-news-row" onclick="showView('news')">
+              <div class="dash-news-ph"><i data-lucide="megaphone"></i></div>
+              <div class="dash-news-info">
+                <div class="dash-news-title">オフィスの清掃日程変更</div>
+                <div class="dash-news-sub"><span class="nbadge nb-slate" style="font-size:9px;padding:1px 6px;">一般</span> 3月25日 · 総務部</div>
               </div>
-              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
+              <div class="dash-news-arr"><i data-lucide="chevron-right"></i></div>
             </div>
           </div>
 
-          <!-- Schedule -->
-          <div class="card" style="overflow:hidden;">
-            <div class="card-hd">
-              <span class="card-hd-title">本日のスケジュール</span>
-              <span class="card-hd-link">カレンダー<i data-lucide="chevron-right"></i></span>
-            </div>
-            <div style="padding:12px;">
-              <div class="schedule-row now">
-                <div class="sched-time" style="color:var(--primary);">09:30</div>
-                <div class="sched-bar" style="background:var(--primary);"></div>
-                <div>
-                  <div class="sched-title">朝礼・チームミーティング</div>
-                  <div class="sched-meta">会議室A · 30分</div>
-                </div>
-              </div>
-              <div style="height:1px;background:var(--border-light);margin:4px 0;"></div>
-              <div class="schedule-row">
-                <div class="sched-time" style="color:var(--t4);">14:00</div>
-                <div class="sched-bar" style="background:var(--border);"></div>
-                <div>
-                  <div class="sched-title">新規顧客プレゼン</div>
-                  <div class="sched-meta">オンライン · 1時間</div>
-                </div>
-              </div>
-              <div style="height:1px;background:var(--border-light);margin:4px 0;"></div>
-              <div class="schedule-row">
-                <div class="sched-time" style="color:var(--t4);">16:30</div>
-                <div class="sched-bar" style="background:var(--border);"></div>
-                <div>
-                  <div class="sched-title">週次レポート提出</div>
-                  <div class="sched-meta">締め切り</div>
-                </div>
+          <!-- Quick access + Schedule -->
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="card">
+              <div class="card-hd"><span class="card-hd-t">よく使うリンク</span><span class="card-link" onclick="showView('links')">すべて見る<i data-lucide="chevron-right"></i></span></div>
+              <div class="shortcut-grid">
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="mail" style="color:#EA4335;"></i><span class="shortcut-label">メール</span></div>
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="calendar" style="color:#4285F4;"></i><span class="shortcut-label">カレンダー</span></div>
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="folder" style="color:#FBBC04;"></i><span class="shortcut-label">ドライブ</span></div>
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="message-square" style="color:#4A154B;"></i><span class="shortcut-label">Slack</span></div>
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="file-text" style="color:#374151;"></i><span class="shortcut-label">Notion</span></div>
+                <div class="shortcut-btn" onclick="showView('links')"><i data-lucide="book-open" style="color:#8B5CF6;"></i><span class="shortcut-label">研修</span></div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Quick links -->
-        <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
-          <span class="section-title">よく使うリンク</span>
-          <span class="card-hd-link" onclick="showView('links')" style="font-size:12px;">すべて見る<i data-lucide="chevron-right" style="width:12px;height:12px;stroke-width:2.5;"></i></span>
-        </div>
-        <div class="g6">
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#EA4335;"><i data-lucide="mail"></i></div>
-            <div class="shortcut-label">メール</div>
-          </div>
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#4285F4;"><i data-lucide="calendar"></i></div>
-            <div class="shortcut-label">カレンダー</div>
-          </div>
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#34A853;"><i data-lucide="folder"></i></div>
-            <div class="shortcut-label">ドライブ</div>
-          </div>
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#4A154B;"><i data-lucide="message-square"></i></div>
-            <div class="shortcut-label">Slack</div>
-          </div>
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#F97316;"><i data-lucide="bar-chart-2"></i></div>
-            <div class="shortcut-label">報告書</div>
-          </div>
-          <div class="shortcut-card" onclick="showView('links')">
-            <div class="shortcut-icon" style="color:#8B5CF6;"><i data-lucide="book-open"></i></div>
-            <div class="shortcut-label">研修</div>
+            <div class="card">
+              <div class="card-hd"><span class="card-hd-t">本日のスケジュール</span></div>
+              <div style="padding:10px 12px;display:flex;flex-direction:column;gap:4px;">
+                <div class="sched-item now">
+                  <div class="sched-time" style="color:var(--primary);">09:30</div>
+                  <div class="sched-bar" style="background:var(--primary);"></div>
+                  <div><div class="sched-title">朝礼・チームミーティング</div><div class="sched-meta">会議室A · 30分</div></div>
+                </div>
+                <div class="sched-item">
+                  <div class="sched-time" style="color:var(--faint);">14:00</div>
+                  <div class="sched-bar" style="background:var(--border);"></div>
+                  <div><div class="sched-title">新規顧客プレゼン</div><div class="sched-meta">オンライン · 1時間</div></div>
+                </div>
+                <div class="sched-item">
+                  <div class="sched-time" style="color:var(--faint);">16:30</div>
+                  <div class="sched-bar" style="background:var(--border);"></div>
+                  <div><div class="sched-title">週次レポート提出</div><div class="sched-meta">締め切り</div></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW: NEWS -->
+      <!-- ── NEWS ── -->
       <div class="view" id="view-news">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
-          <div>
-            <div class="page-title">お知らせ</div>
-            <div class="page-sub">社内のお知らせ・連絡をここで確認できます</div>
-          </div>
-          <button class="btn btn-primary"><i data-lucide="plus"></i>投稿する</button>
+          <div><div class="pg-title">お知らせ</div><div class="pg-sub">社内のお知らせ・連絡をここで確認できます</div></div>
+          <button class="btn btn-dark"><i data-lucide="plus"></i>投稿する</button>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-          <div class="search-bar">
-            <i data-lucide="search"></i>
-            <input placeholder="お知らせを検索...">
-          </div>
-          <div class="filter-tabs">
-            <button class="filter-tab is-active" onclick="filterNews(this,'all')">すべて</button>
-            <button class="filter-tab" onclick="filterNews(this,'重要')">重要</button>
-            <button class="filter-tab" onclick="filterNews(this,'イベント')">イベント</button>
-            <button class="filter-tab" onclick="filterNews(this,'人事')">人事</button>
-            <button class="filter-tab" onclick="filterNews(this,'一般')">一般</button>
-          </div>
+        <div class="tab-nav">
+          <button class="tab-btn is-on" onclick="filterNews(this,'all')">すべて</button>
+          <button class="tab-btn" onclick="filterNews(this,'重要')">重要</button>
+          <button class="tab-btn" onclick="filterNews(this,'イベント')">イベント</button>
+          <button class="tab-btn" onclick="filterNews(this,'人事')">人事</button>
+          <button class="tab-btn" onclick="filterNews(this,'一般')">一般</button>
         </div>
-        <div class="card" style="overflow:hidden;" id="news-list">
-          <div class="news-item" data-cat="重要">
-            <div class="news-date-col"><div class="news-day">1</div><div class="news-month">APR</div></div>
-            <div class="news-body">
-              <span class="news-badge b-red">重要</span>
-              <div class="news-title-t">2025年度 健康診断のご案内</div>
-              <div class="news-excerpt">今年度の健康診断を下記の日程で実施します。対象者は必ずご参加ください。</div>
+        <div class="search-row"><i data-lucide="search"></i><input placeholder="お知らせを検索..."></div>
+        <div id="news-list">
+          <div class="news-card" data-cat="重要">
+            <div class="news-card-inner">
+              <img class="news-thumb" src="https://picsum.photos/seed/medical2/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
+              <div class="news-info">
+                <div class="news-meta-row"><span class="nbadge nb-red">重要</span><span class="news-date">2025年4月1日</span><span class="news-dept">· 人事部</span></div>
+                <div class="news-title-t">2025年度 健康診断のご案内</div>
+                <div class="news-excerpt">今年度の健康診断を下記の日程で実施します。対象者は必ずご参加ください。</div>
+              </div>
+              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
           </div>
-          <div class="news-item" data-cat="イベント">
-            <div class="news-date-col"><div class="news-day">28</div><div class="news-month">MAR</div></div>
-            <div class="news-body">
-              <span class="news-badge b-indigo">イベント</span>
-              <div class="news-title-t">4月の全社会議について</div>
-              <div class="news-excerpt">4月15日（火）15:00より、全社会議を開催します。全員参加をお願いします。</div>
+          <div class="news-card" data-cat="イベント">
+            <div class="news-card-inner">
+              <img class="news-thumb" src="https://picsum.photos/seed/conference/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
+              <div class="news-info">
+                <div class="news-meta-row"><span class="nbadge nb-indigo">イベント</span><span class="news-date">2025年3月28日</span><span class="news-dept">· 経営企画部</span></div>
+                <div class="news-title-t">4月の全社会議について</div>
+                <div class="news-excerpt">4月15日（火）15:00より、全社会議を開催します。全員参加をお願いします。</div>
+              </div>
+              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
           </div>
-          <div class="news-item" data-cat="人事">
-            <div class="news-date-col"><div class="news-day">25</div><div class="news-month">MAR</div></div>
-            <div class="news-body">
-              <span class="news-badge b-green">人事</span>
-              <div class="news-title-t">2025年度 新入社員のご紹介</div>
-              <div class="news-excerpt">この度、4名の新しい仲間が加わりました。温かくお迎えください。</div>
+          <div class="news-card" data-cat="人事">
+            <div class="news-card-inner">
+              <img class="news-thumb" src="https://picsum.photos/seed/team/120/88" alt="" onerror="this.outerHTML='<div class=\'news-thumb-ph\'><i data-lucide=\'image\'></i></div>'">
+              <div class="news-info">
+                <div class="news-meta-row"><span class="nbadge nb-green">人事</span><span class="news-date">2025年3月25日</span><span class="news-dept">· 人事部</span></div>
+                <div class="news-title-t">2025年度 新入社員のご紹介</div>
+                <div class="news-excerpt">この度、4名の新しい仲間が加わりました。温かくお迎えください。</div>
+              </div>
+              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
           </div>
-          <div class="news-item" data-cat="一般">
-            <div class="news-date-col"><div class="news-day">20</div><div class="news-month">MAR</div></div>
-            <div class="news-body">
-              <span class="news-badge b-gray">一般</span>
-              <div class="news-title-t">オフィスの清掃日程変更のお知らせ</div>
-              <div class="news-excerpt">4月より毎週火曜日の清掃を水曜日に変更します。ご協力をお願いします。</div>
+          <div class="news-card" data-cat="一般">
+            <div class="news-card-inner">
+              <div class="news-thumb-ph"><i data-lucide="megaphone"></i></div>
+              <div class="news-info">
+                <div class="news-meta-row"><span class="nbadge nb-slate">一般</span><span class="news-date">2025年3月20日</span><span class="news-dept">· 総務部</span></div>
+                <div class="news-title-t">オフィスの清掃日程変更のお知らせ</div>
+                <div class="news-excerpt">4月より毎週火曜日の清掃を水曜日に変更します。ご協力をお願いします。</div>
+              </div>
+              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
           </div>
-          <div class="news-item" data-cat="一般">
-            <div class="news-date-col"><div class="news-day">15</div><div class="news-month">MAR</div></div>
-            <div class="news-body">
-              <span class="news-badge b-gray">一般</span>
-              <div class="news-title-t">社内WiFiパスワード変更について</div>
-              <div class="news-excerpt">セキュリティ強化のため、社内WiFiのパスワードを変更します。詳細はIT部まで。</div>
+          <div class="news-card" data-cat="一般">
+            <div class="news-card-inner">
+              <div class="news-thumb-ph"><i data-lucide="wifi"></i></div>
+              <div class="news-info">
+                <div class="news-meta-row"><span class="nbadge nb-slate">一般</span><span class="news-date">2025年3月15日</span><span class="news-dept">· IT部</span></div>
+                <div class="news-title-t">社内WiFiパスワード変更について</div>
+                <div class="news-excerpt">セキュリティ強化のため、社内WiFiのパスワードを変更します。</div>
+              </div>
+              <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
             </div>
-            <div class="news-arrow"><i data-lucide="chevron-right"></i></div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW: LINKS -->
+      <!-- ── LINKS ── -->
       <div class="view" id="view-links">
-        <div class="page-title" style="margin-bottom:6px;">よく使うリンク</div>
-        <div class="page-sub" style="margin-bottom:20px;">業務でよく使うサービスへのリンク集</div>
-        <div class="search-bar" style="margin-bottom:24px;">
-          <i data-lucide="search"></i>
-          <input placeholder="リンクを検索...">
+        <div class="pg-title" style="margin-bottom:6px;">よく使うリンク</div>
+        <div class="pg-sub" style="margin-bottom:20px;">業務でよく使うサービスへのリンク集</div>
+        <div class="search-row" style="max-width:380px;"><i data-lucide="search"></i><input placeholder="リンクを検索..."></div>
+
+        <div class="link-cat-label">コミュニケーション</div>
+        <div class="link-grid">
+          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#EA4335;"><i data-lucide="mail"></i></div><div><div class="link-name">Gmail（社用）</div><div class="link-desc">google.com/mail</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="message-square"></i></div><div><div class="link-name">Slack</div><div class="link-desc">チャット・連絡</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#DBEAFE;color:#2563EB;"><i data-lucide="calendar"></i></div><div><div class="link-name">Googleカレンダー</div><div class="link-desc">スケジュール管理</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="video"></i></div><div><div class="link-name">Google Meet</div><div class="link-desc">ビデオ会議</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">コミュニケーション</div>
-        <div class="g2" style="margin-bottom:22px;">
-          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#EA4335;"><i data-lucide="mail"></i></div><div><div class="link-title">Gmail（社用）</div><div class="link-desc">google.com/mail</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="message-square"></i></div><div><div class="link-title">Slack</div><div class="link-desc">チャット・連絡</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#DBEAFE;color:#2563EB;"><i data-lucide="calendar"></i></div><div><div class="link-title">Googleカレンダー</div><div class="link-desc">スケジュール管理</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="video"></i></div><div><div class="link-title">Google Meet</div><div class="link-desc">ビデオ会議</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
+        <div class="link-cat-label">ドキュメント・ファイル</div>
+        <div class="link-grid">
+          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="folder"></i></div><div><div class="link-name">Google Drive</div><div class="link-desc">ファイル共有</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="file-text"></i></div><div><div class="link-name">Notion（社内Wiki）</div><div class="link-desc">マニュアル・議事録</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">ドキュメント・ファイル</div>
-        <div class="g2" style="margin-bottom:22px;">
-          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="folder"></i></div><div><div class="link-title">Google Drive</div><div class="link-desc">ファイル共有</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="file-text"></i></div><div><div class="link-title">Notion（社内Wiki）</div><div class="link-desc">マニュアル・議事録</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-        </div>
-
-        <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">人事・総務</div>
-        <div class="g2">
-          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="credit-card"></i></div><div><div class="link-title">給与明細確認</div><div class="link-desc">給与・源泉徴収</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="receipt"></i></div><div><div class="link-title">経費申請</div><div class="link-desc">経費・精算</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="umbrella"></i></div><div><div class="link-title">有給・休暇申請</div><div class="link-desc">各種申請フォーム</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
-          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="book-open"></i></div><div><div class="link-title">社内研修システム</div><div class="link-desc">学習・スキルアップ</div></div><div class="link-arrow"><i data-lucide="external-link"></i></div></div>
+        <div class="link-cat-label">人事・総務</div>
+        <div class="link-grid">
+          <div class="link-card"><div class="link-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="credit-card"></i></div><div><div class="link-name">給与明細確認</div><div class="link-desc">給与・源泉徴収</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="receipt"></i></div><div><div class="link-name">経費申請</div><div class="link-desc">経費・精算</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="umbrella"></i></div><div><div class="link-name">有給・休暇申請</div><div class="link-desc">各種申請フォーム</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
+          <div class="link-card"><div class="link-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="book-open"></i></div><div><div class="link-name">社内研修システム</div><div class="link-desc">学習・スキルアップ</div></div><div class="link-ext"><i data-lucide="external-link"></i></div></div>
         </div>
       </div>
 
-      <!-- VIEW: MEMBERS -->
+      <!-- ── MEMBERS ── -->
       <div class="view" id="view-members">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
-          <div>
-            <div class="page-title">メンバー</div>
-            <div class="page-sub">社員の連絡先・プロフィール一覧</div>
-          </div>
-          <button class="btn btn-primary"><i data-lucide="user-plus"></i>メンバー追加</button>
+          <div><div class="pg-title">メンバー</div><div class="pg-sub">社員の連絡先・プロフィール一覧</div></div>
+          <button class="btn btn-dark"><i data-lucide="user-plus"></i>メンバー追加</button>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-          <div class="search-bar"><i data-lucide="search"></i><input placeholder="名前・部署で検索..."></div>
-          <div class="filter-tabs">
-            <button class="filter-tab is-active">すべて</button>
-            <button class="filter-tab">営業部</button>
-            <button class="filter-tab">開発部</button>
-            <button class="filter-tab">総務部</button>
-            <button class="filter-tab">人事部</button>
-          </div>
+        <div class="tab-nav">
+          <button class="tab-btn is-on">すべて</button>
+          <button class="tab-btn">営業部</button>
+          <button class="tab-btn">開発部</button>
+          <button class="tab-btn">総務部</button>
+          <button class="tab-btn">人事部</button>
+          <button class="tab-btn">経営企画部</button>
         </div>
-        <div class="g3" id="member-grid"></div>
+        <div class="search-row"><i data-lucide="search"></i><input placeholder="名前・部署で検索..."></div>
+        <div class="member-grid" id="member-grid"></div>
       </div>
 
-      <!-- VIEW: FAQ -->
+      <!-- ── FAQ ── -->
       <div class="view" id="view-faq">
-        <div class="page-title" style="margin-bottom:6px;">FAQ</div>
-        <div class="page-sub" style="margin-bottom:20px;">困ったときはまずここで確認してください</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-          <div class="search-bar"><i data-lucide="search"></i><input placeholder="質問を検索..."></div>
-          <div class="filter-tabs">
-            <button class="filter-tab is-active">すべて</button>
-            <button class="filter-tab">IT・システム</button>
-            <button class="filter-tab">人事・総務</button>
-            <button class="filter-tab">経費・給与</button>
-          </div>
+        <div class="pg-title" style="margin-bottom:6px;">FAQ</div>
+        <div class="pg-sub" style="margin-bottom:20px;">困ったときはまずここで確認してください</div>
+        <div class="tab-nav">
+          <button class="tab-btn is-on">すべて</button>
+          <button class="tab-btn">IT・システム</button>
+          <button class="tab-btn">人事・総務</button>
+          <button class="tab-btn">経費・給与</button>
         </div>
+        <div class="search-row"><i data-lucide="search"></i><input placeholder="質問を検索..."></div>
         <div id="faq-list"></div>
       </div>
 
     </main>
   </div>
 
-  <!-- Bottom tabs (mobile) -->
+  <!-- Bottom tabs -->
   <div class="bottom-tabs">
     <div class="bottom-tabs-row">
-      <div class="tab-btn is-active" onclick="showView('dashboard')" id="tab-dashboard">
-        <i data-lucide="home"></i>ホーム
-      </div>
-      <div class="tab-btn" onclick="showView('news')" id="tab-news">
-        <div style="position:relative;display:inline-block;">
-          <i data-lucide="bell"></i>
-          <span class="tab-dot"></span>
-        </div>お知らせ
-      </div>
-      <div class="tab-btn" onclick="showView('links')" id="tab-links">
-        <i data-lucide="link-2"></i>リンク
-      </div>
-      <div class="tab-btn" onclick="showView('members')" id="tab-members">
-        <i data-lucide="users"></i>メンバー
-      </div>
-      <div class="tab-btn" onclick="showView('faq')" id="tab-faq">
-        <i data-lucide="help-circle"></i>FAQ
-      </div>
+      <div class="btab is-on" onclick="showView('dashboard')" id="tab-dashboard"><i data-lucide="home"></i>ホーム</div>
+      <div class="btab" onclick="showView('news')" id="tab-news" style="position:relative;"><i data-lucide="bell"></i><span class="btab-dot"></span>お知らせ</div>
+      <div class="btab" onclick="showView('links')" id="tab-links"><i data-lucide="link-2"></i>リンク</div>
+      <div class="btab" onclick="showView('members')" id="tab-members"><i data-lucide="users"></i>メンバー</div>
+      <div class="btab" onclick="showView('faq')" id="tab-faq"><i data-lucide="help-circle"></i>FAQ</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
+<!-- ══════════════════════════════════════
      ADMIN
-═══════════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div id="page-admin" class="page">
   <div style="display:flex;min-height:100vh;">
-    <aside class="admin-sidebar">
-      <div class="adm-brand">
-        <div class="adm-brand-name">管理画面</div>
-        <div class="adm-brand-sub">Eチーム株式会社</div>
-      </div>
+    <aside class="adm-sidebar">
+      <div class="adm-brand"><div class="adm-brand-name">管理画面</div><div class="adm-brand-sub">Eチーム株式会社</div></div>
       <nav class="adm-nav">
         <div class="adm-item active"><i data-lucide="layout-dashboard"></i>ダッシュボード</div>
         <div class="adm-item"><i data-lucide="bell"></i>お知らせ管理</div>
@@ -1191,83 +1139,43 @@ body {
         <div class="adm-item"><i data-lucide="shield"></i>セキュリティ</div>
       </nav>
       <div style="padding:10px;border-top:1px solid rgba(255,255,255,.06);">
-        <div onclick="showPage('portal')" class="adm-item">
-          <i data-lucide="arrow-left"></i>ポータルへ戻る
-        </div>
+        <div onclick="showPage('portal')" class="adm-item"><i data-lucide="arrow-left"></i>ポータルへ戻る</div>
       </div>
     </aside>
-    <div class="adm-content" style="flex:1;background:var(--bg-sub);">
-      <div class="adm-topbar">
-        <span class="adm-topbar-title">管理ダッシュボード</span>
-        <span style="font-size:12px;color:var(--t4);">最終更新: 2025年4月1日</span>
-      </div>
+    <div class="adm-content">
+      <div class="adm-topbar"><span class="adm-topbar-title">管理ダッシュボード</span><span style="font-size:12px;color:var(--faint);">最終更新: 2025年4月1日</span></div>
       <div style="padding:32px;">
-        <div class="g4" style="margin-bottom:24px;">
-          <div class="stat-card">
-            <div class="stat-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="users"></i></div>
-            <div class="stat-val">24</div><div class="stat-lbl">総メンバー数</div>
-            <div class="stat-trend trend-up"><i data-lucide="trending-up"></i>今月4名追加</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="bar-chart-2"></i></div>
-            <div class="stat-val">312</div><div class="stat-lbl">月間PV</div>
-            <div class="stat-trend trend-up"><i data-lucide="trending-up"></i>先月比 +18%</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="bell"></i></div>
-            <div class="stat-val">18</div><div class="stat-lbl">公開中のお知らせ</div>
-            <div class="stat-trend" style="color:var(--t4);">今月3件投稿</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="help-circle"></i></div>
-            <div class="stat-val">12</div><div class="stat-lbl">FAQ件数</div>
-            <div class="stat-trend" style="color:var(--t4);">先週1件追加</div>
-          </div>
+        <div class="stat-grid" style="margin-bottom:22px;">
+          <div class="stat-card"><div class="stat-num">24</div><div class="stat-lbl">総メンバー数</div><div class="stat-sub up"><i data-lucide="trending-up"></i>今月4名追加</div></div>
+          <div class="stat-card"><div class="stat-num">312</div><div class="stat-lbl">月間ページビュー</div><div class="stat-sub up"><i data-lucide="trending-up"></i>先月比 +18%</div></div>
+          <div class="stat-card"><div class="stat-num">18</div><div class="stat-lbl">公開中のお知らせ</div><div class="stat-sub" style="color:var(--faint);">今月3件投稿</div></div>
+          <div class="stat-card"><div class="stat-num">12</div><div class="stat-lbl">FAQ件数</div><div class="stat-sub" style="color:var(--faint);">先週1件追加</div></div>
         </div>
-
-        <div class="g2" style="margin-bottom:24px;align-items:start;">
-          <div class="card" style="overflow:hidden;">
-            <div class="card-hd"><span class="card-hd-title">最近の活動</span></div>
-            <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                <div style="width:7px;height:7px;background:#10B981;border-radius:50%;flex-shrink:0;"></div>
-                <span style="flex:1;color:var(--t7);">山田さんがお知らせを投稿しました</span>
-                <span style="font-size:11px;color:var(--t4);">1時間前</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                <div style="width:7px;height:7px;background:var(--primary);border-radius:50%;flex-shrink:0;"></div>
-                <span style="flex:1;color:var(--t7);">新しいメンバーが4名追加されました</span>
-                <span style="font-size:11px;color:var(--t4);">3時間前</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                <div style="width:7px;height:7px;background:#F59E0B;border-radius:50%;flex-shrink:0;"></div>
-                <span style="flex:1;color:var(--t7);">FAQが更新されました</span>
-                <span style="font-size:11px;color:var(--t4);">昨日</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                <div style="width:7px;height:7px;background:#8B5CF6;border-radius:50%;flex-shrink:0;"></div>
-                <span style="flex:1;color:var(--t7);">デザイン設定が変更されました</span>
-                <span style="font-size:11px;color:var(--t4);">2日前</span>
-              </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-hd"><span class="card-hd-t">最近の活動</span></div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:11px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:#10B981;border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">山田さんがお知らせを投稿しました</span><span style="font-size:11px;color:var(--faint);">1時間前</span></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:var(--primary);border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">新しいメンバーが4名追加されました</span><span style="font-size:11px;color:var(--faint);">3時間前</span></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;background:#F59E0B;border-radius:50%;flex-shrink:0;"></div><span style="flex:1;color:var(--h2);">FAQが更新されました</span><span style="font-size:11px;color:var(--faint);">昨日</span></div>
             </div>
           </div>
-
           <div class="card">
-            <div class="card-hd"><span class="card-hd-title">テーマカラー</span></div>
+            <div class="card-hd"><span class="card-hd-t">テーマカラー</span></div>
             <div style="padding:18px;">
-              <p style="font-size:12px;color:var(--t5);margin-bottom:14px;">メインカラーをリアルタイムで変更できます</p>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-                <div class="theme-swatch sel" style="background:#4F46E5;" onclick="setTheme('#4F46E5','#4338CA','#EEF2FF',this)"></div>
-                <div class="theme-swatch" style="background:#10B981;" onclick="setTheme('#10B981','#059669','#D1FAE5',this)"></div>
-                <div class="theme-swatch" style="background:#8B5CF6;" onclick="setTheme('#8B5CF6','#7C3AED','#EDE9FE',this)"></div>
-                <div class="theme-swatch" style="background:#F59E0B;" onclick="setTheme('#F59E0B','#D97706','#FEF3C7',this)"></div>
-                <div class="theme-swatch" style="background:#EF4444;" onclick="setTheme('#EF4444','#DC2626','#FEE2E2',this)"></div>
-                <div class="theme-swatch" style="background:#EC4899;" onclick="setTheme('#EC4899','#DB2777','#FCE7F3',this)"></div>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:13px;">メインカラーをリアルタイムで変更できます</p>
+              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">
+                <div class="th-swatch sel" style="background:#4F46E5;" onclick="setTheme('#4F46E5','#4338CA','#EEF2FF',this)"></div>
+                <div class="th-swatch" style="background:#10B981;" onclick="setTheme('#10B981','#059669','#D1FAE5',this)"></div>
+                <div class="th-swatch" style="background:#8B5CF6;" onclick="setTheme('#8B5CF6','#7C3AED','#EDE9FE',this)"></div>
+                <div class="th-swatch" style="background:#F59E0B;" onclick="setTheme('#F59E0B','#D97706','#FEF3C7',this)"></div>
+                <div class="th-swatch" style="background:#EF4444;" onclick="setTheme('#EF4444','#DC2626','#FEE2E2',this)"></div>
+                <div class="th-swatch" style="background:#0EA5E9;" onclick="setTheme('#0EA5E9','#0284C7','#E0F2FE',this)"></div>
               </div>
-              <div style="padding:12px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-sub);display:flex;align-items:center;gap:10px;">
-                <div style="width:28px;height:28px;border-radius:7px;background:var(--primary);"></div>
-                <span style="font-size:13px;font-weight:500;color:var(--t7);">現在のカラー</span>
-                <button class="btn btn-primary" style="margin-left:auto;padding:5px 14px;font-size:12px;">ボタン</button>
+              <div style="padding:11px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:7px;background:var(--primary);"></div>
+                <span style="font-size:13px;color:var(--muted);">現在のカラー</span>
+                <button class="btn btn-primary" style="margin-left:auto;padding:5px 13px;font-size:12px;">ボタン</button>
               </div>
             </div>
           </div>
@@ -1280,18 +1188,18 @@ body {
 <script>
 // ── DATA ──
 const MEMBERS = [
-  {name:'山田 太郎',dept:'営業部',title:'部長',init:'山',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)'},
-  {name:'佐藤 花子',dept:'人事部',title:'マネージャー',init:'佐',grad:'linear-gradient(135deg,#EC4899,#F43F5E)'},
-  {name:'田中 一郎',dept:'開発部',title:'エンジニア',init:'田',grad:'linear-gradient(135deg,#3B82F6,#06B6D4)'},
-  {name:'鈴木 美咲',dept:'総務部',title:'主任',init:'鈴',grad:'linear-gradient(135deg,#10B981,#34D399)'},
-  {name:'高橋 健太',dept:'開発部',title:'シニアエンジニア',init:'高',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)'},
-  {name:'伊藤 さくら',dept:'営業部',title:'担当',init:'伊',grad:'linear-gradient(135deg,#EF4444,#F87171)'},
-  {name:'渡辺 隆',dept:'経営企画部',title:'課長',init:'渡',grad:'linear-gradient(135deg,#8B5CF6,#A78BFA)'},
-  {name:'小林 由美',dept:'人事部',title:'担当',init:'小',grad:'linear-gradient(135deg,#14B8A6,#06B6D4)'},
-  {name:'加藤 誠',dept:'開発部',title:'リードエンジニア',init:'加',grad:'linear-gradient(135deg,#F97316,#FB923C)'},
-  {name:'松田 奈緒',dept:'総務部',title:'担当',init:'松',grad:'linear-gradient(135deg,#D946EF,#EC4899)'},
-  {name:'中村 博',dept:'営業部',title:'担当',init:'中',grad:'linear-gradient(135deg,#0EA5E9,#38BDF8)'},
-  {name:'木村 葵',dept:'経営企画部',title:'担当',init:'木',grad:'linear-gradient(135deg,#84CC16,#A3E635)'},
+  {name:'山田 太郎',dept:'営業部',role:'部長',init:'山',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)',photo:'https://i.pravatar.cc/64?img=33'},
+  {name:'佐藤 花子',dept:'人事部',role:'マネージャー',init:'佐',grad:'linear-gradient(135deg,#EC4899,#F43F5E)',photo:'https://i.pravatar.cc/64?img=49'},
+  {name:'田中 一郎',dept:'開発部',role:'エンジニア',init:'田',grad:'linear-gradient(135deg,#3B82F6,#06B6D4)',photo:'https://i.pravatar.cc/64?img=12'},
+  {name:'鈴木 美咲',dept:'総務部',role:'主任',init:'鈴',grad:'linear-gradient(135deg,#10B981,#34D399)',photo:'https://i.pravatar.cc/64?img=47'},
+  {name:'高橋 健太',dept:'開発部',role:'シニアエンジニア',init:'高',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',photo:'https://i.pravatar.cc/64?img=7'},
+  {name:'伊藤 さくら',dept:'営業部',role:'担当',init:'伊',grad:'linear-gradient(135deg,#EF4444,#F87171)',photo:'https://i.pravatar.cc/64?img=44'},
+  {name:'渡辺 隆',dept:'経営企画部',role:'課長',init:'渡',grad:'linear-gradient(135deg,#8B5CF6,#A78BFA)',photo:'https://i.pravatar.cc/64?img=15'},
+  {name:'小林 由美',dept:'人事部',role:'担当',init:'小',grad:'linear-gradient(135deg,#14B8A6,#06B6D4)',photo:'https://i.pravatar.cc/64?img=48'},
+  {name:'加藤 誠',dept:'開発部',role:'リードエンジニア',init:'加',grad:'linear-gradient(135deg,#F97316,#FB923C)',photo:'https://i.pravatar.cc/64?img=11'},
+  {name:'松田 奈緒',dept:'総務部',role:'担当',init:'松',grad:'linear-gradient(135deg,#D946EF,#EC4899)',photo:'https://i.pravatar.cc/64?img=45'},
+  {name:'中村 博',dept:'営業部',role:'担当',init:'中',grad:'linear-gradient(135deg,#0EA5E9,#38BDF8)',photo:'https://i.pravatar.cc/64?img=18'},
+  {name:'木村 葵',dept:'経営企画部',role:'担当',init:'木',grad:'linear-gradient(135deg,#84CC16,#A3E635)',photo:'https://i.pravatar.cc/64?img=46'},
 ];
 const FAQS = [
   {cat:'IT',q:'WiFiに接続できません',a:'端末のWiFi設定を確認してください。SSID「eteam-office」を選択し、パスワードはIT部のドキュメントをご確認ください。解決しない場合はIT部（内線: 200）にご連絡ください。'},
@@ -1314,34 +1222,31 @@ function showPage(id) {
 }
 
 // ── VIEW NAV ──
-const VIEW_TITLES = {dashboard:'ホーム',news:'お知らせ',links:'よく使うリンク',members:'メンバー',faq:'FAQ'};
+const VT = {dashboard:'ホーム',news:'お知らせ',links:'よく使うリンク',members:'メンバー',faq:'FAQ'};
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const v = document.getElementById('view-' + id);
-  if (v) v.classList.add('active');
+  const v = document.getElementById('view-' + id); if (v) v.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const ni = document.getElementById('nav-' + id);
-  if (ni) ni.classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('is-active'));
-  const ti = document.getElementById('tab-' + id);
-  if (ti) ti.classList.add('is-active');
-  const tt = document.getElementById('topbar-title');
-  if (tt && VIEW_TITLES[id]) tt.textContent = VIEW_TITLES[id];
-  window.scrollTo(0,0);
-  ri();
+  const ni = document.getElementById('nav-' + id); if (ni) ni.classList.add('active');
+  document.querySelectorAll('.btab').forEach(t => t.classList.remove('is-on'));
+  const ti = document.getElementById('tab-' + id); if (ti) ti.classList.add('is-on');
+  const tt = document.getElementById('topbar-title'); if (tt && VT[id]) tt.textContent = VT[id];
+  window.scrollTo(0,0); ri();
 }
 
-// ── RENDER MEMBERS ──
+// ── MEMBERS ──
 function renderMembers() {
   const g = document.getElementById('member-grid');
   if (!g || g.children.length) return;
   g.innerHTML = MEMBERS.map(m => `
     <div class="member-card">
-      <div class="m-avatar" style="background:${m.grad};">${m.init}</div>
+      <img class="m-photo" src="${m.photo}" alt="${m.name}"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="m-ava" style="background:${m.grad};display:none;">${m.init}</div>
       <div class="m-name">${m.name}</div>
       <div><span class="m-dept">${m.dept}</span></div>
-      <div class="m-title">${m.title}</div>
-      <div class="m-actions">
+      <div class="m-role">${m.role}</div>
+      <div class="m-btns">
         <button class="m-btn"><i data-lucide="mail"></i>メール</button>
         <button class="m-btn"><i data-lucide="message-square"></i>チャット</button>
       </div>
@@ -1349,109 +1254,94 @@ function renderMembers() {
   ri();
 }
 
-// ── RENDER FAQ ──
+// ── FAQ ──
 function renderFAQ() {
   const l = document.getElementById('faq-list');
   if (!l || l.children.length) return;
   l.innerHTML = FAQS.map((f,i) => `
     <div class="faq-item" id="faq${i}">
       <div class="faq-q" onclick="toggleFaq(${i})">
-        <div class="faq-q-label">Q</div>
+        <div class="faq-q-lbl">Q</div>
         <div class="faq-q-text">${f.q}</div>
-        <div style="display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--border-light);color:var(--t5);margin-right:8px;">${f.cat}</div>
+        <span class="faq-q-cat">${f.cat}</span>
         <div class="faq-chevron"><i data-lucide="chevron-down"></i></div>
       </div>
       <div class="faq-a">${f.a}</div>
     </div>`).join('');
   ri();
 }
-function toggleFaq(i) {
-  document.getElementById('faq'+i).classList.toggle('open');
-}
+function toggleFaq(i) { document.getElementById('faq'+i).classList.toggle('open'); }
 
 // ── NEWS FILTER ──
 function filterNews(btn, cat) {
-  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('is-active'));
-  btn.classList.add('is-active');
-  document.querySelectorAll('#news-list .news-item').forEach(item => {
-    item.style.display = (cat==='all' || item.dataset.cat===cat) ? '' : 'none';
+  document.querySelectorAll('.tab-nav .tab-btn').forEach(b => b.classList.remove('is-on'));
+  btn.classList.add('is-on');
+  document.querySelectorAll('#news-list .news-card').forEach(c => {
+    c.style.display = (cat==='all' || c.dataset.cat===cat) ? '' : 'none';
   });
 }
 
 // ── THEME ──
-function setTheme(c, cd, cl, el) {
+function setTheme(c, ch, cl, el) {
   document.documentElement.style.setProperty('--primary', c);
-  document.documentElement.style.setProperty('--primary-hover', cd);
-  document.documentElement.style.setProperty('--primary-light', cl);
-  document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('sel'));
+  document.documentElement.style.setProperty('--primary-h', ch);
+  document.documentElement.style.setProperty('--primary-lt', cl);
+  document.querySelectorAll('.th-swatch').forEach(s => s.classList.remove('sel'));
   el.classList.add('sel');
 }
 
 // ── ONBOARDING ──
 let obStep = 1;
-const OB_STEPS = [
+const OB = [
   {lbl:'ステップ 1 / 4', title:'会社の情報を教えてください', html:`
-    <div class="field"><label>会社名</label><input placeholder="例: Eチーム株式会社" value="Eチーム株式会社"></div>
-    <div class="field"><label>業種</label><select class="field input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-family:inherit;color:var(--t9);outline:none;">
-      <option>IT・システム</option><option>製造業</option><option>小売・流通</option><option>医療・福祉</option><option>その他</option>
-    </select></div>
-    <div class="field"><label>従業員数</label><select style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-family:inherit;color:var(--t9);outline:none;">
-      <option>〜10名</option><option selected>10〜50名</option><option>50〜100名</option><option>100名以上</option>
-    </select></div>`},
+    <div class="field"><label>会社名</label><input value="Eチーム株式会社"></div>
+    <div class="field"><label>業種</label><select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13.5px;font-family:inherit;color:var(--h1);outline:none;background:#fff;"><option>IT・システム</option><option>製造業</option><option>小売・流通</option><option>医療・福祉</option><option>その他</option></select></div>
+    <div class="field"><label>従業員数</label><select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13.5px;font-family:inherit;color:var(--h1);outline:none;background:#fff;"><option>〜10名</option><option selected>10〜50名</option><option>50〜100名</option><option>100名以上</option></select></div>`},
   {lbl:'ステップ 2 / 4', title:'使いたい機能を選んでください', html:`
-    <p style="font-size:13px;color:var(--t5);margin-bottom:14px;">必要な機能にチェックしてください（複数選択可）</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:13px;">必要な機能を選んでください（複数選択可）</p>
     <div class="ob-grid">
-      <div class="ob-option sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="bell"></i></div><div class="ob-opt-label">お知らせ</div></div>
-      <div class="ob-option sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="users"></i></div><div class="ob-opt-label">社員名簿</div></div>
-      <div class="ob-option sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="link-2"></i></div><div class="ob-opt-label">リンク集</div></div>
-      <div class="ob-option sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="help-circle"></i></div><div class="ob-opt-label">FAQ</div></div>
-      <div class="ob-option" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="calendar"></i></div><div class="ob-opt-label">カレンダー</div></div>
-      <div class="ob-option" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="bot"></i></div><div class="ob-opt-label">AIチャット</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EEF2FF;color:var(--primary);"><i data-lucide="bell"></i></div><div class="ob-opt-label">お知らせ</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#D1FAE5;color:#059669;"><i data-lucide="users"></i></div><div class="ob-opt-label">社員名簿</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEF3C7;color:#D97706;"><i data-lucide="link-2"></i></div><div class="ob-opt-label">リンク集</div></div>
+      <div class="ob-opt sel" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#EDE9FE;color:#7C3AED;"><i data-lucide="help-circle"></i></div><div class="ob-opt-label">FAQ</div></div>
+      <div class="ob-opt" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#FEE2E2;color:#DC2626;"><i data-lucide="calendar"></i></div><div class="ob-opt-label">カレンダー</div></div>
+      <div class="ob-opt" onclick="this.classList.toggle('sel')"><div class="ob-opt-icon" style="background:#F3F4F6;color:#374151;"><i data-lucide="bot"></i></div><div class="ob-opt-label">AIチャット</div></div>
     </div>`},
   {lbl:'ステップ 3 / 4', title:'テーマカラーを選んでください', html:`
-    <p style="font-size:13px;color:var(--t5);margin-bottom:16px;">会社のイメージカラーに合わせてください</p>
-    <div class="swatches" style="margin-bottom:20px;">
-      <div class="swatch sel" style="background:#4F46E5;" onclick="obPickColor(this,'#4F46E5','#4338CA','#EEF2FF')"></div>
-      <div class="swatch" style="background:#10B981;" onclick="obPickColor(this,'#10B981','#059669','#D1FAE5')"></div>
-      <div class="swatch" style="background:#8B5CF6;" onclick="obPickColor(this,'#8B5CF6','#7C3AED','#EDE9FE')"></div>
-      <div class="swatch" style="background:#F59E0B;" onclick="obPickColor(this,'#F59E0B','#D97706','#FEF3C7')"></div>
-      <div class="swatch" style="background:#EF4444;" onclick="obPickColor(this,'#EF4444','#DC2626','#FEE2E2')"></div>
-      <div class="swatch" style="background:#EC4899;" onclick="obPickColor(this,'#EC4899','#DB2777','#FCE7F3')"></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">会社のイメージカラーに合わせてください</p>
+    <div class="swatches" style="margin-bottom:18px;">
+      <div class="swatch sel" style="background:#4F46E5;" onclick="obColor(this,'#4F46E5','#4338CA','#EEF2FF')"></div>
+      <div class="swatch" style="background:#10B981;" onclick="obColor(this,'#10B981','#059669','#D1FAE5')"></div>
+      <div class="swatch" style="background:#8B5CF6;" onclick="obColor(this,'#8B5CF6','#7C3AED','#EDE9FE')"></div>
+      <div class="swatch" style="background:#F59E0B;" onclick="obColor(this,'#F59E0B','#D97706','#FEF3C7')"></div>
+      <div class="swatch" style="background:#EF4444;" onclick="obColor(this,'#EF4444','#DC2626','#FEE2E2')"></div>
+      <div class="swatch" style="background:#0EA5E9;" onclick="obColor(this,'#0EA5E9','#0284C7','#E0F2FE')"></div>
     </div>
-    <div style="padding:14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-sub);display:flex;align-items:center;gap:10px;">
-      <div style="width:32px;height:32px;border-radius:8px;background:var(--primary);"></div>
-      <span style="font-size:13px;font-weight:500;color:var(--t7);">選択中のカラー</span>
-      <button class="btn btn-primary" style="margin-left:auto;padding:5px 14px;font-size:12px;">プレビュー</button>
+    <div style="padding:12px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:10px;">
+      <div style="width:26px;height:26px;border-radius:7px;background:var(--primary);"></div>
+      <span style="font-size:13px;color:var(--muted);">選択中のカラー</span>
+      <button class="btn btn-primary" style="margin-left:auto;padding:5px 12px;font-size:12px;">プレビュー</button>
     </div>`},
   {lbl:'ステップ 4 / 4', title:'準備完了！', html:`
-    <div style="text-align:center;padding:12px 0;">
-      <div style="width:56px;height:56px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <i data-lucide="check" style="width:28px;height:28px;color:var(--primary);stroke-width:2.5;"></i>
+    <div style="text-align:center;padding:10px 0;">
+      <div style="width:52px;height:52px;background:var(--primary-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <i data-lucide="check" style="width:26px;height:26px;color:var(--primary);stroke-width:2.5;"></i>
       </div>
-      <div style="font-size:18px;font-weight:800;color:var(--t9);margin-bottom:6px;">ポータルが完成しました</div>
-      <div style="font-size:13px;color:var(--t5);line-height:1.7;margin-bottom:20px;">AIが設定を最適化しました。<br>さっそくポータルを使い始めましょう。</div>
-      <div style="display:flex;flex-direction:column;gap:7px;text-align:left;">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--r-sm);">
-          <i data-lucide="check-circle" style="width:15px;height:15px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i>
-          <span style="font-size:13px;color:var(--t7);">お知らせページ 設定完了</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--r-sm);">
-          <i data-lucide="check-circle" style="width:15px;height:15px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i>
-          <span style="font-size:13px;color:var(--t7);">メンバー名簿 設定完了</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--r-sm);">
-          <i data-lucide="check-circle" style="width:15px;height:15px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i>
-          <span style="font-size:13px;color:var(--t7);">FAQ AIが10件を自動生成</span>
-        </div>
+      <div style="font-size:17px;font-weight:800;color:var(--h1);margin-bottom:5px;">ポータルが完成しました</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:18px;">AIが設定を最適化しました。<br>さっそくポータルを使い始めましょう。</div>
+      <div style="display:flex;flex-direction:column;gap:6px;text-align:left;">
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">お知らせページ 設定完了</span></div>
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">メンバー名簿 設定完了</span></div>
+        <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);"><i data-lucide="check-circle" style="width:14px;height:14px;color:#10B981;stroke-width:2.5;flex-shrink:0;"></i><span style="font-size:13px;color:var(--h2);">FAQ AIが10件を自動生成</span></div>
       </div>
     </div>`},
 ];
 function initOB() { obStep = 1; renderOB(); }
 function renderOB() {
-  const s = OB_STEPS[obStep-1];
+  const s = OB[obStep-1];
   document.querySelector('#ob-hd .ob-step-lbl').textContent = s.lbl;
   document.querySelector('#ob-hd .ob-step-title').textContent = s.title;
-  for(let i=1;i<=4;i++) document.getElementById('od'+i).className = 'ob-dot'+(i<=obStep?' done':'');
+  for(let i=1;i<=4;i++) document.getElementById('od'+i).className='ob-dot'+(i<=obStep?' done':'');
   document.getElementById('ob-body').innerHTML = s.html;
   document.getElementById('ob-back').style.visibility = obStep===1 ? 'hidden' : 'visible';
   document.getElementById('ob-next').innerHTML = obStep===4
@@ -1461,23 +1351,18 @@ function renderOB() {
 }
 function obNext() { if(obStep===4){showPage('portal');return;} obStep++; renderOB(); }
 function obBack() { if(obStep>1){obStep--; renderOB();} }
-function obPickColor(el,c,cd,cl) {
+function obColor(el,c,ch,cl) {
   document.querySelectorAll('#ob-body .swatch').forEach(s=>s.classList.remove('sel'));
   el.classList.add('sel');
   document.documentElement.style.setProperty('--primary',c);
-  document.documentElement.style.setProperty('--primary-hover',cd);
-  document.documentElement.style.setProperty('--primary-light',cl);
+  document.documentElement.style.setProperty('--primary-h',ch);
+  document.documentElement.style.setProperty('--primary-lt',cl);
 }
 
 // ── LUCIDE ──
 function ri() { if(window.lucide) lucide.createIcons(); }
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
-  ri();
-  renderMembers();
-  renderFAQ();
-});
+document.addEventListener('DOMContentLoaded', () => { ri(); renderMembers(); renderFAQ(); });
 </script>
 </body>
 </html>
