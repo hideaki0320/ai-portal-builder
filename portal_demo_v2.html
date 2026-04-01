@@ -1546,8 +1546,18 @@ function _updateTemplateAuthBtn(){
 async function _loadUserRole(user){
   if(!user){ _userRole=null; return; }
   _currentUser = user;
-  const {data}=await sb.from('profiles').select('role').eq('id',user.id).single();
-  _userRole = data ? data.role : 'member';
+  // app_metadataのroleを最優先（JWTに埋め込み済み、DBクエリ不要）
+  if(user.app_metadata && user.app_metadata.role){
+    _userRole = user.app_metadata.role;
+    return;
+  }
+  // fallback: profilesテーブルから取得
+  try {
+    const {data, error}=await sb.from('profiles').select('role').eq('id',user.id).single();
+    _userRole = (data && data.role) ? data.role : 'member';
+  } catch(e) {
+    _userRole = 'member';
+  }
 }
 
 async function doLogin(){

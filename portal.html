@@ -495,9 +495,13 @@ let _userRole = null;
 /* ── AUTH ── */
 async function _loadUserRole(user){
   _currentUser = user;
+  if(user.app_metadata && user.app_metadata.role){
+    _userRole = user.app_metadata.role;
+    return;
+  }
   try {
     const {data} = await sb.from('profiles').select('role').eq('id', user.id).single();
-    _userRole = data ? data.role : 'member';
+    _userRole = (data && data.role) ? data.role : 'member';
   } catch(e){
     _userRole = 'member';
   }
