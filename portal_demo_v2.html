@@ -1585,26 +1585,24 @@ async function doLogout(){
   showPage('login');
 }
 
-// OAuthリダイレクト後のSIGNED_INを確実に捉えるためグローバルで先に登録
-sb.auth.onAuthStateChange(async(_event,session)=>{
-  if(_event==='SIGNED_IN' && session && !_currentUser){
-    await _loadUserRole(session.user);
-    showPage('builder');
-  } else if(_event==='SIGNED_OUT'){
-    _currentUser=null; _userRole=null;
-    showPage('login');
-  }
-});
-
 async function initAuth(){
   const {data:{session}}=await sb.auth.getSession();
   if(session){
     await _loadUserRole(session.user);
     showPage('builder');
   } else if(!window.location.hash.includes('access_token')){
-    // OAuthコールバック中（hashにトークンあり）はonAuthStateChangeに任せる
     showPage('landing');
   }
+  // セッション変化を監視（OAuthリダイレクト後のSIGNED_INも含む）
+  sb.auth.onAuthStateChange(async(_event,session)=>{
+    if(_event==='SIGNED_IN' && session && !_currentUser){
+      await _loadUserRole(session.user);
+      showPage('builder');
+    } else if(_event==='SIGNED_OUT'){
+      _currentUser=null; _userRole=null;
+      showPage('login');
+    }
+  });
 }
 
 /* ── PAGE NAV ── */
