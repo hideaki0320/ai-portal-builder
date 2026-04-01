@@ -2422,7 +2422,8 @@ async function renderUsersTab(){
   if(!list) return;
   list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center;">読み込み中...</div>';
 
-  const {data, error} = await sb.from('profiles').select('*').order('created_at');
+  // auth.usersとJOINしてemailも取得
+  const {data, error} = await sb.from('profiles').select('id, role, email, created_at');
   if(error || !data){
     list.innerHTML = '<div style="color:#DC2626;font-size:13px;padding:24px 0;text-align:center;">読み込みに失敗しました。Supabaseのプロフィールテーブルのポリシーを確認してください。</div>';
     return;
