@@ -1598,43 +1598,37 @@ async function doLogout(){
   showPage('login');
 }
 
-async function initAuth(){
-  let _navigated = false;
+function initAuth(){
+  const isAppPath = window.location.pathname==='/app';
+  let handled = false;
 
-  // getSession()より先に登録してイベントを取りこぼさない
-  sb.auth.onAuthStateChange(async(_event,session)=>{
-    if(_event==='SIGNED_OUT'){
-      _navigated=false; _currentUser=null; _userRole=null;
-      showPage('login');
-      return;
+  function _go(session){
+    if(handled) return;
+    handled = true;
+    if(session){
+      _loadUserRole(session.user).then(()=>showPage('builder'));
+    } else {
+      showPage(isAppPath ? 'login' : 'landing');
     }
-    if((_event==='SIGNED_IN'||_event==='TOKEN_REFRESHED') && session && !_navigated){
-      _navigated=true;
-      await _loadUserRole(session.user);
-      showPage('builder');
+  }
+
+  // INITIAL_SESSION が必ず最初に発火する（セッションあり/なし両方）
+  sb.auth.onAuthStateChange(async(_event, session)=>{
+    if(_event==='INITIAL_SESSION'){
+      _go(session);
+    } else if(_event==='SIGNED_IN' && session){
+      if(!_currentUser){
+        await _loadUserRole(session.user);
+        showPage('builder');
+      }
+    } else if(_event==='SIGNED_OUT'){
+      _currentUser=null; _userRole=null; handled=false;
+      showPage('login');
     }
   });
 
-  const {data:{session}}=await sb.auth.getSession();
-  if(session && !_navigated){
-    _navigated=true;
-    await _loadUserRole(session.user);
-    showPage('builder');
-    return;
-  }
-  if(!session && !_navigated){
-    const isOAuth=window.location.search.includes('code=')||window.location.hash.includes('access_token');
-    const isAppPath=window.location.pathname==='/app';
-    if(!isOAuth){
-      _navigated=true;
-      showPage(isAppPath ? 'login' : 'landing');
-    } else {
-      // OAuthコールバック中 - フォールバック6秒
-      setTimeout(()=>{
-        if(!_navigated){ _navigated=true; showPage(isAppPath ? 'login' : 'landing'); }
-      },6000);
-    }
-  }
+  // 万が一INITIAL_SESSIONが来ない場合のフォールバック（3秒）
+  setTimeout(()=>_go(null), 3000);
 }
 
 /* ── PAGE NAV ── */
