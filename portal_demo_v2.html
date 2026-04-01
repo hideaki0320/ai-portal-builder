@@ -1464,15 +1464,15 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 /* ── SUPABASE ── */
 const SUPA_URL = 'https://rkpnprhatxidaneyuxmw.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrcG5wcmhhdHhpZGFuZXl1eG13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMTc4MjUsImV4cCI6MjA5MDU5MzgyNX0.9eYgqwJZHqbIQZ-fS0jPynkcNarJvaYbxkHdjxA3YQ4';
-const supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
 async function loadSupabaseData() {
   const [membersRes, projectsRes, newsRes, docsRes, faqRes] = await Promise.all([
-    supabase.from('members').select('*').order('id'),
-    supabase.from('projects').select('*').order('id'),
-    supabase.from('news').select('*').order('id'),
-    supabase.from('docs').select('*').order('id'),
-    supabase.from('faq').select('*').order('id'),
+    sb.from('members').select('*').order('id'),
+    sb.from('projects').select('*').order('id'),
+    sb.from('news').select('*').order('id'),
+    sb.from('docs').select('*').order('id'),
+    sb.from('faq').select('*').order('id'),
   ]);
   if (membersRes.data && membersRes.data.length) {
     MEMBERS.length = 0;
@@ -2091,9 +2091,9 @@ async function saveCrudRecord(){
   if(_crudIdx!==null){
     const arr=DATA_FOR_TAB[_crudTab]();
     const id=arr[_crudIdx]._id;
-    ({error}=await supabase.from(s.table).update(data).eq('id',id));
+    ({error}=await sb.from(s.table).update(data).eq('id',id));
   } else {
-    ({error}=await supabase.from(s.table).insert(data));
+    ({error}=await sb.from(s.table).insert(data));
   }
   if(error){alert('エラー: '+error.message);if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='保存';}return;}
   closeCrudModal();
@@ -2110,7 +2110,7 @@ async function deleteCrudRecord(tab, idx){
   if(!s) return;
   const arr=DATA_FOR_TAB[tab]();
   const id=arr[idx]._id;
-  const {error}=await supabase.from(s.table).delete().eq('id',id);
+  const {error}=await sb.from(s.table).delete().eq('id',id);
   if(error){alert('エラー: '+error.message);return;}
   await loadSupabaseData();
   renderSpreadsheet(tab);
