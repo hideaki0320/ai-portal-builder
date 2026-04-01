@@ -196,10 +196,27 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 /* ── BUILDER PREVIEW AREA ── */
 .bld-main{flex:1;display:flex;overflow:hidden;}
 .bld-preview-area{flex:1;background:#EAECF0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px;}
-.bld-device-frame{background:white;border-radius:10px;box-shadow:0 4px 32px rgba(0,0,0,.12),0 1px 6px rgba(0,0,0,.08);overflow:hidden;transform-origin:top center;position:relative;flex-shrink:0;transform:scale(1);}
+.bld-device-frame{background:white;border-radius:10px;box-shadow:0 4px 32px rgba(0,0,0,.12),0 1px 6px rgba(0,0,0,.08);overflow:hidden;transform-origin:top center;position:relative;flex-shrink:0;width:1100px;}
 .bld-device-frame .portal-wrap{display:flex;height:680px;overflow:hidden;}
 .bld-device-frame .portal-sidebar{width:var(--sw);min-width:var(--sw);background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
 .bld-device-frame .portal-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg);}
+/* mobile inside builder */
+.bld-device-frame.mobile .portal-sidebar{display:none;}
+.bld-device-frame.mobile .portal-wrap{flex-direction:column;}
+.bld-device-frame.mobile .portal-mobile-header{display:flex !important;}
+.bld-device-frame.mobile .portal-mobile-tabs{display:flex !important;}
+.bld-device-frame.mobile .portal-topbar{display:none;}
+.bld-device-frame.mobile .portal-main{padding:16px;}
+/* tablet inside builder */
+.bld-device-frame.tablet .portal-sidebar{width:180px;min-width:180px;}
+.bld-device-frame.tablet .sb-company{font-size:12px;}
+/* mobile header/tabs */
+.portal-mobile-header{display:none;align-items:center;justify-content:space-between;padding:12px 16px;background:white;border-bottom:1px solid var(--border);flex-shrink:0;}
+.portal-mobile-header-title{font-size:14px;font-weight:700;color:var(--h1);}
+.portal-mobile-tabs{display:none;border-top:1px solid var(--border);background:white;flex-shrink:0;}
+.portal-mobile-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;font-size:10px;color:var(--faint);cursor:pointer;}
+.portal-mobile-tab svg{width:18px;height:18px;}
+.portal-mobile-tab.active{color:var(--primary);}
 
 /* ── BUILDER DATA VIEW ── */
 .bld-data-view{flex:1;display:flex;flex-direction:column;overflow:hidden;background:white;}
@@ -741,6 +758,15 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         <div class="bld-device-frame" id="bld-frame">
           <div class="portal-wrap">
 
+            <!-- Mobile Header (hidden on PC/tablet) -->
+            <div class="portal-mobile-header">
+              <div class="portal-mobile-header-title" id="mobile-title">ホーム</div>
+              <div style="display:flex;gap:4px;">
+                <div class="tb-icon"><i data-lucide="search"></i></div>
+                <div class="tb-icon" style="position:relative;"><i data-lucide="bell"></i><span style="position:absolute;top:7px;right:7px;width:5px;height:5px;background:#EF4444;border-radius:50%;border:1.5px solid white;"></span></div>
+              </div>
+            </div>
+
             <!-- Portal Sidebar -->
             <div class="portal-sidebar">
               <div class="sb-brand">
@@ -920,6 +946,15 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 
               </div><!-- portal-main -->
             </div><!-- portal-content -->
+            <!-- Mobile Bottom Tabs (hidden on PC/tablet) -->
+            <div class="portal-mobile-tabs">
+              <div class="portal-mobile-tab active" onclick="portalNav('dashboard',document.getElementById('pnav-dashboard'));updateMobileTabs(this,'ホーム')"><i data-lucide="home"></i>ホーム</div>
+              <div class="portal-mobile-tab" onclick="portalNav('projects',document.getElementById('pnav-projects'));updateMobileTabs(this,'プロジェクト')"><i data-lucide="layers"></i>プロジェクト</div>
+              <div class="portal-mobile-tab" onclick="portalNav('documents',document.getElementById('pnav-documents'));updateMobileTabs(this,'ドキュメント')"><i data-lucide="folder"></i>書類</div>
+              <div class="portal-mobile-tab" onclick="portalNav('members',document.getElementById('pnav-members'));updateMobileTabs(this,'メンバー')"><i data-lucide="users"></i>メンバー</div>
+              <div class="portal-mobile-tab" onclick="portalNav('news',document.getElementById('pnav-news'));updateMobileTabs(this,'お知らせ')"><i data-lucide="bell"></i>お知らせ</div>
+            </div>
+
           </div><!-- portal-wrap -->
         </div><!-- bld-device-frame -->
       </div><!-- bld-preview-area -->
@@ -1055,6 +1090,17 @@ function setDevice(dev, btn){
   const scale = Math.min(1, areaW / targetW);
   frame.style.transform = 'scale('+scale+')';
   frame.style.marginBottom = -(680*(1-scale))+'px';
+  // device class for CSS
+  frame.classList.remove('pc','tablet','mobile');
+  frame.classList.add(dev);
+  lucide.createIcons();
+}
+
+function updateMobileTabs(el, title){
+  document.querySelectorAll('.portal-mobile-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const mt = document.getElementById('mobile-title');
+  if(mt) mt.textContent = title;
 }
 
 /* ── PORTAL NAV (inside builder) ── */
