@@ -164,6 +164,51 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 .swatch.sel{border-color:var(--h1);}
 .ob-footer{display:flex;justify-content:space-between;margin-top:28px;}
 
+/* ── PRICING ── */
+.pricing-section{background:var(--bg);padding:80px 40px;}
+.pricing-header{text-align:center;margin-bottom:48px;}
+.pricing-header h2{font-size:28px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:8px;}
+.pricing-header p{font-size:15px;color:var(--muted);}
+.pricing-toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;}
+.pricing-toggle-label{font-size:13px;font-weight:500;color:var(--muted);}
+.pricing-toggle-label.active{color:var(--h1);font-weight:600;}
+.pricing-toggle-switch{width:44px;height:24px;background:var(--primary);border-radius:12px;position:relative;cursor:pointer;}
+.pricing-toggle-knob{width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.pricing-toggle-switch.yearly .pricing-toggle-knob{left:23px;}
+.pricing-badge-save{background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto;}
+.pricing-card{background:white;border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;}
+.pricing-card.popular{border-color:var(--primary);border-width:2px;box-shadow:0 8px 28px rgba(79,70,229,.12);}
+.pricing-popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;font-size:11px;font-weight:700;padding:3px 14px;border-radius:100px;white-space:nowrap;}
+.pricing-plan-name{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.pricing-price{display:flex;align-items:flex-end;gap:4px;margin-bottom:6px;}
+.pricing-price-num{font-size:36px;font-weight:800;color:var(--h1);letter-spacing:-.5px;line-height:1;}
+.pricing-price-unit{font-size:13px;color:var(--muted);margin-bottom:4px;}
+.pricing-price-free{font-size:36px;font-weight:800;color:var(--h1);line-height:1;}
+.pricing-desc{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.55;}
+.pricing-divider{height:1px;background:var(--border-lt);margin-bottom:20px;}
+.pricing-features{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.pricing-feature{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--h2);}
+.pricing-feature svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
+.pricing-feature.ok svg{color:#10B981;}
+.pricing-feature.ng{color:var(--faint);}
+.pricing-feature.ng svg{color:var(--border);}
+.pricing-btn{width:100%;padding:11px;border-radius:var(--rsm);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .12s;}
+.pricing-btn.outline{background:white;border:1.5px solid var(--border);color:var(--h1);}
+.pricing-btn.outline:hover{border-color:var(--h1);background:var(--border-lt);}
+.pricing-btn.filled{background:var(--primary);color:white;}
+.pricing-btn.filled:hover{background:var(--primary-h);}
+/* ── TESTIMONIALS ── */
+.testimonials-section{background:white;padding:80px 40px;}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:960px;margin:40px auto 0;}
+.testimonial-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;}
+.testimonial-stars{display:flex;gap:3px;margin-bottom:12px;}
+.testimonial-stars svg{width:14px;height:14px;color:#F59E0B;fill:#F59E0B;}
+.testimonial-text{font-size:14px;color:var(--h2);line-height:1.7;margin-bottom:16px;}
+.testimonial-author{display:flex;align-items:center;gap:10px;}
+.testimonial-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;}
+.testimonial-name{font-size:13px;font-weight:600;color:var(--h1);}
+.testimonial-company{font-size:11px;color:var(--muted);}
 /* ── TEMPLATE GALLERY ── */
 .tmpl-page{min-height:100vh;background:var(--bg);}
 .tmpl-topbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;}
@@ -657,6 +702,125 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
     <div style="text-align:center;margin-top:52px;">
       <button class="h-cta" onclick="showPage('templates')" style="margin:0 auto;">今すぐテンプレートを選ぶ</button>
       <p style="font-size:12px;color:var(--faint);margin-top:11px;">クレジットカード不要 · 14日間無料トライアル</p>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div style="text-align:center;">
+      <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">TESTIMONIALS</div>
+      <h2 style="font-size:26px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:8px;">導入企業の声</h2>
+      <p style="font-size:15px;color:var(--muted);">全国150社以上の中小企業が活用中</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <div class="testimonial-text">「ITが苦手な社員でも迷わず使えています。テンプレートを選ぶだけで完成したのには驚きました。社内の情報共有が格段に改善されました。」</div>
+        <div class="testimonial-author">
+          <img class="testimonial-photo" src="https://i.pravatar.cc/72?img=33">
+          <div><div class="testimonial-name">田中 雄介</div><div class="testimonial-company">株式会社マルヤ商事 · 総務部長</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <div class="testimonial-text">「Softrの日本語版を探していました。プロジェクト管理とドキュメント管理が一つになっているのが決め手。スマホでも使いやすい。」</div>
+        <div class="testimonial-author">
+          <img class="testimonial-photo" src="https://i.pravatar.cc/72?img=44">
+          <div><div class="testimonial-name">鈴木 彩香</div><div class="testimonial-company">テクノソリューションズ · 代表取締役</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <div class="testimonial-text">「部署ごとの権限管理が簡単に設定できて助かっています。導入から2週間で全社員が使い始めてくれました。サポートも丁寧です。」</div>
+        <div class="testimonial-author">
+          <img class="testimonial-photo" src="https://i.pravatar.cc/72?img=52">
+          <div><div class="testimonial-name">山本 健太郎</div><div class="testimonial-company">有限会社サンライズ · 経営企画室</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing-section">
+    <div class="pricing-header">
+      <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">PRICING</div>
+      <h2>シンプルな料金プラン</h2>
+      <p>すべてのプランで14日間無料トライアル。クレジットカード不要。</p>
+      <div class="pricing-toggle">
+        <span class="pricing-toggle-label active">月払い</span>
+        <div class="pricing-toggle-switch" id="billing-toggle" onclick="toggleBilling(this)">
+          <div class="pricing-toggle-knob"></div>
+        </div>
+        <span class="pricing-toggle-label">年払い</span>
+        <span class="pricing-badge-save">2ヶ月分お得</span>
+      </div>
+    </div>
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="pricing-card">
+        <div class="pricing-plan-name">フリー</div>
+        <div class="pricing-price"><span class="pricing-price-free">¥0</span></div>
+        <div class="pricing-desc">小規模チームや個人事業主向け。まず試してみたい方に。</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature ok"><i data-lucide="check"></i>メンバー最大5名</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>テンプレート3種類</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>ストレージ 1GB</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>お知らせ・FAQ</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>プロジェクト管理</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>ドキュメント管理</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>権限管理</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>カスタムドメイン</div>
+        </div>
+        <button class="pricing-btn outline" onclick="showPage('templates')">無料で始める</button>
+      </div>
+      <!-- Standard (popular) -->
+      <div class="pricing-card popular">
+        <div class="pricing-popular-badge">人気プラン</div>
+        <div class="pricing-plan-name">スタンダード</div>
+        <div class="pricing-price">
+          <span class="pricing-price-num" id="price-std">¥4,980</span>
+          <span class="pricing-price-unit">/ 月</span>
+        </div>
+        <div class="pricing-desc">中小企業のほとんどのニーズを満たす充実のプラン。</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature ok"><i data-lucide="check"></i>メンバー最大50名</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>全テンプレート利用可</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>ストレージ 50GB</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>プロジェクト管理</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>ドキュメント管理</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>権限管理（部署・役職）</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>カスタムドメイン</div>
+          <div class="pricing-feature ng"><i data-lucide="minus"></i>API連携</div>
+        </div>
+        <button class="pricing-btn filled" onclick="showPage('templates')">14日間無料で試す</button>
+      </div>
+      <!-- Pro -->
+      <div class="pricing-card">
+        <div class="pricing-plan-name">プロ</div>
+        <div class="pricing-price">
+          <span class="pricing-price-num" id="price-pro">¥12,800</span>
+          <span class="pricing-price-unit">/ 月</span>
+        </div>
+        <div class="pricing-desc">大きなチームや複数拠点を持つ企業向けの最上位プラン。</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="pricing-feature ok"><i data-lucide="check"></i>メンバー無制限</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>全テンプレート利用可</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>ストレージ 500GB</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>プロジェクト管理</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>ドキュメント管理</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>権限管理（詳細設定）</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>カスタムドメイン</div>
+          <div class="pricing-feature ok"><i data-lucide="check"></i>API連携・Webhook</div>
+        </div>
+        <button class="pricing-btn outline" onclick="showPage('templates')">14日間無料で試す</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px;font-size:13px;color:var(--muted);">
+      <i data-lucide="shield-check" style="width:14px;height:14px;vertical-align:middle;margin-right:5px;color:#10B981;"></i>
+      全プランSSL暗号化 · 99.9%稼働率SLA · 日本語サポート対応
     </div>
   </section>
 </div>
@@ -1828,6 +1992,19 @@ function renderOB(){
 }
 function obNext(){if(obStep<3){obStep++;renderOB();}else{showPage('builder');}}
 function obBack(){if(obStep>1){obStep--;renderOB();}}
+
+/* ── PRICING TOGGLE ── */
+function toggleBilling(el){
+  el.classList.toggle('yearly');
+  const yearly = el.classList.contains('yearly');
+  const labels = document.querySelectorAll('.pricing-toggle-label');
+  labels[0].classList.toggle('active', !yearly);
+  labels[1].classList.toggle('active', yearly);
+  const std = document.getElementById('price-std');
+  const pro = document.getElementById('price-pro');
+  if(std) std.textContent = yearly ? '¥3,980' : '¥4,980';
+  if(pro) pro.textContent = yearly ? '¥9,800' : '¥12,800';
+}
 
 /* ── INIT ── */
 lucide.createIcons();
