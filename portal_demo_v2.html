@@ -420,6 +420,56 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
 .link-name{font-size:13px;font-weight:600;color:var(--h1);}
 .link-url{font-size:11px;color:var(--faint);}
 
+/* ── PROJECT DETAIL ── */
+.proj-detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;margin-bottom:20px;padding:5px 10px;border-radius:6px;transition:all .12s;}
+.proj-detail-back svg{width:15px;height:15px;}
+.proj-detail-back:hover{background:var(--border-lt);color:var(--h2);}
+.proj-detail-hero{display:flex;gap:24px;margin-bottom:28px;align-items:flex-start;}
+.proj-detail-img{width:160px;height:120px;border-radius:var(--r);object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
+.proj-detail-info{flex:1;}
+.proj-detail-title{font-size:22px;font-weight:800;color:var(--h1);letter-spacing:-.4px;margin-bottom:4px;}
+.proj-detail-client{font-size:14px;color:var(--muted);margin-bottom:10px;}
+.proj-detail-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+.proj-detail-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:24px;background:white;}
+.proj-detail-meta-item{padding:16px 20px;border-right:1px solid var(--border);}
+.proj-detail-meta-item:last-child{border-right:none;}
+.proj-detail-meta-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.proj-detail-meta-value{font-size:14px;font-weight:600;color:var(--h1);}
+.proj-detail-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.proj-detail-tab{display:flex;align-items:center;gap:6px;padding:9px 16px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:nowrap;transition:all .12s;}
+.proj-detail-tab svg{width:14px;height:14px;}
+.proj-detail-tab:hover{color:var(--h1);}
+.proj-detail-tab.active{color:var(--h1);border-bottom-color:var(--h1);font-weight:600;}
+.proj-member-list{display:flex;flex-direction:column;gap:14px;}
+.proj-member-row{display:flex;align-items:center;gap:14px;background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.proj-member-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.proj-member-ava{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0;}
+.proj-member-info{flex:1;}
+.proj-member-name{font-size:14px;font-weight:700;color:var(--h1);margin-bottom:2px;}
+.proj-member-email{font-size:12px;color:var(--muted);}
+.proj-member-role{display:inline-flex;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+.proj-member-role.lead{background:#EDE9FE;color:#6D28D9;}
+.proj-member-role.member{background:#D1FAE5;color:#065F46;}
+.proj-member-role.freelancer{background:#FEF3C7;color:#92400E;}
+.proj-plan-list{display:flex;flex-direction:column;gap:0;}
+.proj-plan-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border-lt);}
+.proj-plan-item:last-child{border-bottom:none;}
+.proj-plan-num{width:28px;height:28px;border-radius:50%;background:var(--primary-lt);color:var(--primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.proj-plan-name{font-size:13px;font-weight:600;color:var(--h1);flex:1;}
+.proj-plan-date{font-size:12px;color:var(--muted);}
+.proj-milestone-list{display:flex;flex-direction:column;gap:12px;}
+.proj-milestone-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:white;border:1px solid var(--border);border-radius:var(--r);}
+.proj-milestone-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.proj-milestone-name{font-size:13px;font-weight:600;color:var(--h1);flex:1;}
+.proj-milestone-date{font-size:12px;color:var(--muted);}
+.proj-milestone-status{font-size:11px;font-weight:600;padding:2px 9px;border-radius:100px;}
+/* mobile project detail */
+.bld-device-frame.mobile .proj-detail-hero{flex-direction:column;}
+.bld-device-frame.mobile .proj-detail-img{width:100%;height:140px;}
+.bld-device-frame.mobile .proj-detail-meta{grid-template-columns:1fr 1fr;}
+.bld-device-frame.mobile .proj-detail-meta-item:nth-child(2){border-right:none;}
+.bld-device-frame.mobile .proj-detail-meta-item:nth-child(3){border-top:1px solid var(--border);}
+.bld-device-frame.mobile .proj-detail-meta-item:nth-child(4){border-top:1px solid var(--border);border-right:none;}
 /* Scrollbar */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -877,6 +927,34 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
                   <div class="proj-grid" id="proj-grid"></div>
                 </div>
 
+                <!-- PROJECT DETAIL -->
+                <div class="view" id="view-project-detail">
+                  <div class="proj-detail-back" onclick="portalNav('projects',document.getElementById('pnav-projects'))"><i data-lucide="arrow-left"></i>プロジェクト一覧に戻る</div>
+                  <div class="proj-detail-hero">
+                    <img class="proj-detail-img" id="pd-img" src="">
+                    <div class="proj-detail-info">
+                      <div class="proj-detail-title" id="pd-title"></div>
+                      <div class="proj-detail-client" id="pd-client"></div>
+                      <div id="pd-status" style="margin-bottom:12px;"></div>
+                      <div class="proj-detail-desc" id="pd-desc"></div>
+                    </div>
+                  </div>
+                  <div class="proj-detail-meta">
+                    <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">START DATE</div><div class="proj-detail-meta-value" id="pd-start"></div></div>
+                    <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">END DATE</div><div class="proj-detail-meta-value" id="pd-end"></div></div>
+                    <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">PROJECT LEAD</div><div class="proj-detail-meta-value" id="pd-lead"></div></div>
+                    <div class="proj-detail-meta-item"><div class="proj-detail-meta-label">CLIENT</div><div class="proj-detail-meta-value" id="pd-client2"></div></div>
+                  </div>
+                  <div class="proj-detail-tabs">
+                    <button class="proj-detail-tab active" onclick="pdTab('members',this)"><i data-lucide="users"></i>Project Members</button>
+                    <button class="proj-detail-tab" onclick="pdTab('plan',this)"><i data-lucide="list-checks"></i>Project Plan</button>
+                    <button class="proj-detail-tab" onclick="pdTab('milestones',this)"><i data-lucide="flag"></i>Milestones</button>
+                    <button class="proj-detail-tab" onclick="pdTab('files',this)"><i data-lucide="folder"></i>Files</button>
+                    <button class="proj-detail-tab" onclick="pdTab('comments',this)"><i data-lucide="message-circle"></i>Comments</button>
+                  </div>
+                  <div id="pd-tab-content"></div>
+                </div>
+
                 <!-- DOCUMENTS -->
                 <div class="view" id="view-documents">
                   <div class="pg-title">ドキュメント</div>
@@ -1215,6 +1293,67 @@ const FAQ_DATA=[
 
 const STATUS_LABELS={progress:'進行中',active:'開始',review:'レビュー中',done:'完了'};
 
+const PROJ_DETAILS=[
+  {
+    start:'2026/3/1', end:'2026/6/30', lead:'山田 太郎',
+    desc:'社内ポータルシステムの全面リニューアル。新機能追加と既存機能の改善を行い、社員の業務効率を向上させる。モバイル対応も強化。',
+    members:[
+      {name:'山田 太郎',email:'yamada@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=33',grad:'linear-gradient(135deg,#6366F1,#8B5CF6)',init:'山'},
+      {name:'佐藤 恵美',email:'sato@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=40',grad:'linear-gradient(135deg,#EF4444,#F87171)',init:'佐'},
+      {name:'田中 健一',email:'tanaka@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=52',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',init:'田'},
+    ],
+    plan:['要件定義','UIデザイン','フロントエンド開発','バックエンド開発','テスト・QA','リリース'],
+    planDates:['2026/3/1〜3/15','2026/3/15〜4/1','2026/4/1〜5/1','2026/4/1〜5/15','2026/5/15〜6/15','2026/6/30'],
+    milestones:[
+      {name:'要件定義完了',date:'2026/3/15',done:true},{name:'デザイン承認',date:'2026/4/1',done:true},
+      {name:'α版リリース',date:'2026/5/1',done:false},{name:'β版リリース',date:'2026/6/1',done:false},{name:'本番リリース',date:'2026/6/30',done:false},
+    ],
+  },
+  {
+    start:'2026/4/1', end:'2026/9/30', lead:'鈴木 花子',
+    desc:'顧客向けEコマースサイトの新規構築。モバイルファーストで開発を進め、直感的なUI/UXを実現する。決済機能・在庫管理も含む。',
+    members:[
+      {name:'鈴木 花子',email:'suzuki@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=44',grad:'linear-gradient(135deg,#10B981,#34D399)',init:'鈴'},
+      {name:'中村 浩二',email:'nakamura@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=55',grad:'linear-gradient(135deg,#F59E0B,#FCD34D)',init:'中'},
+      {name:'小林 美咲',email:'kobayashi@eteam.co.jp',role:'freelancer',photo:'https://i.pravatar.cc/64?img=71',grad:'linear-gradient(135deg,#EC4899,#F472B6)',init:'小'},
+    ],
+    plan:['市場調査','システム設計','UI/UXデザイン','開発フェーズ1','開発フェーズ2','テスト・リリース'],
+    planDates:['2026/4/1〜4/15','2026/4/15〜5/1','2026/5/1〜5/20','2026/5/20〜7/1','2026/7/1〜8/15','2026/8/15〜9/30'],
+    milestones:[
+      {name:'設計完了',date:'2026/5/1',done:false},{name:'デザイン完了',date:'2026/5/20',done:false},
+      {name:'フェーズ1完了',date:'2026/7/1',done:false},{name:'本番リリース',date:'2026/9/30',done:false},
+    ],
+  },
+  {
+    start:'2026/1/15', end:'2026/4/30', lead:'田中 健一',
+    desc:'営業活動の可視化と管理効率化のためのツール開発。SalesforceライクなCRMをSaaS形式で提供。現在レビュー段階。',
+    members:[
+      {name:'田中 健一',email:'tanaka@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=52',grad:'linear-gradient(135deg,#F59E0B,#FBBF24)',init:'田'},
+      {name:'伊藤 大輔',email:'ito@eteam.co.jp',role:'member',photo:'https://i.pravatar.cc/64?img=12',grad:'linear-gradient(135deg,#06B6D4,#22D3EE)',init:'伊'},
+    ],
+    plan:['要件定義','プロトタイプ','開発','テスト'],
+    planDates:['2026/1/15〜2/1','2026/2/1〜2/28','2026/3/1〜4/15','2026/4/15〜4/30'],
+    milestones:[
+      {name:'要件定義完了',date:'2026/2/1',done:true},{name:'プロトタイプ完成',date:'2026/2/28',done:true},
+      {name:'開発完了',date:'2026/4/15',done:true},{name:'最終レビュー',date:'2026/4/30',done:false},
+    ],
+  },
+  {
+    start:'2026/2/1', end:'2026/3/15', lead:'佐藤 恵美',
+    desc:'新商品ローンチに向けたランディングページ制作。コンバージョン率最大化を目的としたデザインと、A/Bテストを実施。完了済み。',
+    members:[
+      {name:'佐藤 恵美',email:'sato@eteam.co.jp',role:'lead',photo:'https://i.pravatar.cc/64?img=40',grad:'linear-gradient(135deg,#EF4444,#F87171)',init:'佐'},
+      {name:'小林 美咲',email:'kobayashi@eteam.co.jp',role:'freelancer',photo:'https://i.pravatar.cc/64?img=71',grad:'linear-gradient(135deg,#EC4899,#F472B6)',init:'小'},
+    ],
+    plan:['コンセプト策定','デザイン','コーディング','A/Bテスト'],
+    planDates:['2026/2/1〜2/7','2026/2/7〜2/20','2026/2/20〜3/1','2026/3/1〜3/15'],
+    milestones:[
+      {name:'デザイン完了',date:'2026/2/20',done:true},{name:'コーディング完了',date:'2026/3/1',done:true},
+      {name:'A/Bテスト完了',date:'2026/3/10',done:true},{name:'最終リリース',date:'2026/3/15',done:true},
+    ],
+  },
+];
+
 function typeColors(t){
   if(t==='pdf') return {bg:'#FEE2E2',color:'#DC2626',icon:'file-text'};
   if(t==='xlsx') return {bg:'#D1FAE5',color:'#059669',icon:'table'};
@@ -1226,8 +1365,8 @@ function typeColors(t){
 function renderProjects(){
   const g=document.getElementById('proj-grid');
   if(!g) return;
-  g.innerHTML=PROJECTS.map(p=>`
-    <div class="proj-card">
+  g.innerHTML=PROJECTS.map((p,idx)=>`
+    <div class="proj-card" onclick="showProjectDetail(${idx})">
       <img class="proj-thumb" src="https://picsum.photos/seed/${p.img}/400/200">
       <div class="proj-body">
         <span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]}</span>
@@ -1240,6 +1379,100 @@ function renderProjects(){
         </div>
       </div>
     </div>`).join('');
+}
+
+function showProjectDetail(idx){
+  const p = PROJECTS[idx];
+  const d = PROJ_DETAILS[idx];
+  // populate header
+  document.getElementById('pd-img').src = `https://picsum.photos/seed/${p.img}/400/200`;
+  document.getElementById('pd-title').textContent = p.name;
+  document.getElementById('pd-client').textContent = p.client;
+  document.getElementById('pd-client2').textContent = p.client;
+  document.getElementById('pd-status').innerHTML = `<span class="proj-status ${p.status}"><span class="proj-status-dot"></span>${STATUS_LABELS[p.status]}</span>`;
+  document.getElementById('pd-desc').textContent = d.desc;
+  document.getElementById('pd-start').textContent = d.start;
+  document.getElementById('pd-end').textContent = d.end;
+  document.getElementById('pd-lead').textContent = d.lead;
+  // switch view
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-project-detail').classList.add('active');
+  document.getElementById('portal-title').textContent = p.name;
+  // show members tab by default
+  pdTab('members', null, idx);
+  lucide.createIcons();
+}
+
+let currentProjIdx = 0;
+function pdTab(tab, btn, idx){
+  if(idx !== undefined) currentProjIdx = idx;
+  document.querySelectorAll('.proj-detail-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    const tabs = document.querySelectorAll('.proj-detail-tab');
+    const map = {members:0,plan:1,milestones:2,files:3,comments:4};
+    if(tabs[map[tab]]) tabs[map[tab]].classList.add('active');
+  }
+  const d = PROJ_DETAILS[currentProjIdx];
+  const cont = document.getElementById('pd-tab-content');
+  if(!cont) return;
+  if(tab==='members'){
+    cont.innerHTML = `<div class="proj-member-list">${d.members.map(m=>`
+      <div class="proj-member-row">
+        <img class="proj-member-photo" src="${m.photo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="proj-member-ava" style="background:${m.grad};display:none;">${m.init}</div>
+        <div class="proj-member-info">
+          <div class="proj-member-name">${m.name}</div>
+          <div class="proj-member-email">${m.email}</div>
+        </div>
+        <span class="proj-member-role ${m.role}">${m.role==='lead'?'リーダー':m.role==='freelancer'?'フリーランス':'メンバー'}</span>
+      </div>`).join('')}</div>`;
+  } else if(tab==='plan'){
+    cont.innerHTML = `<div class="proj-plan-list">${d.plan.map((item,i)=>`
+      <div class="proj-plan-item">
+        <div class="proj-plan-num">${i+1}</div>
+        <div class="proj-plan-name">${item}</div>
+        <div class="proj-plan-date">${d.planDates[i]}</div>
+      </div>`).join('')}</div>`;
+  } else if(tab==='milestones'){
+    cont.innerHTML = `<div class="proj-milestone-list">${d.milestones.map(m=>`
+      <div class="proj-milestone-item">
+        <div class="proj-milestone-dot" style="background:${m.done?'#10B981':'#D1D5DB'};"></div>
+        <div class="proj-milestone-name">${m.name}</div>
+        <div class="proj-milestone-date">${m.date}</div>
+        <span class="proj-milestone-status" style="background:${m.done?'#D1FAE5':'#F3F4F6'};color:${m.done?'#065F46':'#6B7280'};">${m.done?'完了':'未完了'}</span>
+      </div>`).join('')}</div>`;
+  } else if(tab==='files'){
+    cont.innerHTML = `<div class="doc-grid">${DOCS.slice(0,4).map(d=>{const c=typeColors(d.type);return`
+      <div class="doc-card">
+        <div class="doc-icon" style="background:${c.bg};color:${c.color};"><i data-lucide="${c.icon}"></i></div>
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.size} · ${d.updated}</div>
+      </div>`;}).join('')}</div>`;
+  } else if(tab==='comments'){
+    cont.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <img src="https://i.pravatar.cc/32?img=33" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+          <div><div style="font-size:13px;font-weight:600;color:var(--h1);">山田 太郎</div><div style="font-size:11px;color:var(--faint);">2026/3/28</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--h2);line-height:1.65;">UIのデザインレビューが完了しました。細かい修正点がいくつかありますが、全体的な方向性は承認します。</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <img src="https://i.pravatar.cc/32?img=40" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+          <div><div style="font-size:13px;font-weight:600;color:var(--h1);">佐藤 恵美</div><div style="font-size:11px;color:var(--faint);">2026/4/1</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--h2);line-height:1.65;">修正点を反映しました。モバイルレイアウトも対応済みです。ご確認をお願いします。</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <div class="sb-ava" style="flex-shrink:0;">山</div>
+        <input type="text" placeholder="コメントを入力..." style="flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:var(--rsm);font-size:13px;outline:none;font-family:inherit;">
+        <button class="btn btn-dark" style="padding:8px 14px;font-size:13px;">送信</button>
+      </div>
+    </div>`;
+  }
+  lucide.createIcons();
 }
 
 function renderDocuments(){
