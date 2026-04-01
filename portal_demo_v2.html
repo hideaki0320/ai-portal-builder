@@ -617,8 +617,8 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
       <h1 class="h-h1">中小企業のための<br><em>かんたん社内ポータル</em></h1>
       <p class="h-sub">ITが得意でなくても大丈夫。テンプレートを選ぶだけで、プロ品質のポータルが完成します。</p>
       <div class="h-btns">
-        <button class="h-cta" onclick="showPage('templates')"><i data-lucide="arrow-right"></i>テンプレートを選ぶ</button>
-        <button class="h-demo" onclick="showPage('builder')"><i data-lucide="monitor"></i>デモを見る</button>
+        <button class="h-cta" onclick="showPage('login')"><i data-lucide="arrow-right"></i>無料で始める</button>
+        <button class="h-demo" onclick="startDemo()"><i data-lucide="monitor"></i>デモを試す（登録不要）</button>
       </div>
     </div>
     <!-- Product mockup -->
@@ -719,7 +719,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
       <div class="feat-card"><div class="feat-icon" style="background:#ECFDF5;color:#059669;"><i data-lucide="users"></i></div><div class="feat-title">プロジェクト進捗を可視化</div><div class="feat-desc">メンバーの役割・進捗・マイルストーンをリアルタイムで把握できます。</div></div>
     </div>
     <div style="text-align:center;margin-top:52px;">
-      <button class="h-cta" onclick="showPage('templates')" style="margin:0 auto;">今すぐテンプレートを選ぶ</button>
+      <button class="h-cta" onclick="showPage('login')" style="margin:0 auto;">今すぐテンプレートを選ぶ</button>
       <p style="font-size:12px;color:var(--faint);margin-top:11px;">クレジットカード不要 · 14日間無料トライアル</p>
     </div>
   </section>
@@ -791,7 +791,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
           <div class="pricing-feature ng"><i data-lucide="minus"></i>権限管理</div>
           <div class="pricing-feature ng"><i data-lucide="minus"></i>カスタムドメイン</div>
         </div>
-        <button class="pricing-btn outline" onclick="showPage('templates')">無料で始める</button>
+        <button class="pricing-btn outline" onclick="showPage('login')">無料で始める</button>
       </div>
       <!-- Standard (popular) -->
       <div class="pricing-card popular">
@@ -813,7 +813,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
           <div class="pricing-feature ng"><i data-lucide="minus"></i>カスタムドメイン</div>
           <div class="pricing-feature ng"><i data-lucide="minus"></i>API連携</div>
         </div>
-        <button class="pricing-btn filled" onclick="showPage('templates')">14日間無料で試す</button>
+        <button class="pricing-btn filled" onclick="showPage('login')">14日間無料で試す</button>
       </div>
       <!-- Pro -->
       <div class="pricing-card">
@@ -834,7 +834,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
           <div class="pricing-feature ok"><i data-lucide="check"></i>カスタムドメイン</div>
           <div class="pricing-feature ok"><i data-lucide="check"></i>API連携・Webhook</div>
         </div>
-        <button class="pricing-btn outline" onclick="showPage('templates')">14日間無料で試す</button>
+        <button class="pricing-btn outline" onclick="showPage('login')">14日間無料で試す</button>
       </div>
     </div>
     <div style="text-align:center;margin-top:32px;font-size:13px;color:var(--muted);">
@@ -896,7 +896,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         <div class="tmpl-logo-icon"><i data-lucide="building-2"></i></div>
         <span class="tmpl-logo-text">AI社内ポータル Builder</span>
       </div>
-      <button onclick="doLogout()" style="padding:6px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h2);cursor:pointer;display:flex;align-items:center;gap:6px;"><i data-lucide="log-out" style="width:14px;height:14px;"></i>ログアウト</button>
+      <button id="tmpl-auth-btn" onclick="_demoMode?showPage('login'):doLogout()" style="padding:6px 14px;border:1px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:500;color:var(--h2);cursor:pointer;display:flex;align-items:center;gap:6px;"><i data-lucide="log-in" style="width:14px;height:14px;"></i><span id="tmpl-auth-label">ログインして始める</span></button>
     </div>
     <div class="tmpl-body">
       <div class="tmpl-header">
@@ -912,7 +912,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
       <div class="tmpl-grid">
 
         <!-- 社内ポータル -->
-        <div class="tmpl-card featured" onclick="showPage('builder')">
+        <div class="tmpl-card featured" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#EEF2FF,#C7D2FE);">
             <span class="tmpl-thumb-badge" style="color:var(--primary);">社内向け</span>
             <span class="tmpl-thumb-popular">人気 No.1</span>
@@ -933,7 +933,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         </div>
 
         <!-- プロジェクト管理 -->
-        <div class="tmpl-card" onclick="showPage('builder')">
+        <div class="tmpl-card" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#F5F3FF,#DDD6FE);">
             <span class="tmpl-thumb-badge" style="color:#7C3AED;">プロジェクト管理</span>
             <div class="tmpl-thumb-mockup">
@@ -953,7 +953,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         </div>
 
         <!-- クライアントポータル -->
-        <div class="tmpl-card" onclick="showPage('builder')">
+        <div class="tmpl-card" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#ECFDF5,#A7F3D0);">
             <span class="tmpl-thumb-badge" style="color:#059669;">顧客向け</span>
             <div class="tmpl-thumb-mockup">
@@ -973,7 +973,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         </div>
 
         <!-- 社員ディレクトリ -->
-        <div class="tmpl-card" onclick="showPage('builder')">
+        <div class="tmpl-card" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFF7ED,#FED7AA);">
             <span class="tmpl-thumb-badge" style="color:#D97706;">社内向け</span>
             <div class="tmpl-thumb-mockup">
@@ -993,7 +993,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         </div>
 
         <!-- ドキュメント管理 -->
-        <div class="tmpl-card" onclick="showPage('builder')">
+        <div class="tmpl-card" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFF1F2,#FECDD3);">
             <span class="tmpl-thumb-badge" style="color:#DC2626;">社内向け</span>
             <div class="tmpl-thumb-mockup">
@@ -1013,7 +1013,7 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
         </div>
 
         <!-- タスク管理 -->
-        <div class="tmpl-card" onclick="showPage('builder')">
+        <div class="tmpl-card" onclick="selectTemplate()">
           <div class="tmpl-thumb" style="background:linear-gradient(135deg,#FFFBEB,#FDE68A);">
             <span class="tmpl-thumb-badge" style="color:#92400E;">プロジェクト管理</span>
             <div class="tmpl-thumb-mockup">
@@ -1041,6 +1041,12 @@ a{text-decoration:none;} button{font-family:inherit;cursor:pointer;} img{display
      BUILDER
 ══════════════════════════════════════ -->
 <div id="page-builder" class="page">
+  <!-- Demo Banner -->
+  <div id="demo-banner" style="display:none;background:#F59E0B;color:white;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;">
+    <i data-lucide="eye" style="width:15px;height:15px;"></i>
+    デモモード — データは保存されません
+    <button onclick="showPage('login')" style="background:white;color:#92400E;border:none;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px;">ログインして始める</button>
+  </div>
   <!-- Builder Top Bar -->
   <div class="bld-topbar">
     <div class="bld-appname"><i data-lucide="building-2"></i>Eチーム株式会社<i data-lucide="chevron-down"></i></div>
@@ -1499,6 +1505,36 @@ async function loadSupabaseData() {
 /* ── AUTH ── */
 let _currentUser = null;
 let _userRole = null;
+let _demoMode = false;
+
+function startDemo(){
+  _demoMode = true;
+  showPage('templates');
+}
+
+function selectTemplate(){
+  if(_demoMode || _currentUser){
+    // デモまたはログイン済み → builderへ
+    const banner=document.getElementById('demo-banner');
+    if(banner) banner.style.display=_demoMode?'flex':'none';
+    showPage('builder');
+  } else {
+    showPage('login');
+  }
+}
+
+function _updateTemplateAuthBtn(){
+  const label=document.getElementById('tmpl-auth-label');
+  const icon=document.querySelector('#tmpl-auth-btn i');
+  if(!label) return;
+  if(_demoMode||!_currentUser){
+    label.textContent='ログインして始める';
+    if(icon){icon.setAttribute('data-lucide','log-in');lucide.createIcons();}
+  } else {
+    label.textContent='ログアウト';
+    if(icon){icon.setAttribute('data-lucide','log-out');lucide.createIcons();}
+  }
+}
 
 async function _loadUserRole(user){
   if(!user){ _userRole=null; return; }
@@ -1545,6 +1581,7 @@ function showPage(id){
   lucide.createIcons();
   if(id==='builder') initBuilder();
   if(id==='onboarding') initOB();
+  if(id==='templates') _updateTemplateAuthBtn();
 }
 
 /* ── BUILDER TABS ── */
