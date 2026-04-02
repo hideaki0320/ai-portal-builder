@@ -34,9 +34,11 @@ app.post('/api/invite', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'メールアドレスが必要です' });
   if (!SUPA_SERVICE_KEY) return res.status(500).json({ error: 'SUPABASE_SERVICE_KEY が設定されていません' });
 
+  const siteUrl = process.env.SITE_URL || `http://localhost:${PORT}`;
   const body = JSON.stringify({
     email,
-    data: { role: role || 'member' }
+    data: { role: role || 'member' },
+    redirect_to: `${siteUrl}/portal`
   });
 
   const options = {
@@ -69,6 +71,42 @@ app.post('/api/invite', async (req, res) => {
 
   request.on('error', (e) => res.status(500).json({ error: e.message }));
   request.write(body);
+  request.end();
+});
+
+// /api/delete-user → Supabase Admin APIでユーザー完全削除（auth.users + profiles両方）
+app.delete('/api/delete-user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  if (!userId) return res.status(400).json({ error: 'ユーザーIDが必要です' });
+  if (!SUPA_SERVICE_KEY) return res.status(500).json({ error: 'SUPABASE_SERVICE_KEY が設定されていません' });
+
+  const options = {
+    hostname: 'rkpnprhatxidaneyuxmw.supabase.co',
+    path: `/auth/v1/admin/users/${userId}`,
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPA_SERVICE_KEY,
+      'Authorization': `Bearer ${SUPA_SERVICE_KEY}`,
+    }
+  };
+
+  const request = https.request(options, (response) => {
+    let data = '';
+    response.on('data', chunk => data += chunk);
+    response.on('end', () => {
+      if (response.statusCode >= 400) {
+        try {
+          const json = JSON.parse(data);
+          return res.status(response.statusCode).json({ error: json.msg || json.message || '削除に失敗しました' });
+        } catch(e) {
+          return res.status(response.statusCode).json({ error: '削除に失敗しました' });
+        }
+      }
+      res.json({ success: true });
+    });
+  });
+
+  request.on('error', (e) => res.status(500).json({ error: e.message }));
   request.end();
 });
 
